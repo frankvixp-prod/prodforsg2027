@@ -1,0 +1,2517 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRODFOR — Participantes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Skip artifact shell — fixed styles served beside every artifact.
+   Tokens, utilities and components (basecoat 1.0 markup, no CDN); artifacts
+   override --accent for their own identity. */
+:root {
+  color-scheme: light dark;
+  --accent: #2563eb;
+  --accent-contrast: #ffffff;
+  --accent-text: color-mix(in srgb, var(--accent) 72%, #000);
+  --bg: #f8f9fb;
+  --surface: #ffffff;
+  --text: #14171f;
+  --text-muted: #5b6472;
+  --border: rgba(20, 23, 31, 0.10);
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(20, 23, 31, 0.08);
+  --space: 16px;
+  --success: #0a7a35;
+  --danger: #c0262d;
+  --warning: #8a5300;
+}
+/* Theme resolution. Without data-theme the viewer's system preference decides,
+   as it always did. With it, the artifact's own choice wins in BOTH directions:
+   a page that hardcodes one palette must not be handed the opposite set of
+   tokens by the machine it happens to be opened on. The dark values appear
+   twice because a media query cannot be folded into a selector list.
+   The attribute sits inside :where() so these blocks keep the specificity of a
+   bare :root — the page's own <style> is linked after this file and must go on
+   overriding any token it wants, exactly as it could before. */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    --accent-text: color-mix(in srgb, var(--accent) 78%, #fff);
+    --bg: #101318;
+    --surface: #181c23;
+    --text: #eef1f6;
+    --text-muted: #9aa4b2;
+    --border: rgba(238, 241, 246, 0.12);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --success: #4ade80;
+    --danger: #f87171;
+    --warning: #fbbf24;
+  }
+}
+:root:where([data-theme="dark"]) {
+  color-scheme: dark;
+  --accent-text: color-mix(in srgb, var(--accent) 78%, #fff);
+  --bg: #101318;
+  --surface: #181c23;
+  --text: #eef1f6;
+  --text-muted: #9aa4b2;
+  --border: rgba(238, 241, 246, 0.12);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --success: #4ade80;
+  --danger: #f87171;
+  --warning: #fbbf24;
+}
+:root:where([data-theme="light"]) { color-scheme: light; }
+/* Pages generated before the shell had its own components still link the
+   basecoat CDN, which reads its own tokens and switches theme only on a
+   .dark class. Bridged to the shell's, whatever of it those pages use takes
+   the page's accent and follows the declared theme. Its --accent token is a
+   hover tint, renamed in its theme as --color-accent; the shell's --accent is
+   the brand colour, so the tint is derived from it here. */
+:root {
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface);
+  --popover-foreground: var(--text);
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-contrast);
+  --secondary: color-mix(in srgb, var(--text) 7%, var(--surface));
+  --secondary-foreground: var(--text);
+  --muted: color-mix(in srgb, var(--text) 5%, var(--surface));
+  --muted-foreground: var(--text-muted);
+  --color-accent: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  --color-accent-foreground: var(--text);
+  --destructive: var(--danger);
+  --input: var(--border);
+  --ring: var(--accent);
+}
+* { box-sizing: border-box; }
+/* The reset the pages were written against: they all linked basecoat, which
+   ships Tailwind's. Its components now live here, so the reset does too. */
+*, ::before, ::after, ::backdrop { margin: 0; padding: 0; border: 0 solid; }
+/* Preflight's rule too: without it a component class that sets display
+   (.alert, .card, .btn…) beats the hidden attribute and shows the element. */
+[hidden]:where(:not([hidden="until-found"])) { display: none !important; }
+.hidden { display: none !important; }
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+a { color: inherit; text-decoration: inherit; }
+b, strong { font-weight: bolder; }
+ol, ul, menu { list-style: none; }
+svg, video, canvas, iframe { display: block; vertical-align: middle; }
+button, input, select, textarea { color: inherit; background-color: transparent; border-radius: 0; }
+table { border-collapse: collapse; }
+hr { height: 0; color: inherit; border-top-width: 1px; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+
+.shell-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.shell-section { padding: calc(var(--space) * 2) 0; }
+.shell-grid { display: grid; gap: var(--space); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.shell-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: var(--space); }
+.shell-footer { padding: 24px 0 40px; color: var(--text-muted); font-size: 13px; }
+
+.shell-hero { padding: calc(var(--space) * 3) 0 calc(var(--space) * 2); }
+.shell-hero h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.15; margin: 0 0 10px; text-wrap: balance; }
+.shell-hero p { color: var(--text-muted); max-width: 60ch; margin: 0; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space);
+}
+
+.kpi { display: flex; flex-direction: column; gap: 4px; }
+.kpi .kpi-value { font-size: clamp(22px, 2.3vw, 28px); font-weight: 650; line-height: 1.1; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.kpi .kpi-label { font-size: 13px; color: var(--text-muted); }
+.kpi .kpi-delta { font-size: 12.5px; font-weight: 600; }
+.kpi .kpi-delta.up { color: var(--success); }
+.kpi .kpi-delta.down { color: var(--danger); }
+
+table.shell-table { border-collapse: collapse; width: 100%; font-size: 14px; }
+table.shell-table th {
+  text-align: left; font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--text-muted); font-weight: 600;
+}
+table.shell-table th, table.shell-table td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--border); }
+table.shell-table td.num, table.shell-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.shell-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+
+.chart-box { width: 100%; min-height: 220px; }
+.chart-box svg { width: 100%; height: auto; display: block; }
+.chart-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; margin-top: 12px; font-size: 12.5px; color: var(--text-muted); }
+.chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.chart-legend b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.muted { color: var(--text-muted); }
+.accent { color: var(--accent-text); }
+.shell-badge, .eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent-text);
+}
+/* A pill keeps its content width inside flex and grid columns, which would
+   otherwise stretch it across the card; a centred parent still centres it. */
+.shell-badge, .eyebrow, .badge { width: fit-content; max-width: 100%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .shell-fade { animation: shell-fade 400ms ease both; }
+  @keyframes shell-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+
+/* Layout and type utilities: what the pages kept spelling in style="".
+   Spacing and type sizes follow Tailwind's scale; there is no Tailwind. */
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.stack { display: flex; flex-direction: column; gap: var(--space); }
+.between { justify-content: space-between; }
+.grow { flex: 1 1 0; min-width: 0; }
+.cols-2, .cols-3, .cols-4, .cols-5 { display: grid; gap: var(--space); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 720px) {
+  .cols-2, .cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cols-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1000px) { .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; }
+.m-0 { margin: 0; }
+.mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
+.mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-6 { margin-bottom: 24px; }
+.p-2 { padding: 8px; } .p-3 { padding: 12px; } .p-4 { padding: 16px; } .p-6 { padding: 24px; }
+.text-xs { font-size: 12px; } .text-sm { font-size: 14px; } .text-base { font-size: 16px; }
+.text-lg { font-size: 18px; } .text-xl { font-size: 20px; line-height: 1.35; }
+.text-2xl { font-size: 24px; line-height: 1.25; } .text-3xl { font-size: 30px; line-height: 1.2; }
+.font-medium { font-weight: 500; } .font-semibold { font-weight: 600; } .font-bold { font-weight: 700; }
+.text-right { text-align: right; } .text-center { text-align: center; }
+.nowrap { white-space: nowrap; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+.w-full { width: 100%; }
+.text-success { color: var(--success); } .text-danger { color: var(--danger); } .text-warning { color: var(--warning); }
+
+/* Components, with basecoat 1.0 markup (variants and sizes are data
+   attributes) and the shell tokens, so a page needs neither component CSS
+   nor a CSS framework. An older page that also links basecoat gets these
+   rules after it, over the same properties. */
+button, input, select, textarea { font: inherit; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 36px; padding: 0 14px; border: 1px solid transparent; border-radius: calc(var(--radius) - 2px);
+  background: var(--accent); color: var(--accent-contrast);
+  font-size: 14px; font-weight: 500; line-height: 1; white-space: nowrap; text-decoration: none; cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.btn:hover { background: color-mix(in srgb, var(--accent) 86%, #000); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+.btn[data-variant="secondary"] { background: color-mix(in srgb, var(--text) 8%, var(--surface)); color: var(--text); }
+.btn[data-variant="secondary"]:hover { background: color-mix(in srgb, var(--text) 14%, var(--surface)); }
+.btn[data-variant="outline"] { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn[data-variant="ghost"] { background: transparent; color: var(--text); }
+.btn[data-variant="outline"]:hover, .btn[data-variant="ghost"]:hover { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.btn[data-variant="destructive"] { background: var(--danger); color: var(--bg); }
+.btn[data-variant="destructive"]:hover { background: color-mix(in srgb, var(--danger) 86%, var(--text)); }
+.btn[data-variant="link"] { height: auto; padding: 0; background: none; color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+.btn[data-size="sm"] { height: 30px; padding: 0 10px; font-size: 13px; }
+.btn[data-size="lg"] { height: 42px; padding: 0 20px; font-size: 15px; }
+.btn[data-size="icon"] { width: 36px; padding: 0; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+  border: 1px solid transparent; border-radius: 999px; background: var(--accent); color: var(--accent-contrast);
+  font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap;
+}
+.badge[data-variant="secondary"] { background: color-mix(in srgb, var(--text) 8%, var(--surface)); color: var(--text); }
+.badge[data-variant="outline"] { background: transparent; color: var(--text); border-color: var(--border); }
+.badge[data-variant="destructive"] { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); color: var(--danger); }
+
+.alert {
+  display: grid; gap: 4px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); font-size: 14px;
+}
+.alert h2, .alert h3 { margin: 0; font-size: 14px; font-weight: 600; }
+.alert p, .alert section { margin: 0; color: var(--text-muted); }
+.alert[data-variant="destructive"] { border-color: color-mix(in srgb, var(--danger) 45%, var(--border)); background: color-mix(in srgb, var(--danger) 7%, var(--surface)); color: var(--danger); }
+
+.card {
+  display: flex; flex-direction: column; gap: 16px; padding: 20px 0;
+  border: 1px solid var(--border); border-radius: calc(var(--radius) + 2px);
+  background: var(--surface); color: var(--text); box-shadow: var(--shadow);
+}
+.card > header, .card > section, .card > footer { padding: 0 20px; }
+.card > header { display: grid; gap: 4px; }
+.card > header h2, .card > header h3 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; }
+.card > header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+.card > footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+.input {
+  width: 100%; min-height: 36px; padding: 6px 12px; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px);
+  background: var(--surface); color: var(--text); font-size: 14px;
+}
+textarea.input { min-height: 84px; resize: vertical; }
+.input::placeholder { color: var(--text-muted); }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 14px; font-weight: 500; }
+.field [role="alert"] { color: var(--danger); font-size: 13px; }
+
+dialog.dialog {
+  width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 32px); margin: auto; padding: 0;
+  border: 1px solid var(--border); border-radius: calc(var(--radius) + 4px);
+  background: var(--surface); color: var(--text); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+dialog.dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+dialog.dialog > div { display: grid; gap: 16px; padding: 24px; }
+dialog.dialog header { display: grid; gap: 4px; }
+dialog.dialog header h2 { margin: 0; font-size: 18px; font-weight: 600; }
+dialog.dialog header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+dialog.dialog footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+.tabs { display: grid; gap: 12px; }
+.tabs > [role="tablist"] {
+  display: inline-flex; gap: 4px; width: fit-content; max-width: 100%; padding: 4px; overflow-x: auto;
+  border-radius: var(--radius); background: color-mix(in srgb, var(--text) 6%, var(--surface));
+}
+.tabs [role="tab"] {
+  padding: 6px 12px; border: 0; border-radius: calc(var(--radius) - 4px); background: transparent;
+  color: var(--text-muted); font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer;
+}
+.tabs [role="tab"][aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.tabs [role="tabpanel"][hidden] { display: none; }
+
+.accordion > details { border-bottom: 1px solid var(--border); }
+.accordion > details > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 0; font-weight: 500; list-style: none; cursor: pointer;
+}
+.accordion > details > summary::-webkit-details-marker { display: none; }
+.accordion > details > summary::after { content: "+"; color: var(--text-muted); font-size: 18px; line-height: 1; }
+.accordion > details[open] > summary::after { content: "\2212"; }
+.accordion > details > :not(summary) { margin: 0 0 14px; color: var(--text-muted); }
+
+.toaster {
+  position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; flex-direction: column-reverse; gap: 8px;
+  width: min(360px, calc(100vw - 32px)); pointer-events: none;
+}
+.toaster .toast { pointer-events: auto; transition: opacity 200ms ease, transform 200ms ease; }
+.toaster .toast[aria-hidden="true"] { opacity: 0; transform: translateY(8px); }
+.toaster .toast-content {
+  padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); font-size: 13px;
+}
+.toaster .toast-content h2 { margin: 0 0 2px; font-size: 14px; font-weight: 600; }
+.toaster .toast-content p { margin: 0; color: var(--text-muted); }
+
+/* skipUI building blocks. */
+.skip-table-search { max-width: 320px; margin-bottom: 12px; }
+.skip-table-wrap { overflow-x: auto; }
+table.shell-table th[data-sort] { cursor: pointer; user-select: none; }
+table.shell-table th[aria-sort="ascending"]::after { content: " \25B2"; font-size: 9px; }
+table.shell-table th[aria-sort="descending"]::after { content: " \25BC"; font-size: 9px; }
+table.shell-table td.skip-table-empty { color: var(--text-muted); text-align: center; padding: 24px 0; }
+.skip-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: 13px; color: var(--text-muted); }
+.toaster .toast[data-type="success"] .toast-content { border-left: 3px solid var(--success); }
+.toaster .toast[data-type="error"] .toast-content { border-left: 3px solid var(--danger); }
+
+</style>
+<script>
+/* Skip artifact shell — fixed helpers served beside every artifact. */
+(function () {
+  "use strict";
+
+  var fmt = {
+    num: function (v, opts) { return new Intl.NumberFormat("pt-BR", opts || {}).format(v); },
+    brl: function (v) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v); },
+    pct: function (v) { return new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 1 }).format(v); },
+    compact: function (v) { return new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(v); },
+    brlCompact: function (v) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", notation: "compact", maximumFractionDigits: 1 }).format(v); }
+  };
+
+  // axisLabels formats the five y-axis ticks in the unit the chart declared
+  // (percent, BRL or plain numbers), compact so long values never clip, with
+  // the fewest decimals that still print every tick exactly (1,5 mi, not 2 mi).
+  function axisLabels(format, ticks) {
+    function at(digits) {
+      var opts = { notation: "compact", maximumFractionDigits: digits };
+      if (format === "pct") opts = { style: "percent", maximumFractionDigits: digits };
+      else if (format === "brl") opts = { style: "currency", currency: "BRL", notation: "compact", maximumFractionDigits: digits };
+      var nf = new Intl.NumberFormat("pt-BR", opts);
+      return ticks.map(function (t) { return nf.format(t); });
+    }
+    for (var digits = 0; digits < 2; digits++) {
+      if (at(digits).join("|") === at(digits + 1).join("|")) return at(digits);
+    }
+    return at(2);
+  }
+
+  // yAxisPad formats the ticks and measures the left padding they need from
+  // the longest one; drawYAxis then draws the grid and the labels.
+  function yAxisPad(format, max) {
+    var labels = axisLabels(format, [0, max / 4, max / 2, (max * 3) / 4, max]);
+    var longest = labels.reduce(function (m, l) { return Math.max(m, l.length); }, 0);
+    return { labels: labels, padL: Math.max(40, Math.round(longest * 6.2) + 14) };
+  }
+  function drawYAxis(svg, axis, W, padR, padT, plotH) {
+    for (var g = 0; g <= 4; g++) {
+      var gy = padT + plotH - (plotH * g) / 4;
+      svg.appendChild(svgEl("line", { x1: axis.padL, y1: gy, x2: W - padR, y2: gy, stroke: "currentColor", "stroke-opacity": 0.08 }));
+      var lbl = svgEl("text", { x: axis.padL - 8, y: gy + 4, "text-anchor": "end", "font-size": 10, fill: mutedColor() });
+      lbl.textContent = axis.labels[g];
+      svg.appendChild(lbl);
+    }
+  }
+
+  // xLabelStep: show every k-th category label so labels never overlap, and
+  // always the last one (counted back from the end).
+  function xLabelStep(labels, step) {
+    var longest = labels.reduce(function (m, l) { return Math.max(m, String(l).length); }, 0);
+    return Math.max(1, Math.ceil((longest * 6.4 + 8) / Math.max(step, 1)));
+  }
+  function drawXLabel(svg, text, x, y, W, edgeGuard) {
+    var anchor = "middle";
+    var half = String(text).length * 3.2;
+    if (edgeGuard && x - half < 4) anchor = "start";
+    if (edgeGuard && x + half > W - 4) anchor = "end";
+    var tx = svgEl("text", { x: x, y: y, "text-anchor": anchor, "font-size": 11, fill: mutedColor() });
+    tx.textContent = text;
+    svg.appendChild(tx);
+  }
+  // categoryLines fits a bar's category name in its slot: one line, two lines
+  // split at a space, or cut with "…". A bar without its name can't be read, so
+  // categories are never skipped; null when the slot is too narrow for that.
+  function categoryLines(text, slot) {
+    var fit = Math.floor((slot - 6) / 6.4);
+    var s = String(text);
+    if (fit < 4) return null;
+    if (s.length <= fit) return [s];
+    var cut = function (t) { return t.length <= fit ? t : t.slice(0, fit - 1).trimEnd() + "…"; };
+    var best = -1;
+    for (var i = 0; i < s.length; i++) {
+      if (s[i] === " " && (best < 0 || Math.abs(s.length / 2 - i) < Math.abs(s.length / 2 - best))) best = i;
+    }
+    if (best < 0) return [cut(s)];
+    return [cut(s.slice(0, best)), cut(s.slice(best + 1))];
+  }
+  function legend(el, items) {
+    var box = document.createElement("div");
+    box.className = "chart-legend";
+    items.forEach(function (it) {
+      var row = document.createElement("span");
+      var dot = document.createElement("i");
+      dot.style.background = it.color;
+      row.appendChild(dot);
+      row.appendChild(document.createTextNode((it.label || "") + (it.value ? " " : "")));
+      if (it.value) {
+        var v = document.createElement("b");
+        v.textContent = it.value;
+        row.appendChild(v);
+      }
+      box.appendChild(row);
+    });
+    resolve(el).appendChild(box);
+  }
+  var seriesPalette = ["#1baf7a", "#eda100", "#e34948", "#4a3aa7", "#e87ba4", "#0ea5b7"];
+
+  // format accepts a function OR one of the fmt names ("num" | "brl" | "pct").
+  // A page's function may return nothing or throw: the chart prints its
+  // number instead of taking the rest of the page script down with it.
+  function coerceFormat(spec) {
+    if (typeof spec === "function") {
+      return function (v) {
+        try {
+          var out = spec(v);
+          return out == null ? "" : String(out);
+        } catch (e) {
+          return fmt.num(v);
+        }
+      };
+    }
+    if (typeof spec === "string" && fmt[spec]) return fmt[spec];
+    return function (v) { return fmt.num(v); };
+  }
+
+  function accent() {
+    return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2563eb";
+  }
+  function mutedColor() {
+    return getComputedStyle(document.documentElement).getPropertyValue("--text-muted").trim() || "#5b6472";
+  }
+  function svgEl(tag, attrs) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (var k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+  function frame(el, w, h) {
+    var svg = svgEl("svg", { viewBox: "0 0 " + w + " " + h, role: "img" });
+    el = resolve(el);
+    el.innerHTML = "";
+    el.appendChild(svg);
+    return svg;
+  }
+
+  // maxOf guards the axis scale: empty values would give -Infinity (truthy,
+  // so "|| 1" can't catch it) and a non-positive max would flip the chart.
+  // finite reads a chart value as a number, 0 when it is not one (NaN,
+  // Infinity, a stray string), so one bad value cannot blank the axis.
+  function finite(v) {
+    var n = +v;
+    return isFinite(n) ? n : 0;
+  }
+
+  function maxOf(values) {
+    var m = values.length ? Math.max.apply(null, values.map(finite)) : 0;
+    return m > 0 ? m : 1;
+  }
+
+  // labelsFor pads or trims the category names to the n points drawn: pages
+  // pass labels and values of different lengths, and one throw here loses
+  // every section the page renders after the chart.
+  function labelsFor(cfg, n) {
+    var out = [];
+    for (var i = 0; i < n; i++) out.push(cfg.labels && cfg.labels[i] != null ? String(cfg.labels[i]) : "");
+    return out;
+  }
+
+  // niceMax rounds the scale up so the four grid steps land on round values
+  // (1, 1.5, 2, 2.5, 3, 4, 5, 6 or 8 × 10^k) and the tick labels read exactly.
+  function niceMax(max) {
+    var raw = max / 4;
+    var mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var res = raw / mag;
+    var steps = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+    var nice = steps.filter(function (s) { return s >= res - 1e-9; })[0];
+    return nice * mag * 4;
+  }
+
+  // bar(el, {labels:[], values:[], color?, format?}) — vertical bar chart.
+  function bar(el, cfg) {
+    var W = 640, H = 280, padB = 30, padT = 12, padR = 12;
+    var max = niceMax(maxOf(cfg.values));
+    var axis = yAxisPad(cfg.format, max);
+    var svg = frame(el, W, H);
+    var n = cfg.values.length;
+    var labels = labelsFor(cfg, n);
+    var plotW = W - axis.padL - padR;
+    var step = plotW / n, bw = Math.min(step * 0.62, 64);
+    var names = labels.map(function (l) { return categoryLines(l, step); });
+    var named = names.every(Boolean);
+    if (named && names.some(function (l) { return l.length > 1; })) padB = 42;
+    var plotH = H - padT - padB;
+    var color = cfg.color || accent();
+    var f = coerceFormat(cfg.format);
+    var every = xLabelStep(labels, step);
+    drawYAxis(svg, axis, W, padR, padT, plotH);
+    cfg.values.forEach(function (v, i) {
+      var bh = Math.max(0, (finite(v) / max) * plotH);
+      var x = axis.padL + i * step + (step - bw) / 2;
+      var y = padT + plotH - bh;
+      var r = svgEl("rect", { x: x, y: y, width: bw, height: bh, rx: 4, fill: (cfg.colors && cfg.colors[i]) || color });
+      var t = svgEl("title", {});
+      t.textContent = labels[i] + ": " + f(v);
+      r.appendChild(t);
+      svg.appendChild(r);
+      if (named) {
+        names[i].forEach(function (text, li) {
+          drawXLabel(svg, text, x + bw / 2, padT + plotH + 18 + li * 13, W, false);
+        });
+      } else if ((n - 1 - i) % every === 0) {
+        drawXLabel(svg, labels[i], x + bw / 2, H - 10, W, false);
+      }
+    });
+  }
+
+  // line(el, {labels:[], values:[] | series:[{label, values, color?}], color?, format?})
+  // — one line, or several series on one scale with a legend under the chart.
+  function line(el, cfg) {
+    var W = 640, H = 280, padB = 30, padT = 12, padR = 16;
+    var series = cfg.series && cfg.series.length
+      ? cfg.series
+      : [{ label: "", values: cfg.values || [], color: cfg.color }];
+    var all = [];
+    series.forEach(function (s) { all = all.concat(s.values || []); });
+    var max = niceMax(maxOf(all));
+    var axis = yAxisPad(cfg.format, max);
+    var svg = frame(el, W, H);
+    var n = series.reduce(function (m, s) { return Math.max(m, (s.values || []).length); }, 0);
+    var labels = labelsFor(cfg, n);
+    var plotW = W - axis.padL - padR, plotH = H - padT - padB;
+    var f = coerceFormat(cfg.format);
+    drawYAxis(svg, axis, W, padR, padT, plotH);
+    var xs = labels.map(function (_, i) { return axis.padL + (n === 1 ? plotW / 2 : (plotW * i) / (n - 1)); });
+    var every = xLabelStep(labels, n > 1 ? plotW / (n - 1) : plotW);
+    labels.forEach(function (label, i) {
+      if ((n - 1 - i) % every === 0) drawXLabel(svg, label, xs[i], H - 10, W, true);
+    });
+    var colors = series.map(function (s, si) {
+      return s.color || (si === 0 ? (cfg.color || accent()) : seriesPalette[(si - 1) % seriesPalette.length]);
+    });
+    series.forEach(function (s, si) {
+      var color = colors[si];
+      var pts = (s.values || []).map(function (v, i) { return [xs[i], padT + plotH - (finite(v) / max) * plotH]; });
+      var d = pts.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" ");
+      svg.appendChild(svgEl("path", { d: d, fill: "none", stroke: color, "stroke-width": 2, "stroke-linejoin": "round" }));
+      pts.forEach(function (p, i) {
+        var c = svgEl("circle", { cx: p[0], cy: p[1], r: 3.5, fill: color });
+        var t = svgEl("title", {});
+        t.textContent = (s.label ? s.label + " · " : "") + labels[i] + ": " + f(s.values[i]);
+        c.appendChild(t);
+        svg.appendChild(c);
+      });
+    });
+    if (series.length > 1) {
+      legend(el, series.map(function (s, si) { return { label: s.label, color: colors[si] }; }));
+    }
+  }
+
+  // donut(el, {labels:[], values:[], colors?, format?, center?, centerLabel?, legend?})
+  // — donut with a short total in the centre (compact, in the declared unit)
+  // and, with legend: true, the labels and shares listed under it.
+  function donut(el, cfg) {
+    var W = 320, H = 280, cx = W / 2, cy = H / 2, R = 92, r = 58;
+    var svg = frame(el, W, H);
+    // At 100% of a wide container the donut outgrows the height pages give
+    // the box and spills over the next section: keep it at its own size.
+    svg.style.maxWidth = W + "px";
+    svg.style.margin = "0 auto";
+    var values = cfg.values.map(finite);
+    var labels = labelsFor(cfg, values.length);
+    var sum = values.reduce(function (a, b) { return a + b; }, 0);
+    var total = sum || 1;
+    var palette = cfg.colors || [accent()].concat(seriesPalette);
+    // The hover keeps the full value; the centre has room for a short one.
+    var full = coerceFormat(cfg.format);
+    var short = typeof cfg.format === "function" ? full : cfg.format === "brl" ? fmt.brlCompact : fmt.compact;
+    var a0 = -Math.PI / 2;
+    values.forEach(function (v, i) {
+      var a1 = a0 + (v / total) * Math.PI * 2;
+      var large = a1 - a0 > Math.PI ? 1 : 0;
+      var p = ["M", cx + R * Math.cos(a0), cy + R * Math.sin(a0),
+        "A", R, R, 0, large, 1, cx + R * Math.cos(a1), cy + R * Math.sin(a1),
+        "L", cx + r * Math.cos(a1), cy + r * Math.sin(a1),
+        "A", r, r, 0, large, 0, cx + r * Math.cos(a0), cy + r * Math.sin(a0), "Z"].join(" ");
+      var path = svgEl("path", { d: p, fill: palette[i % palette.length] });
+      var t = svgEl("title", {});
+      t.textContent = labels[i] + ": " + full(v) + " (" + fmt.pct(v / total) + ")";
+      path.appendChild(t);
+      svg.appendChild(path);
+      a0 = a1;
+    });
+    // A share chart has no total worth printing: without its own centre text
+    // the caption alone takes the middle.
+    var text = cfg.center != null ? String(cfg.center) : (cfg.format === "pct" ? "" : short(sum));
+    if (text) {
+      var size = text.length > 9 ? 14 : text.length > 7 ? 17 : 20;
+      var center = svgEl("text", { x: cx, y: cfg.centerLabel ? cy + 1 : cy + 6, "text-anchor": "middle", "font-size": size, "font-weight": 650, fill: "currentColor" });
+      center.textContent = text;
+      svg.appendChild(center);
+    }
+    if (cfg.centerLabel) {
+      var cap = svgEl("text", { x: cx, y: text ? cy + 19 : cy + 5, "text-anchor": "middle", "font-size": 11, fill: mutedColor() });
+      cap.textContent = cfg.centerLabel;
+      svg.appendChild(cap);
+    }
+    if (cfg.legend) {
+      legend(el, labels.map(function (label, i) {
+        return { label: label, color: palette[i % palette.length], value: fmt.pct(values[i] / total) };
+      }));
+    }
+  }
+
+  // ---- Page building blocks: what dashboards and small systems kept
+  // re-implementing — a searchable sortable table, a KPI row, tabs, toasts,
+  // dialogs, saved state and mock data. Every call is opt-in, so a page that
+  // brings its own versions keeps them.
+
+  function resolve(target) {
+    return typeof target === "string" ? document.querySelector(target) : target;
+  }
+
+  function node(tag, className, text) {
+    var el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text != null) el.textContent = text;
+    return el;
+  }
+
+  function isNumberColumn(col) {
+    return col.align === "right" || col.format === "num" || col.format === "brl" || col.format === "pct";
+  }
+
+  function cellText(col, row) {
+    var value = row[col.key];
+    if (value == null) return "";
+    return col.format ? coerceFormat(col.format)(value) : String(value);
+  }
+
+  function compareValues(a, b) {
+    if (typeof a === "number" && typeof b === "number") return a - b;
+    return String(a == null ? "" : a).localeCompare(String(b == null ? "" : b), "pt-BR", { numeric: true });
+  }
+
+  // table(el, {columns, rows, search?, pageSize?, empty?, onRowClick?}) — a
+  // table.shell-table with sortable headers, an optional search box and
+  // pager. A column is {key, label, format?, align?, sortable? (true),
+  // render?(value, row) returning a Node or an HTML string — the page writes
+  // its cell templates as markup}. Plain values are always set as text.
+  // Returns {setRows, rows}.
+  function table(target, cfg) {
+    var root = resolve(target);
+    var cols = cfg.columns || [];
+    var pageSize = cfg.pageSize || 0;
+    var state = { rows: (cfg.rows || []).slice(), query: "", key: null, dir: 1, page: 0 };
+    root.innerHTML = "";
+    if (cfg.search) {
+      var search = node("input", "input skip-table-search");
+      search.type = "search";
+      search.placeholder = typeof cfg.search === "string" ? cfg.search : "Buscar…";
+      search.setAttribute("aria-label", search.placeholder);
+      search.addEventListener("input", function () {
+        state.query = search.value.trim().toLowerCase();
+        state.page = 0;
+        draw();
+      });
+      root.appendChild(search);
+    }
+    var tableEl = node("table", "shell-table");
+    var headRow = node("tr");
+    var heads = cols.map(function (col) {
+      var th = node("th", isNumberColumn(col) ? "num" : "", col.label == null ? col.key : col.label);
+      th.scope = "col";
+      if (col.sortable !== false) {
+        var toggle = function () {
+          state.dir = state.key === col.key ? -state.dir : 1;
+          state.key = col.key;
+          draw();
+        };
+        th.setAttribute("data-sort", col.key);
+        th.tabIndex = 0;
+        th.addEventListener("click", toggle);
+        th.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+        });
+      }
+      headRow.appendChild(th);
+      return th;
+    });
+    var thead = node("thead");
+    var tbody = node("tbody");
+    var wrap = node("div", "skip-table-wrap");
+    var pager = node("div", "skip-pager");
+    thead.appendChild(headRow);
+    tableEl.appendChild(thead);
+    tableEl.appendChild(tbody);
+    wrap.appendChild(tableEl);
+    root.appendChild(wrap);
+    if (pageSize) root.appendChild(pager);
+
+    function visibleRows() {
+      var rows = state.rows;
+      if (state.query) {
+        rows = rows.filter(function (row) {
+          return cols.some(function (col) { return cellText(col, row).toLowerCase().indexOf(state.query) >= 0; });
+        });
+      }
+      if (state.key) {
+        var key = state.key, dir = state.dir;
+        rows = rows.slice().sort(function (a, b) { return dir * compareValues(a[key], b[key]); });
+      }
+      return rows;
+    }
+
+    function drawRow(row) {
+      var tr = node("tr");
+      cols.forEach(function (col) {
+        var td = node("td", isNumberColumn(col) ? "num" : "");
+        if (!col.render) {
+          td.textContent = cellText(col, row);
+        } else {
+          var content = col.render(row[col.key], row);
+          if (content instanceof Node) td.appendChild(content);
+          else td.innerHTML = content == null ? "" : String(content);
+        }
+        tr.appendChild(td);
+      });
+      // The row stays a row (no role) and takes focus, so a keyboard reaches
+      // the same action; keys pressed on a control inside a cell are its own.
+      if (cfg.onRowClick) {
+        tr.style.cursor = "pointer";
+        tr.tabIndex = 0;
+        tr.addEventListener("click", function () { cfg.onRowClick(row); });
+        tr.addEventListener("keydown", function (e) {
+          if (e.target !== tr || (e.key !== "Enter" && e.key !== " ")) return;
+          e.preventDefault();
+          cfg.onRowClick(row);
+        });
+      }
+      return tr;
+    }
+
+    function pagerButton(label, disabled, step) {
+      var button = node("button", "btn", label);
+      button.type = "button";
+      button.setAttribute("data-variant", "outline");
+      button.setAttribute("data-size", "sm");
+      button.disabled = disabled;
+      button.addEventListener("click", function () { state.page += step; draw(); });
+      return button;
+    }
+
+    function draw() {
+      var rows = visibleRows();
+      heads.forEach(function (th, i) {
+        if (cols[i].key === state.key) th.setAttribute("aria-sort", state.dir > 0 ? "ascending" : "descending");
+        else th.removeAttribute("aria-sort");
+      });
+      var pages = pageSize ? Math.max(1, Math.ceil(rows.length / pageSize)) : 1;
+      state.page = Math.min(state.page, pages - 1);
+      var shown = pageSize ? rows.slice(state.page * pageSize, (state.page + 1) * pageSize) : rows;
+      tbody.innerHTML = "";
+      if (!shown.length) {
+        var empty = node("td", "skip-table-empty", cfg.empty || "Nenhum registro encontrado.");
+        empty.colSpan = cols.length;
+        tbody.appendChild(node("tr")).appendChild(empty);
+      }
+      shown.forEach(function (row) { tbody.appendChild(drawRow(row)); });
+      if (!pageSize) return;
+      pager.innerHTML = "";
+      var from = rows.length ? state.page * pageSize + 1 : 0;
+      pager.appendChild(node("span", "", from + "–" + Math.min(rows.length, (state.page + 1) * pageSize) + " de " + rows.length));
+      var nav = node("div", "row gap-2");
+      nav.appendChild(pagerButton("Anterior", state.page === 0, -1));
+      nav.appendChild(pagerButton("Próxima", state.page >= pages - 1, 1));
+      pager.appendChild(nav);
+    }
+
+    draw();
+    return {
+      setRows: function (rows) { state.rows = rows.slice(); draw(); },
+      rows: visibleRows
+    };
+  }
+
+  // kpis(el, [{label, value, format?, delta?, hint?}]) — KPI cards in a
+  // responsive grid; delta is a fraction (0.12 renders as ▲ 12%).
+  function kpis(target, items) {
+    var root = resolve(target);
+    root.innerHTML = "";
+    root.classList.add("shell-grid");
+    items.forEach(function (item) {
+      var card = node("div", "panel kpi");
+      card.appendChild(node("span", "kpi-label", item.label));
+      // Large money values go compact ("R$ 27,5 mi"): the full amount does
+      // not fit a KPI card at four per row.
+      var kpiFormat = item.format === "brl" && Math.abs(item.value) >= 1e6 ? fmt.brlCompact : (item.format ? coerceFormat(item.format) : null);
+      card.appendChild(node("span", "kpi-value", kpiFormat ? kpiFormat(item.value) : String(item.value)));
+      if (typeof item.delta === "number") {
+        var up = item.delta >= 0;
+        card.appendChild(node("span", "kpi-delta " + (up ? "up" : "down"), (up ? "▲ " : "▼ ") + fmt.pct(Math.abs(item.delta))));
+      }
+      if (item.hint) card.appendChild(node("span", "kpi-label", item.hint));
+      root.appendChild(card);
+    });
+  }
+
+  // badge(text, variant?) — a .badge node for table cells and lists;
+  // variant is "secondary" | "outline" | "destructive" (default: primary).
+  function badge(text, variant) {
+    var el = node("span", "badge", text);
+    if (variant) el.setAttribute("data-variant", variant);
+    return el;
+  }
+
+  // tabs(el) — wires one .tabs block: [role=tab] buttons inside
+  // [role=tablist], each with aria-controls naming its [role=tabpanel].
+  function tabs(target) {
+    var root = resolve(target);
+    var buttons = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+    function select(chosen) {
+      buttons.forEach(function (b) {
+        var on = b === chosen;
+        b.setAttribute("aria-selected", on ? "true" : "false");
+        b.tabIndex = on ? 0 : -1;
+        var panel = document.getElementById(b.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !on;
+      });
+    }
+    buttons.forEach(function (b, i) {
+      b.addEventListener("click", function () { select(b); });
+      b.addEventListener("keydown", function (e) {
+        var step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        var next = buttons[(i + step + buttons.length) % buttons.length];
+        next.focus();
+        select(next);
+      });
+    });
+    select(buttons.filter(function (b) { return b.getAttribute("aria-selected") === "true"; })[0] || buttons[0]);
+  }
+
+  // toast(message, {type?: "success" | "error", title?, duration?}) — a
+  // .toast in a shared .toaster at the bottom of the page.
+  function toast(message, opts) {
+    opts = opts || {};
+    var toaster = document.querySelector(".toaster") || document.body.appendChild(node("div", "toaster"));
+    var item = node("div", "toast");
+    item.setAttribute("role", opts.type === "error" ? "alert" : "status");
+    item.setAttribute("aria-hidden", "true");
+    if (opts.type) item.setAttribute("data-type", opts.type);
+    var content = node("div", "toast-content");
+    var section = node("section");
+    if (opts.title) section.appendChild(node("h2", "", opts.title));
+    section.appendChild(node("p", "", message));
+    content.appendChild(section);
+    item.appendChild(content);
+    toaster.appendChild(item);
+    requestAnimationFrame(function () { item.setAttribute("aria-hidden", "false"); });
+    setTimeout(function () {
+      item.setAttribute("aria-hidden", "true");
+      setTimeout(function () { item.remove(); }, 400);
+    }, opts.duration || 3000);
+  }
+
+  // Dialogs are native <dialog class="dialog">: a [data-dialog-open="id"]
+  // anywhere opens one, a [data-dialog-close] inside closes it, and a click on
+  // its backdrop closes it too. Plain dialog.showModal()/close() still work.
+  document.addEventListener("click", function (e) {
+    var target = e.target;
+    if (!(target instanceof Element)) return;
+    var opener = target.closest("[data-dialog-open]");
+    if (opener) {
+      var dialog = document.getElementById(opener.getAttribute("data-dialog-open"));
+      if (dialog && dialog.showModal && !dialog.open) dialog.showModal();
+      return;
+    }
+    var closer = target.closest("[data-dialog-close]");
+    if (closer && closer.closest("dialog")) {
+      closer.closest("dialog").close();
+      return;
+    }
+    if (target.tagName === "DIALOG" && target.classList.contains("dialog") && target.open) target.close();
+  });
+
+  // store(key, fallback) — JSON state in localStorage that never throws (a
+  // private window or a full quota falls back to memory): {get, set, update}.
+  function store(key, fallback) {
+    var memory;
+    // Set while the last write did not reach localStorage: what is stored
+    // there is older than memory until a write goes through again.
+    var unsaved = false;
+    var initial = function () { return fallback === undefined ? undefined : JSON.parse(JSON.stringify(fallback)); };
+    function get() {
+      if (!unsaved) {
+        try {
+          var raw = localStorage.getItem(key);
+          if (raw != null) return JSON.parse(raw);
+        } catch (e) { /* storage unavailable: memory below */ }
+      }
+      return memory !== undefined ? memory : initial();
+    }
+    function set(value) {
+      memory = value;
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        unsaved = false;
+      } catch (e) {
+        unsaved = true;
+      }
+      return value;
+    }
+    return { get: get, set: set, update: function (fn) { return set(fn(get())); } };
+  }
+
+  // mock — seeded random data, so a page asks for 90 days of numbers in one
+  // line instead of writing them out; the same seed gives the same data.
+  var FIRST = ["Ana", "Bruno", "Carla", "Diego", "Eduarda", "Felipe", "Gabriela", "Henrique", "Isabela", "João",
+    "Larissa", "Marcos", "Natália", "Otávio", "Paula", "Rafael", "Sofia", "Thiago", "Vanessa", "Lucas"];
+  var LAST = ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Costa", "Rodrigues", "Almeida", "Nascimento", "Lima",
+    "Araújo", "Fernandes", "Carvalho", "Gomes", "Martins", "Rocha", "Ribeiro", "Barbosa"];
+  var INITIALS = "ABCDEFGHIJLMNOPRSTV".split("");
+  var CITIES = ["São Paulo, SP", "Rio de Janeiro, RJ", "Belo Horizonte, MG", "Curitiba, PR", "Porto Alegre, RS",
+    "Salvador, BA", "Recife, PE", "Fortaleza, CE", "Brasília, DF", "Goiânia, GO", "Campinas, SP", "Florianópolis, SC",
+    "Manaus, AM", "Belém, PA", "Vitória, ES", "Natal, RN"];
+
+  function createMock(seed) {
+    var state = seed >>> 0;
+    var names = 0;
+    function random() {
+      state = (state + 0x6d2b79f5) >>> 0;
+      var t = state;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    function int(min, max) { return min + Math.floor(random() * (max - min + 1)); }
+    function pick(list) { return list[Math.floor(random() * list.length)]; }
+    var mock = {
+      seed: function (value) { state = value >>> 0; names = 0; return mock; },
+      random: random,
+      int: int,
+      float: function (min, max, decimals) {
+        var factor = Math.pow(10, decimals == null ? 2 : decimals);
+        return Math.round((min + random() * (max - min)) * factor) / factor;
+      },
+      pick: pick,
+      chance: function (p) { return random() < p; },
+      // There are 360 first/last pairs. A page that draws until the name is
+      // new (do { … } while (used.has(name))) froze the tab past them, so
+      // later draws widen the space: a second surname after 200 (6,480), a
+      // middle initial after 4,000.
+      name: function () {
+        names++;
+        var middle = names > 4000 ? pick(INITIALS) + ". " : "";
+        return pick(FIRST) + " " + middle + (names > 200 ? pick(LAST) + " " : "") + pick(LAST);
+      },
+      city: function () { return pick(CITIES); },
+      // series(n, {start, trend, noise, min, decimals}) — a walk: each value
+      // moves by trend (fraction per step) plus up to ±noise of itself.
+      series: function (n, opts) {
+        opts = opts || {};
+        var value = opts.start == null ? 100 : opts.start;
+        var factor = Math.pow(10, opts.decimals || 0);
+        var out = [];
+        for (var i = 0; i < n; i++) {
+          out.push(Math.max(opts.min == null ? 0 : opts.min, Math.round(value * factor) / factor));
+          value = value * (1 + (opts.trend || 0)) * (1 + (random() * 2 - 1) * (opts.noise == null ? 0.08 : opts.noise));
+        }
+        return out;
+      },
+      // dates(n, {end?, step?: "day" | "week" | "month"}) — ISO dates
+      // (YYYY-MM-DD), oldest first, ending at end (default: today).
+      dates: function (n, opts) {
+        opts = opts || {};
+        var end = opts.end ? new Date(opts.end) : new Date();
+        var out = [];
+        for (var i = n - 1; i >= 0; i--) {
+          var d = new Date(end.getTime());
+          if (opts.step === "month") d.setMonth(d.getMonth() - i);
+          else d.setDate(d.getDate() - i * (opts.step === "week" ? 7 : 1));
+          out.push(d.toISOString().slice(0, 10));
+        }
+        return out;
+      },
+      // rows(n, spec) — n objects; each spec value is a function(i), a list
+      // to pick from, or a constant.
+      rows: function (n, spec) {
+        var out = [];
+        for (var i = 0; i < n; i++) {
+          var row = {};
+          for (var key in spec) {
+            var value = spec[key];
+            row[key] = typeof value === "function" ? value(i) : Array.isArray(value) ? pick(value) : value;
+          }
+          out.push(row);
+        }
+        return out;
+      }
+    };
+    return mock;
+  }
+
+  window.skipShell = { fmt: fmt };
+  window.skipChart = { bar: bar, line: line, donut: donut };
+  window.skipUI = { table: table, kpis: kpis, badge: badge, tabs: tabs, toast: toast };
+  window.skipStore = store;
+  window.skipMock = createMock(20261022);
+})();
+
+</script>
+<style>
+:root {
+--azul: #004A87;
+--ciano: #00A0E4;
+--petroleo: #0B2430;
+--ambar: #E08A3C;
+--salvia: #CFDCD3;
+--creme: #F4F1E8;
+--grafite: #1F2A2E;
+--verde: #2E7D5B;
+--vermelho: #B3453A;
+--accent: #004A87;
+--accent-contrast: #ffffff;
+}
+body {
+font-family: 'DM Sans', system-ui, sans-serif;
+background: #EEF2F4;
+color: #1F2A2E;
+margin: 0;
+}
+h1, h2, h3, .brand-title { font-family: 'Archivo Black', sans-serif; letter-spacing: 0.3px; }
+.mono { font-family: 'DM Mono', monospace; }
+.hidden { display: none !important; }
+
+#banner-erro {
+display: none;
+background: var(--vermelho);
+color: #fff;
+padding: 10px 16px;
+font-size: 13px;
+position: sticky;
+top: 0;
+z-index: 100;
+}
+
+/* LOGIN */
+#tela-login {
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+background: linear-gradient(160deg, var(--petroleo) 0%, var(--azul) 100%);
+padding: 24px;
+box-sizing: border-box;
+}
+.login-card {
+background: #fff;
+border-radius: 12px;
+padding: 32px;
+width: 100%;
+max-width: 400px;
+box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+}
+.login-logo {
+display: flex;
+justify-content: center;
+background: var(--petroleo);
+border-radius: 8px;
+padding: 14px;
+margin-bottom: 20px;
+}
+.login-subtitle { color: rgba(31,42,46,0.7); font-size: 13px; text-align: center; margin: 0 0 20px; }
+.campo { margin-bottom: 14px; }
+.campo label, .label-caixa {
+display: block;
+font-size: 11px;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+color: rgba(31,42,46,0.7);
+margin-bottom: 6px;
+font-weight: 600;
+}
+.campo-helper { font-size: 12px; color: rgba(31,42,46,0.6); margin-top: 4px; }
+.input-campo, .select-campo {
+width: 100%;
+height: 40px;
+border: 1px solid var(--salvia);
+border-radius: 8px;
+padding: 0 12px;
+font-size: 14px;
+font-family: 'DM Sans', sans-serif;
+box-sizing: border-box;
+background: #fff;
+color: var(--grafite);
+}
+.input-campo:focus, .select-campo:focus { outline: none; border-color: var(--ciano); box-shadow: 0 0 0 3px rgba(0,160,228,0.2); }
+.input-com-olho { position: relative; }
+.input-com-olho .input-campo { padding-right: 44px; }
+.btn-olho {
+position: absolute;
+right: 6px;
+top: 50%;
+transform: translateY(-50%);
+background: none;
+border: none;
+cursor: pointer;
+padding: 6px;
+color: var(--grafite);
+display: flex;
+align-items: center;
+}
+.btn-olho:focus-visible { outline: 2px solid var(--ciano); border-radius: 4px; }
+.btn-primario {
+background: var(--azul);
+color: #fff;
+height: 40px;
+padding: 0 20px;
+border-radius: 8px;
+border: none;
+cursor: pointer;
+font-weight: 600;
+font-family: 'DM Sans', sans-serif;
+font-size: 14px;
+white-space: nowrap;
+transition: background 0.15s;
+}
+.btn-primario:hover { background: #003a6b; }
+.btn-primario:focus-visible { outline: 3px solid var(--ciano); outline-offset: 2px; }
+.btn-secundario {
+background: transparent;
+border: 1px solid var(--azul);
+color: var(--azul);
+height: 40px;
+padding: 0 20px;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 600;
+font-family: 'DM Sans', sans-serif;
+font-size: 14px;
+white-space: nowrap;
+}
+.btn-secundario:hover { background: rgba(0,74,135,0.06); }
+.btn-perigo {
+background: var(--vermelho);
+color: #fff;
+height: 34px;
+padding: 0 12px;
+border-radius: 8px;
+border: none;
+cursor: pointer;
+font-size: 12px;
+font-weight: 600;
+}
+.btn-acao {
+background: transparent;
+border: 1px solid var(--azul);
+color: var(--azul);
+height: 30px;
+padding: 0 10px;
+border-radius: 6px;
+cursor: pointer;
+font-size: 12px;
+font-weight: 600;
+margin-right: 4px;
+white-space: nowrap;
+}
+.btn-acao.perigo { border-color: var(--vermelho); color: var(--vermelho); }
+.link-btn {
+background: none;
+border: none;
+color: var(--azul);
+text-decoration: underline;
+cursor: pointer;
+font-size: 13px;
+padding: 0;
+font-family: 'DM Sans', sans-serif;
+}
+.aviso-demo {
+margin-top: 18px;
+padding: 10px 12px;
+border-radius: 8px;
+background: var(--creme);
+border: 1px dashed var(--ambar);
+font-size: 12px;
+color: var(--grafite);
+text-align: center;
+}
+.msg-login { min-height: 18px; font-size: 13px; color: var(--vermelho); margin: 8px 0 0; }
+
+/* APP LAYOUT */
+#tela-app { display: flex; min-height: 100vh; }
+.sidebar {
+width: 260px;
+flex: 0 0 260px;
+background: var(--petroleo);
+color: #fff;
+display: flex;
+flex-direction: column;
+padding: 24px 18px;
+box-sizing: border-box;
+position: sticky;
+top: 0;
+height: 100vh;
+}
+.sidebar-logo {
+display: flex;
+flex-direction: column;
+gap: 8px;
+margin-bottom: 24px;
+}
+.sidebar-programa { font-size: 12px; color: var(--salvia); letter-spacing: 0.5px; }
+.bloco-usuario {
+background: rgba(255,255,255,0.06);
+border-radius: 10px;
+padding: 12px;
+margin-bottom: 22px;
+}
+.bloco-usuario .nome { font-weight: 600; font-size: 14px; }
+.badge-perfil {
+display: inline-block;
+margin-top: 6px;
+padding: 3px 10px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
+background: var(--ambar);
+color: var(--petroleo);
+}
+.btn-sair {
+margin-top: 10px;
+background: transparent;
+border: 1px solid var(--salvia);
+color: var(--salvia);
+border-radius: 6px;
+height: 30px;
+padding: 0 12px;
+cursor: pointer;
+font-size: 12px;
+}
+.nav-item {
+display: block;
+padding: 10px 12px 10px 14px;
+border-left: 3px solid transparent;
+color: #fff;
+font-weight: 600;
+font-size: 14px;
+border-radius: 0 8px 8px 0;
+}
+.nav-item.ativo { border-left-color: var(--ciano); background: rgba(255,255,255,0.12); }
+.sidebar-rodape { margin-top: auto; font-size: 11px; color: var(--salvia); opacity: 0.85; }
+
+.conteudo { flex: 1; min-width: 0; padding: 28px 32px 40px; box-sizing: border-box; }
+.cabecalho {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 16px;
+flex-wrap: wrap;
+margin-bottom: 20px;
+}
+.eyebrow-pill {
+display: inline-block;
+background: var(--salvia);
+color: var(--azul);
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.5px;
+padding: 4px 12px;
+border-radius: 12px;
+margin-bottom: 8px;
+text-transform: uppercase;
+}
+.titulo-pagina { font-size: 28px; color: var(--petroleo); margin: 0; }
+.subtitulo { color: rgba(31,42,46,0.7); font-size: 14px; margin: 4px 0 0; }
+.acoes-topo { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.card {
+background: #fff;
+border-radius: 12px;
+padding: 24px;
+box-shadow: 0 2px 10px rgba(11,36,48,0.08);
+margin-bottom: 20px;
+box-sizing: border-box;
+}
+.card-titulo { font-size: 18px; color: var(--petroleo); margin: 0 0 4px; }
+.card-sub { font-size: 13px; color: rgba(31,42,46,0.65); margin: 0 0 16px; }
+
+.grid-form {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
+}
+.grid-form .acao-form { grid-column: 1 / -1; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+@media (max-width: 900px) {
+.grid-form { grid-template-columns: 1fr; }
+.sidebar { position: static; width: 100%; height: auto; flex: none; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 12px 16px; gap: 12px; }
+.sidebar-logo { margin-bottom: 0; flex-direction: row; align-items: center; }
+.bloco-usuario { margin-bottom: 0; display: flex; gap: 10px; align-items: center; }
+.bloco-usuario .btn-sair { margin-top: 0; }
+.nav-item { border-left: none; border-bottom: 3px solid transparent; }
+.nav-item.ativo { border-bottom-color: var(--ciano); border-left-color: transparent; }
+.sidebar-rodape { margin-top: 0; }
+#tela-app { flex-direction: column; }
+.conteudo { padding: 20px 16px 32px; }
+}
+
+.msg-form { min-height: 20px; font-size: 13px; color: var(--vermelho); margin: 0; }
+.msg-form.sucesso { color: var(--verde); }
+.msg-toast {
+position: fixed;
+bottom: 20px;
+right: 20px;
+background: var(--petroleo);
+color: #fff;
+padding: 12px 18px;
+border-radius: 8px;
+font-size: 14px;
+box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+z-index: 200;
+max-width: 380px;
+}
+.msg-toast.erro { background: var(--vermelho); }
+.msg-toast.sucesso { background: var(--verde); }
+
+/* FILTROS */
+.filtros-linha {
+display: flex;
+flex-direction: row;
+flex-wrap: nowrap;
+align-items: flex-end;
+gap: 16px;
+width: 100%;
+}
+.filtros-linha > div { flex: 1 1 0; min-width: 0; }
+.filtros-linha .input-campo, .filtros-linha .select-campo { width: 100%; height: 40px; box-sizing: border-box; }
+.filtros-acoes {
+display: flex;
+flex-direction: row;
+gap: 12px;
+margin-top: 16px;
+justify-content: flex-start;
+flex-wrap: wrap;
+}
+.filtros-acoes button { height: 40px; padding: 0 20px; flex: 0 0 auto; white-space: nowrap; }
+.input-lupa { position: relative; }
+.input-lupa .input-campo { padding-left: 36px; }
+.input-lupa svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: rgba(31,42,46,0.5); }
+@media (max-width: 900px) {
+.filtros-linha { flex-wrap: wrap; }
+.filtros-linha > div { flex: 1 1 100%; }
+}
+
+/* RESUMO */
+.grid-resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+@media (max-width: 760px) { .grid-resumo { grid-template-columns: 1fr; } }
+.kpi-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(11,36,48,0.08); }
+.kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(31,42,46,0.7); font-weight: 600; }
+.kpi-valor { font-family: 'DM Mono', monospace; font-size: 32px; color: var(--azul); margin: 6px 0 4px; }
+.kpi-valor.alerta { color: var(--ambar); }
+.kpi-caption { font-size: 12px; color: rgba(31,42,46,0.6); }
+
+/* TABELA */
+.tabela-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--salvia); }
+table.tabela { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px; }
+table.tabela thead th {
+background: var(--azul);
+color: #fff;
+text-align: left;
+padding: 10px;
+font-weight: 600;
+font-size: 12px;
+white-space: nowrap;
+}
+table.tabela tbody td { padding: 10px; border-bottom: 1px solid #ECEEEC; vertical-align: middle; }
+table.tabela tbody tr:nth-child(even) { background: #F9F9F7; }
+.badge-num {
+display: inline-block;
+padding: 3px 10px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
+background: var(--creme);
+color: var(--azul);
+font-family: 'DM Mono', monospace;
+}
+.estado-vazio { text-align: center; padding: 40px 20px; color: rgba(31,42,46,0.65); }
+.estado-vazio svg { color: var(--salvia); margin-bottom: 8px; }
+.badge-sem-email { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; background: #FCEBD7; color: #8a4a12; font-weight: 600; }
+
+/* MODAL */
+.overlay {
+position: fixed;
+inset: 0;
+background: rgba(11,36,48,0.6);
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 16px;
+z-index: 150;
+}
+.modal {
+background: #fff;
+border-radius: 12px;
+padding: 28px;
+max-width: 560px;
+width: 100%;
+box-sizing: border-box;
+max-height: 90vh;
+overflow-y: auto;
+box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+.modal h3 { margin: 0 0 6px; font-size: 20px; color: var(--petroleo); }
+.modal-sub { font-size: 13px; color: rgba(31,42,46,0.65); margin: 0 0 18px; }
+.modal-acoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
+.lista-presencas { width: 100%; border-collapse: collapse; font-size: 13px; }
+.lista-presencas th { text-align: left; padding: 8px; background: var(--creme); color: var(--petroleo); font-size: 12px; }
+.lista-presencas td { padding: 8px; border-bottom: 1px solid #ECEEEC; }
+.bloco-troca { background: #FCEBD7; border-radius: 8px; padding: 12px; margin-top: 12px; font-size: 13px; }
+
+.rodape-app {
+margin-top: 24px;
+font-size: 12px;
+color: rgba(31,42,46,0.6);
+text-align: center;
+border-top: 1px solid var(--salvia);
+padding-top: 14px;
+}
+.hidden-input { display: none; }
+</style>
+</head>
+<body>
+
+<div id="banner-erro"></div>
+
+<!-- BLOCO LOGIN -->
+<div id="tela-login">
+<div class="login-card">
+<div class="login-logo">
+<img src="https://adapta-one-prod.s3.sa-east-1.amazonaws.com/frankvixp%40gmail.com/png/Logo_PRODFOR_IA.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3FLD6RMYLYFE2L2Q%2F20261105%2Fsa-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261105T171000Z&X-Amz-Expires=3600&X-Amz-Signature=PLACEHOLDER&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject" alt="PRODFOR" style="height:44px;width:auto;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline-block'"><span id="logoFallback" style="display:none;font-family:'Archivo Black',sans-serif;color:#fff;font-size:20px;letter-spacing:2px">PRODFOR</span>
+</div>
+<p class="login-subtitle">Acesse o painel de participantes do programa</p>
+<form id="form-login" onsubmit="return false;">
+<div class="campo">
+<label for="loginEmail">E-mail</label>
+<input class="input-campo" id="loginEmail" type="email" placeholder="seu@email.com.br" autocomplete="username">
+<div class="campo-helper">Use o e-mail informado no cadastro do programa.</div>
+</div>
+<div class="campo">
+<label for="loginSenha">Senha</label>
+<div class="input-com-olho">
+<input class="input-campo" id="loginSenha" type="password" placeholder="Sua senha" autocomplete="current-password">
+<button type="button" class="btn-olho" id="btnOlhoLogin" aria-label="Mostrar senha" onclick="alternarSenha('loginSenha','btnOlhoLogin')">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
+</div>
+</div>
+<button type="button" class="btn-primario" style="width:100%;" onclick="entrar()">Entrar</button>
+<p class="msg-login" id="msgLogin"></p>
+<div class="acoes-topo" style="justify-content:space-between;margin-top:8px;">
+<button type="button" class="btn-secundario" style="width:100%;" onclick="entrarDemo()">Entrar como coordenação (demonstração)</button>
+</div>
+<p style="text-align:center;margin:14px 0 0;"><button type="button" class="link-btn" onclick="restaurarAcesso()">Restaurar acesso padrão</button></p>
+</form>
+<div class="aviso-demo">Acesso inicial: <strong>coordenacao@prodfor.com.br</strong> / <strong>prodfor2027</strong></div>
+</div>
+</div>
+
+<!-- BLOCO APP -->
+<div id="tela-app" style="display:none;">
+<aside class="sidebar">
+<div class="sidebar-logo">
+<img src="https://adapta-one-prod.s3.sa-east-1.amazonaws.com/frankvixp%40gmail.com/png/Logo_PRODFOR_IA.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3FLD6RMYLYFE2L2Q%2F20261105%2Fsa-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261105T171000Z&X-Amz-Expires=3600&X-Amz-Signature=PLACEHOLDER&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject" alt="PRODFOR" style="height:44px;width:auto;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.style.display='none';document.getElementById('logoFallbackApp').style.display='inline-block'"><span id="logoFallbackApp" style="display:none;font-family:'Archivo Black',sans-serif;color:#fff;font-size:20px;letter-spacing:2px">PRODFOR</span>
+<div class="sidebar-programa">Programa PRODFOR</div>
+</div>
+<div class="bloco-usuario">
+<div class="nome" id="nomeUsuario">—</div>
+<span class="badge-perfil" id="perfilUsuario">coordenação</span>
+<div><button type="button" class="btn-sair" onclick="sair()">Sair</button></div>
+</div>
+<nav>
+<a class="nav-item ativo" href="#" onclick="return false;">Participantes</a>
+</nav>
+<div class="sidebar-rodape">v3.0 · Participantes</div>
+</aside>
+
+<main class="conteudo">
+<div class="cabecalho">
+<div>
+<span class="eyebrow-pill">Cadastro mestre</span>
+<h1 class="titulo-pagina">Participantes</h1>
+<p class="subtitulo">Cadastro mestre de participantes vinculados às empresas do programa.</p>
+</div>
+<div class="acoes-topo">
+<button type="button" class="btn-secundario" onclick="exportarCSV()">Exportar CSV</button>
+</div>
+</div>
+
+<!-- CADASTRO -->
+<section class="card">
+<h2 class="card-titulo">Cadastrar participante</h2>
+<p class="card-sub">Cada participante pode representar apenas uma empresa. Campos com * são obrigatórios.</p>
+<form id="form-cadastro" onsubmit="return false;">
+<div class="grid-form">
+<div class="campo">
+<label for="cNome">Nome completo *</label>
+<input class="input-campo" id="cNome" type="text" placeholder="Ex.: João da Silva">
+<div class="campo-helper">Mínimo de 3 caracteres.</div>
+</div>
+<div class="campo">
+<label for="cEmpresa">Empresa *</label>
+<select class="select-campo" id="cEmpresa"></select>
+<div class="campo-helper">Empresa à qual o participante está vinculado.</div>
+</div>
+<div class="campo">
+<label for="cTurma">Turma</label>
+<select class="select-campo" id="cTurma"></select>
+</div>
+<div class="campo">
+<label for="cCargo">Cargo/função</label>
+<input class="input-campo" id="cCargo" type="text" placeholder="Ex.: Analista da Qualidade">
+</div>
+<div class="campo">
+<label for="cEmail">E-mail</label>
+<input class="input-campo" id="cEmail" type="email" placeholder="nome@empresa.com.br">
+<div class="campo-helper">Opcional, mas recomendado para comunicações.</div>
+</div>
+<div class="campo">
+<label for="cTelefone">Telefone</label>
+<input class="input-campo" id="cTelefone" type="text" placeholder="(11) 99999-9999">
+</div>
+<div class="acao-form">
+<button type="button" class="btn-primario" style="height:44px;" onclick="cadastrarParticipante()">Cadastrar participante</button>
+<span class="msg-form" id="msgCadastro"></span>
+</div>
+</div>
+</form>
+</section>
+
+<!-- RESUMO -->
+<section class="grid-resumo">
+<div class="kpi-card">
+<div class="kpi-label">Total de participantes</div>
+<div class="kpi-valor" id="kpiTotal">0</div>
+<div class="kpi-caption">Registros no cadastro mestre</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">Empresas com participantes</div>
+<div class="kpi-valor" id="kpiEmpresas">0</div>
+<div class="kpi-caption">Empresas com ao menos um vínculo</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">Participantes sem e-mail</div>
+<div class="kpi-valor" id="kpiSemEmail">0</div>
+<div class="kpi-caption" id="kpiSemEmailCaption">Todos com contato de e-mail</div>
+</div>
+</section>
+
+<!-- FILTROS E TABELA -->
+<section class="card">
+<h2 class="card-titulo">Lista de participantes</h2>
+<p class="card-sub">Filtre por nome, empresa ou turma. A tabela é ordenada alfabeticamente.</p>
+<div class="filtros-linha">
+<div>
+<label class="label-caixa" for="fBusca">Buscar por nome</label>
+<div class="input-lupa">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input class="input-campo" id="fBusca" type="text" placeholder="Digite o nome">
+</div>
+</div>
+<div>
+<label class="label-caixa" for="fEmpresa">Empresa</label>
+<select class="select-campo" id="fEmpresa"></select>
+</div>
+<div>
+<label class="label-caixa" for="fTurma">Turma</label>
+<select class="select-campo" id="fTurma"></select>
+</div>
+</div>
+<div class="filtros-acoes">
+<button type="button" class="btn-primario" onclick="aplicarFiltros()">Aplicar</button>
+<button type="button" class="btn-secundario" onclick="limparFiltros()">Limpar filtros</button>
+<button type="button" class="btn-secundario" onclick="exportarCSV()">Exportar CSV</button>
+</div>
+
+<div class="tabela-wrap" style="margin-top:20px;">
+<table class="tabela">
+<thead>
+<tr>
+<th>Nome</th>
+<th>Empresa</th>
+<th>Turma</th>
+<th>Cargo</th>
+<th>E-mail</th>
+<th>Telefone</th>
+<th>Nº de presenças</th>
+<th>Ações</th>
+</tr>
+</thead>
+<tbody id="tbodyParticipantes"></tbody>
+</table>
+</div>
+<div id="estadoVazio" class="estado-vazio" style="display:none;">
+<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+<div>Nenhum participante cadastrado. Use o formulário acima para começar.</div>
+</div>
+</section>
+
+<footer class="rodape-app" id="rodapeData">Programa PRODFOR · Registro Operacional · v3.0 · Participantes</footer>
+</main>
+</div>
+
+<!-- MODAL EDIÇÃO -->
+<div class="overlay hidden" id="modalEdicao">
+<div class="modal">
+<h3>Editar participante</h3>
+<p class="modal-sub">Altere os dados e salve. A alteração fica registrada com seu usuário e data.</p>
+<input type="hidden" id="eId">
+<div class="grid-form">
+<div class="campo">
+<label for="eNome">Nome completo</label>
+<input class="input-campo" id="eNome" type="text">
+</div>
+<div class="campo">
+<label for="eEmpresa">Empresa</label>
+<select class="select-campo" id="eEmpresa"></select>
+</div>
+<div class="campo">
+<label for="eTurma">Turma</label>
+<select class="select-campo" id="eTurma"></select>
+</div>
+<div class="campo">
+<label for="eCargo">Cargo</label>
+<input class="input-campo" id="eCargo" type="text">
+</div>
+<div class="campo">
+<label for="eEmail">E-mail</label>
+<input class="input-campo" id="eEmail" type="email">
+</div>
+<div class="campo">
+<label for="eTelefone">Telefone</label>
+<input class="input-campo" id="eTelefone" type="text">
+</div>
+</div>
+<div id="blocoTrocaEdicao" class="bloco-troca" style="display:none;">
+<div id="textoTrocaEdicao"></div>
+<button type="button" class="btn-acao" style="margin-top:8px;" onclick="autorizarTrocaEdicao()">Autorizar troca de empresa</button>
+</div>
+<p class="msg-form" id="msgEdicao"></p>
+<div class="modal-acoes">
+<button type="button" class="btn-secundario" onclick="fecharModal('modalEdicao')">Cancelar</button>
+<button type="button" class="btn-primario" onclick="salvarEdicao()">Salvar alterações</button>
+</div>
+</div>
+</div>
+
+<!-- MODAL PRESENÇAS -->
+<div class="overlay hidden" id="modalPresencas">
+<div class="modal">
+<h3>Presenças do participante</h3>
+<p class="modal-sub" id="presencasNomeTitulo"></p>
+<div id="presencasConteudo"></div>
+<div class="modal-acoes">
+<button type="button" class="btn-secundario" onclick="fecharModal('modalPresencas')">Fechar</button>
+</div>
+</div>
+</div>
+
+<!-- MODAL EXCLUSÃO -->
+<div class="overlay hidden" id="modalExclusao">
+<div class="modal">
+<h3>Excluir participante</h3>
+<p class="modal-sub" id="textoExclusao"></p>
+<div id="blocoConfirmacaoExtra" style="display:none;">
+<label style="font-size:13px;display:flex;gap:8px;align-items:center;">
+<input type="checkbox" id="chkConfirmaExtra"> Confirmo que desejo excluir mesmo com presenças registradas.
+</label>
+</div>
+<div class="modal-acoes">
+<button type="button" class="btn-secundario" onclick="fecharModal('modalExclusao')">Cancelar</button>
+<button type="button" class="btn-perigo" id="btnConfirmaExclusao" onclick="confirmarExclusao()">Excluir</button>
+</div>
+</div>
+</div>
+
+<script>
+var CHAVES = {
+usuarios: 'prodfor_usuarios',
+sessao: 'prodfor_sessao',
+participantes: 'prodfor_participantes',
+presencas: 'prodfor_presencas',
+empresas: 'prodfor_empresas',
+turmas: 'prodfor_turmas_ativas',
+programas: 'prodfor_programas'
+};
+
+var EMPRESAS_PADRAO = ['Empresa Alfa', 'Empresa Beta', 'Empresa Gama', 'Empresa Delta', 'Empresa Épsilon'];
+var TURMA_PADRAO = 'SGQ T2027-01';
+
+var DADOS = {
+usuarios: [],
+sessao: {},
+participantes: [],
+presencas: [],
+empresas: [],
+turmas: [],
+programas: []
+};
+
+var usuarioAtual = null;
+var filtrosAtivos = { busca: '', empresa: '', turma: '' };
+var idExclusao = null;
+var idEdicao = null;
+var idsSnapshotMsg = {};
+
+window.onerror = function (msg, src, linha) {
+var b = document.getElementById('banner-erro');
+if (b) {
+b.style.display = 'block';
+b.textContent = 'Erro ao executar a página: ' + msg + ' (linha ' + linha + ')';
+}
+return true;
+};
+
+function lerChave(chave, padrao) {
+try {
+var bruto = localStorage.getItem(chave);
+if (bruto === null || bruto === undefined) return padrao;
+var v = JSON.parse(bruto);
+if (v === null || v === undefined) return padrao;
+return v;
+} catch (e) {
+return padrao;
+}
+}
+
+function gravarChave(chave, valor) {
+try {
+localStorage.setItem(chave, JSON.stringify(valor));
+} catch (e) {
+mostrarToast('Não foi possível gravar os dados neste navegador.', 'erro');
+}
+}
+
+function carregarDados() {
+try {
+DADOS.usuarios = lerChave(CHAVES.usuarios, []);
+if (!Array.isArray(DADOS.usuarios)) DADOS.usuarios = [];
+DADOS.sessao = lerChave(CHAVES.sessao, {});
+if (!DADOS.sessao || typeof DADOS.sessao !== 'object') DADOS.sessao = {};
+DADOS.participantes = lerChave(CHAVES.participantes, []);
+if (!Array.isArray(DADOS.participantes)) DADOS.participantes = [];
+DADOS.presencas = lerChave(CHAVES.presencas, []);
+if (!Array.isArray(DADOS.presencas)) DADOS.presencas = [];
+DADOS.empresas = lerChave(CHAVES.empresas, []);
+if (!Array.isArray(DADOS.empresas)) DADOS.empresas = [];
+DADOS.turmas = lerChave(CHAVES.turmas, []);
+if (!Array.isArray(DADOS.turmas)) DADOS.turmas = [];
+DADOS.programas = lerChave(CHAVES.programas, []);
+if (!Array.isArray(DADOS.programas)) DADOS.programas = [];
+} catch (e) {
+DADOS.usuarios = [];
+DADOS.sessao = {};
+DADOS.participantes = [];
+DADOS.presencas = [];
+DADOS.empresas = [];
+DADOS.turmas = [];
+DADOS.programas = [];
+}
+}
+
+function salvarDados() {
+gravarChave(CHAVES.usuarios, DADOS.usuarios);
+gravarChave(CHAVES.sessao, DADOS.sessao);
+gravarChave(CHAVES.participantes, DADOS.participantes);
+gravarChave(CHAVES.presencas, DADOS.presencas);
+gravarChave(CHAVES.empresas, DADOS.empresas);
+gravarChave(CHAVES.turmas, DADOS.turmas);
+gravarChave(CHAVES.programas, DADOS.programas);
+}
+
+function garantirUsuarioPadrao() {
+try {
+var achou = false;
+for (var i = 0; i < DADOS.usuarios.length; i++) {
+var u = DADOS.usuarios[i];
+if (u && u.email === 'coordenacao@prodfor.com.br' && String(u.senha) === 'prodfor2027' && u.ativo === true) {
+achou = true;
+break;
+}
+}
+if (!achou) {
+var outros = [];
+for (var j = 0; j < DADOS.usuarios.length; j++) {
+var x = DADOS.usuarios[j];
+if (x && x.email !== 'coordenacao@prodfor.com.br') outros.push(x);
+}
+DADOS.usuarios = [{
+id: 'u1',
+nome: 'Coordenação PRODFOR',
+email: 'coordenacao@prodfor.com.br',
+senha: 'prodfor2027',
+perfil: 'coordenação',
+ativo: true
+}].concat(outros);
+}
+} catch (e) {}
+}
+
+function criarDadosDemonstracao() {
+if (!DADOS.empresas || DADOS.empresas.length === 0) {
+var lista = [];
+var nomes = ['Alfa', 'Beta', 'Gama', 'Delta', 'Épsilon'];
+for (var i = 0; i < nomes.length; i++) {
+lista.push({ id: 'e' + (i + 1), nome: 'Empresa ' + nomes[i], turma: TURMA_PADRAO });
+}
+DADOS.empresas = lista;
+}
+if (!DADOS.turmas || DADOS.turmas.length === 0) {
+DADOS.turmas = [{ id: 'SGQ T2027-01', nome: 'T2027-1', ano: 2027 }];
+}
+if (!DADOS.participantes || DADOS.participantes.length === 0) {
+var base = Date.now();
+DADOS.participantes = [
+{
+id: base + '_1',
+nome: 'Ana Paula Ribeiro',
+empresa: 'Empresa Alfa',
+turma: 'SGQ T2027-01',
+cargo: 'Coordenadora da Qualidade',
+email: 'ana.ribeiro@alfa.com.br',
+telefone: '(11) 98888-1010',
+registradoPor: 'Coordenação PRODFOR',
+perfilUsuario: 'coordenação',
+dataHoraRegistro: new Date().toISOString()
+},
+{
+id: base + '_2',
+nome: 'Carlos Eduardo Lima',
+empresa: 'Empresa Beta',
+turma: 'SGQ T2027-01',
+cargo: 'Analista de Processos',
+email: 'carlos.lima@beta.com.br',
+telefone: '(11) 97777-2020',
+registradoPor: 'Coordenação PRODFOR',
+perfilUsuario: 'coordenação',
+dataHoraRegistro: new Date().toISOString()
+},
+{
+id: base + '_3',
+nome: 'Mariana Costa',
+empresa: 'Empresa Gama',
+turma: 'SGQ T2027-01',
+cargo: 'Gerente de Produção',
+email: 'mariana.costa@gama.com.br',
+telefone: '(11) 96666-3030',
+registradoPor: 'Coordenação PRODFOR',
+perfilUsuario: 'coordenação',
+dataHoraRegistro: new Date().toISOString()
+}
+];
+}
+if (!DADOS.presencas || DADOS.presencas.length === 0) {
+DADOS.presencas = [
+{ nome: 'Ana Paula Ribeiro', evento: 'Oficina de Gestão da Qualidade', data: '12/03/2027', empresa: 'Empresa Alfa' },
+{ nome: 'Ana Paula Ribeiro', evento: 'Visita técnica ao processo', data: '28/04/2027', empresa: 'Empresa Alfa' },
+{ nome: 'Carlos Eduardo Lima', evento: 'Oficina de Gestão da Qualidade', data: '12/03/2027', empresa: 'Empresa Beta' }
+];
+}
+if (!DADOS.programas || DADOS.programas.length === 0) {
+DADOS.programas = [{ id: 'prodfor', nome: 'PRODFOR', versao: 'v3.0' }];
+}
+}
+
+function normalizarNome(nome) {
+var s = String(nome || '');
+s = s.replace(/[ÁÀÂÃÄáàâãä]/g, 'a').replace(/[ÉÈÊËéèêë]/g, 'e').replace(/[ÍÌÎÏíìîï]/g, 'i').replace(/[ÓÒÔÕÖóòôõö]/g, 'o').replace(/[ÚÙÛÜúùûü]/g, 'u').replace(/[Çç]/g, 'c').replace(/[Ññ]/g, 'n');
+s = s.toLowerCase().replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+return s;
+}
+
+function contarPresencas(nome) {
+var alvo = normalizarNome(nome);
+var n = 0;
+for (var i = 0; i < DADOS.presencas.length; i++) {
+var p = DADOS.presencas[i];
+if (p && normalizarNome(p.nome) === alvo) n++;
+}
+return n;
+}
+
+function listarPresencas(nome) {
+var alvo = normalizarNome(nome);
+var r = [];
+for (var i = 0; i < DADOS.presencas.length; i++) {
+var p = DADOS.presencas[i];
+if (p && normalizarNome(p.nome) === alvo) r.push(p);
+}
+return r;
+}
+
+function mostrarMensagem(id, texto, tipo) {
+var el = document.getElementById(id);
+if (!el) return;
+el.textContent = texto;
+el.className = 'msg-form' + (tipo === 'sucesso' ? ' sucesso' : '');
+if (tipo === 'sucesso') {
+setTimeout(function () {
+if (el.textContent === texto) el.textContent = '';
+}, 4000);
+}
+}
+
+function mostrarToast(texto, tipo) {
+try {
+var t = document.createElement('div');
+t.className = 'msg-toast' + (tipo ? ' ' + tipo : '');
+t.textContent = texto;
+document.body.appendChild(t);
+setTimeout(function () {
+if (t && t.parentNode) t.parentNode.removeChild(t);
+}, 4000);
+} catch (e) {}
+}
+
+function alternarSenha(idInput, idBotao) {
+var input = document.getElementById(idInput);
+var botao = document.getElementById(idBotao);
+if (!input || !botao) return;
+var mostrar = input.type === 'password';
+input.type = mostrar ? 'text' : 'password';
+botao.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+if (mostrar) {
+botao.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+} else {
+botao.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+}
+
+function entrar() {
+var email = String(document.getElementById('loginEmail').value || '').replace(/^\s+|\s+$/g, '').toLowerCase();
+var senha = String(document.getElementById('loginSenha').value || '');
+var msg = document.getElementById('msgLogin');
+msg.textContent = '';
+if (!email) {
+msg.textContent = 'Informe o e-mail.';
+return;
+}
+if (!senha) {
+msg.textContent = 'Informe a senha.';
+return;
+}
+var usuario = null;
+for (var i = 0; i < DADOS.usuarios.length; i++) {
+if (DADOS.usuarios[i] && String(DADOS.usuarios[i].email).toLowerCase() === email) {
+usuario = DADOS.usuarios[i];
+break;
+}
+}
+if (!usuario) {
+msg.textContent = 'E-mail não encontrado.';
+return;
+}
+if (usuario.ativo !== true) {
+msg.textContent = 'Usuário inativo. Procure a coordenação.';
+return;
+}
+if (String(usuario.senha) !== String(senha)) {
+msg.textContent = 'Senha incorreta.';
+return;
+}
+DADOS.sessao = { usuarioId: usuario.id, email: usuario.email, entrouEm: new Date().toISOString() };
+salvarDados();
+msg.textContent = '';
+exibirApp();
+}
+
+function entrarDemo() {
+var u = null;
+for (var i = 0; i < DADOS.usuarios.length; i++) {
+if (DADOS.usuarios[i] && DADOS.usuarios[i].email === 'coordenacao@prodfor.com.br') { u = DADOS.usuarios[i]; break; }
+}
+if (!u) {
+garantirUsuarioPadrao();
+u = DADOS.usuarios[0];
+}
+DADOS.sessao = { usuarioId: u.id, email: u.email, entrouEm: new Date().toISOString() };
+salvarDados();
+exibirApp();
+}
+
+function restaurarAcesso() {
+garantirUsuarioPadrao();
+salvarDados();
+document.getElementById('loginEmail').value = 'coordenacao@prodfor.com.br';
+document.getElementById('loginSenha').value = 'prodfor2027';
+document.getElementById('msgLogin').textContent = 'Acesso padrão restaurado. Clique em Entrar.';
+}
+
+function sair() {
+DADOS.sessao = {};
+salvarDados();
+usuarioAtual = null;
+document.getElementById('tela-app').style.display = 'none';
+document.getElementById('tela-login').style.display = 'flex';
+document.getElementById('loginSenha').value = '';
+}
+
+function usuarioLogado() {
+var id = DADOS.sessao && DADOS.sessao.usuarioId ? DADOS.sessao.usuarioId : null;
+if (!id) return null;
+for (var i = 0; i < DADOS.usuarios.length; i++) {
+if (DADOS.usuarios[i] && DADOS.usuarios[i].id === id) return DADOS.usuarios[i];
+}
+return null;
+}
+
+function exibirApp() {
+usuarioAtual = usuarioLogado();
+if (!usuarioAtual) {
+document.getElementById('tela-app').style.display = 'none';
+document.getElementById('tela-login').style.display = 'flex';
+return;
+}
+document.getElementById('tela-login').style.display = 'none';
+document.getElementById('tela-app').style.display = 'flex';
+document.getElementById('nomeUsuario').textContent = usuarioAtual.nome;
+document.getElementById('perfilUsuario').textContent = usuarioAtual.perfil;
+preencherSelects();
+renderizarParticipantes();
+renderizarResumo();
+}
+
+function ehCoordenacao() {
+return !!usuarioAtual && String(usuarioAtual.perfil).toLowerCase().indexOf('coordena') === 0;
+}
+
+function listaEmpresas() {
+var nomes = [];
+for (var i = 0; i < DADOS.empresas.length; i++) {
+var e = DADOS.empresas[i];
+var n = e && e.nome ? e.nome : (typeof e === 'string' ? e : '');
+if (n && nomes.indexOf(n) < 0) nomes.push(n);
+}
+if (nomes.length === 0) nomes = EMPRESAS_PADRAO.slice();
+return nomes;
+}
+
+function listaTurmas() {
+var ids = [];
+for (var i = 0; i < DADOS.turmas.length; i++) {
+var t = DADOS.turmas[i];
+var n = t && t.id ? t.id : (typeof t === 'string' ? t : '');
+if (n && ids.indexOf(n) < 0) ids.push(n);
+}
+if (ids.length === 0) ids = [TURMA_PADRAO];
+return ids;
+}
+
+function preencherOpcoes(selectEl, lista, primeiraOpcao) {
+if (!selectEl) return;
+var valorAtual = selectEl.value;
+selectEl.innerHTML = '';
+if (primeiraOpcao) {
+var o0 = document.createElement('option');
+o0.value = '';
+o0.textContent = primeiraOpcao;
+selectEl.appendChild(o0);
+}
+for (var i = 0; i < lista.length; i++) {
+var o = document.createElement('option');
+o.value = lista[i];
+o.textContent = lista[i];
+selectEl.appendChild(o);
+}
+if (valorAtual) selectEl.value = valorAtual;
+}
+
+function preencherSelects() {
+var empresas = listaEmpresas();
+var turmas = listaTurmas();
+preencherOpcoes(document.getElementById('cEmpresa'), empresas, null);
+preencherOpcoes(document.getElementById('eEmpresa'), empresas, null);
+preencherOpcoes(document.getElementById('fEmpresa'), empresas, 'Todas as empresas');
+preencherOpcoes(document.getElementById('cTurma'), turmas, null);
+preencherOpcoes(document.getElementById('eTurma'), turmas, null);
+preencherOpcoes(document.getElementById('fTurma'), turmas, 'Todas as turmas');
+}
+
+function validarEmail(email) {
+if (!email) return true;
+var at = email.indexOf('@');
+if (at < 1) return false;
+var depois = email.substring(at + 1);
+return depois.indexOf('.') > 0 && depois.lastIndexOf('.') < depois.length - 1;
+}
+
+function dadosFormulario(prefixo) {
+var p = prefixo;
+return {
+nome: String(document.getElementById(p + 'Nome').value || '').replace(/^\s+|\s+$/g, ''),
+empresa: document.getElementById(p + 'Empresa').value,
+turma: document.getElementById(p + 'Turma').value,
+cargo: String(document.getElementById(p + 'Cargo').value || '').replace(/^\s+|\s+$/g, ''),
+email: String(document.getElementById(p + 'Email').value || '').replace(/^\s+|\s+$/g, ''),
+telefone: String(document.getElementById(p + 'Telefone').value || '').replace(/^\s+|\s+$/g, '')
+};
+}
+
+function validarCampos(d) {
+if (!d.nome || d.nome.length < 3) return 'Nome completo obrigatório, com no mínimo 3 caracteres.';
+if (!d.empresa) return 'Selecione a empresa.';
+if (!validarEmail(d.email)) return 'Informe um e-mail válido.';
+return '';
+}
+
+function verificarConflitos(d, idIgnorar) {
+var norm = normalizarNome(d.nome);
+var mesma = null;
+var outra = null;
+for (var i = 0; i < DADOS.participantes.length; i++) {
+var p = DADOS.participantes[i];
+if (!p || p.id === idIgnorar) continue;
+if (normalizarNome(p.nome) !== norm) continue;
+if (p.empresa === d.empresa) mesma = p;
+else if (!outra) outra = p;
+}
+if (mesma) return { tipo: 'duplicado', texto: 'Este participante já está cadastrado nesta empresa.' };
+if (outra) return { tipo: 'troca', empresa: outra.empresa, texto: 'Este participante já está vinculado à empresa ' + outra.empresa + '. Um participante pode representar apenas uma empresa.' };
+return null;
+}
+
+var pendenteTroca = null;
+
+function cadastrarParticipante() {
+mostrarMensagem('msgCadastro', '', '');
+var d = dadosFormulario('c');
+var erro = validarCampos(d);
+if (erro) {
+mostrarMensagem('msgCadastro', erro);
+return;
+}
+var conflito = verificarConflitos(d, null);
+if (conflito && conflito.tipo === 'duplicado') {
+mostrarMensagem('msgCadastro', conflito.texto);
+return;
+}
+if (conflito && conflito.tipo === 'troca') {
+if (ehCoordenacao() && pendenteTroca && pendenteTroca.nome === d.nome) {
+} else {
+mostrarMensagem('msgCadastro', conflito.texto);
+if (ehCoordenacao()) {
+pendenteTroca = d;
+mostrarToast('Coordenação: você pode autorizar a troca de empresa abaixo. Clique novamente em Cadastrar.', 'erro');
+}
+return;
+}
+}
+var autorizada = pendenteTroca && pendenteTroca.nome === d.nome && conflito;
+var registro = {
+id: Date.now() + '_' + Math.floor(Math.random() * 100000),
+nome: d.nome,
+empresa: d.empresa,
+turma: d.turma,
+cargo: d.cargo,
+email: d.email,
+telefone: d.telefone,
+registradoPor: usuarioAtual ? usuarioAtual.nome : '',
+perfilUsuario: usuarioAtual ? usuarioAtual.perfil : '',
+dataHoraRegistro: new Date().toISOString()
+};
+if (autorizada) {
+registro.trocaAutorizadaPor = usuarioAtual.nome;
+registro.trocaAutorizadaEm = new Date().toISOString();
+}
+pendenteTroca = null;
+DADOS.participantes.push(registro);
+salvarDados();
+limparFormularioCadastro();
+mostrarMensagem('msgCadastro', 'Participante cadastrado com sucesso.', 'sucesso');
+mostrarToast('Participante cadastrado.', 'sucesso');
+renderizarParticipantes();
+renderizarResumo();
+}
+
+function limparFormularioCadastro() {
+document.getElementById('cNome').value = '';
+document.getElementById('cCargo').value = '';
+document.getElementById('cEmail').value = '';
+document.getElementById('cTelefone').value = '';
+}
+
+function editarParticipante(id) {
+var p = null;
+for (var i = 0; i < DADOS.participantes.length; i++) {
+if (DADOS.participantes[i].id === id) { p = DADOS.participantes[i]; break; }
+}
+if (!p) return;
+idEdicao = id;
+document.getElementById('eId').value = id;
+document.getElementById('eNome').value = p.nome;
+document.getElementById('eEmpresa').value = p.empresa;
+document.getElementById('eTurma').value = p.turma;
+document.getElementById('eCargo').value = p.cargo || '';
+document.getElementById('eEmail').value = p.email || '';
+document.getElementById('eTelefone').value = p.telefone || '';
+document.getElementById('blocoTrocaEdicao').style.display = 'none';
+mostrarMensagem('msgEdicao', '');
+document.getElementById('modalEdicao').classList.remove('hidden');
+}
+
+function autorizarTrocaEdicao() {
+var d = dadosFormulario('e');
+d.nome = d.nome;
+var msg = 'Autorização registrada. Clique em Salvar alterações para concluir a troca.';
+window.__trocaEdicaoAutorizada = { por: usuarioAtual.nome, em: new Date().toISOString(), empresa: d.empresa };
+mostrarMensagem('msgEdicao', msg, 'sucesso');
+}
+
+function salvarEdicao() {
+var d = dadosFormulario('e');
+var erro = validarCampos(d);
+if (erro) {
+mostrarMensagem('msgEdicao', erro);
+return;
+}
+var conflito = verificarConflitos(d, idEdicao);
+var autorizacao = window.__trocaEdicaoAutorizada;
+if (conflito && conflito.tipo === 'duplicado') {
+mostrarMensagem('msgEdicao', conflito.texto);
+return;
+}
+if (conflito && conflito.tipo === 'troca') {
+if (ehCoordenacao() && autorizacao && autorizacao.empresa === d.empresa) {
+} else {
+mostrarMensagem('msgEdicao', conflito.texto);
+document.getElementById('textoTrocaEdicao').textContent = conflito.texto;
+document.getElementById('blocoTrocaEdicao').style.display = ehCoordenacao() ? 'block' : 'none';
+return;
+}
+}
+for (var i = 0; i < DADOS.participantes.length; i++) {
+var p = DADOS.participantes[i];
+if (p.id === idEdicao) {
+p.nome = d.nome;
+p.empresa = d.empresa;
+p.turma = d.turma;
+p.cargo = d.cargo;
+p.email = d.email;
+p.telefone = d.telefone;
+p.editadoPor = usuarioAtual ? usuarioAtual.nome : '';
+p.editadoEm = new Date().toISOString();
+if (conflito && conflito.tipo === 'troca' && autorizacao) {
+p.trocaAutorizadaPor = autorizacao.por;
+p.trocaAutorizadaEm = autorizacao.em;
+}
+break;
+}
+}
+window.__trocaEdicaoAutorizada = null;
+salvarDados();
+fecharModal('modalEdicao');
+mostrarToast('Alterações salvas.', 'sucesso');
+renderizarParticipantes();
+renderizarResumo();
+}
+
+function excluirParticipante(id) {
+if (!ehCoordenacao()) {
+mostrarToast('Apenas a coordenação pode excluir participantes.', 'erro');
+return;
+}
+var p = null;
+for (var i = 0; i < DADOS.participantes.length; i++) {
+if (DADOS.participantes[i].id === id) { p = DADOS.participantes[i]; break; }
+}
+if (!p) return;
+idExclusao = id;
+var n = contarPresencas(p.nome);
+var texto = 'Confirma a exclusão de ' + p.nome + '?';
+var extra = document.getElementById('blocoConfirmacaoExtra');
+document.getElementById('chkConfirmaExtra').checked = false;
+if (n > 0) {
+texto = 'Este participante possui ' + n + ' presenças registradas. A exclusão não remove as presenças.';
+extra.style.display = 'block';
+} else {
+extra.style.display = 'none';
+}
+document.getElementById('textoExclusao').textContent = texto;
+document.getElementById('modalExclusao').classList.remove('hidden');
+}
+
+function confirmarExclusao() {
+var p = null;
+for (var i = 0; i < DADOS.participantes.length; i++) {
+if (DADOS.participantes[i].id === idExclusao) { p = DADOS.participantes[i]; break; }
+}
+if (!p) { fecharModal('modalExclusao'); return; }
+var n = contarPresencas(p.nome);
+if (n > 0 && !document.getElementById('chkConfirmaExtra').checked) {
+mostrarToast('Marque a confirmação adicional para excluir.', 'erro');
+return;
+}
+DADOS.participantes = DADOS.participantes.filter(function (x) { return x.id !== idExclusao; });
+salvarDados();
+fecharModal('modalExclusao');
+mostrarToast('Participante excluído.', 'sucesso');
+renderizarParticipantes();
+renderizarResumo();
+}
+
+function verPresencas(id) {
+var p = null;
+for (var i = 0; i < DADOS.participantes.length; i++) {
+if (DADOS.participantes[i].id === id) { p = DADOS.participantes[i]; break; }
+}
+if (!p) return;
+document.getElementById('presencasNomeTitulo').textContent = p.nome + ' · ' + p.empresa;
+var lista = listarPresencas(p.nome);
+var cont = document.getElementById('presencasConteudo');
+if (lista.length === 0) {
+cont.innerHTML = '<p class="card-sub">Nenhuma presença registrada.</p>';
+} else {
+var html = '<table class="lista-presencas"><thead><tr><th>Evento</th><th>Data</th><th>Empresa</th></tr></thead><tbody>';
+for (var j = 0; j < lista.length; j++) {
+html += '<tr><td>' + escapeHtml(lista[j].evento || '') + '</td><td class="mono">' + escapeHtml(lista[j].data || '') + '</td><td>' + escapeHtml(lista[j].empresa || '') + '</td></tr>';
+}
+html += '</tbody></table>';
+cont.innerHTML = html;
+}
+document.getElementById('modalPresencas').classList.remove('hidden');
+}
+
+function escapeHtml(s) {
+return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function fecharModal(id) {
+var m = document.getElementById(id);
+if (m) m.classList.add('hidden');
+}
+
+function aplicarFiltros() {
+filtrosAtivos.busca = String(document.getElementById('fBusca').value || '').replace(/^\s+|\s+$/g, '');
+filtrosAtivos.empresa = document.getElementById('fEmpresa').value;
+filtrosAtivos.turma = document.getElementById('fTurma').value;
+renderizarParticipantes();
+mostrarToast('Filtros aplicados.');
+}
+
+function limparFiltros() {
+document.getElementById('fBusca').value = '';
+document.getElementById('fEmpresa').value = '';
+document.getElementById('fTurma').value = '';
+filtrosAtivos = { busca: '', empresa: '', turma: '' };
+renderizarParticipantes();
+mostrarToast('Filtros limpos.');
+}
+
+function participantesFiltrados() {
+var r = [];
+var busca = normalizarNome(filtrosAtivos.busca);
+for (var i = 0; i < DADOS.participantes.length; i++) {
+var p = DADOS.participantes[i];
+if (busca && normalizarNome(p.nome).indexOf(busca) < 0) continue;
+if (filtrosAtivos.empresa && p.empresa !== filtrosAtivos.empresa) continue;
+if (filtrosAtivos.turma && p.turma !== filtrosAtivos.turma) continue;
+r.push(p);
+}
+r.sort(function (a, b) {
+return normalizarNome(a.nome).localeCompare(normalizarNome(b.nome), 'pt-BR');
+});
+return r;
+}
+
+function renderizarParticipantes() {
+var tbody = document.getElementById('tbodyParticipantes');
+var vazio = document.getElementById('estadoVazio');
+tbody.innerHTML = '';
+var lista = participantesFiltrados();
+if (DADOS.participantes.length === 0) {
+vazio.style.display = 'block';
+document.querySelector('.tabela-wrap').style.display = 'none';
+return;
+}
+vazio.style.display = 'none';
+document.querySelector('.tabela-wrap').style.display = 'block';
+if (lista.length === 0) {
+tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:rgba(31,42,46,0.65);">Nenhum resultado com os filtros atuais.</td></tr>';
+return;
+}
+var html = '';
+for (var i = 0; i < lista.length; i++) {
+var p = lista[i];
+var n = contarPresencas(p.nome);
+var emailHtml = p.email ? escapeHtml(p.email) : '<span class="badge-sem-email">sem e-mail</span>';
+html += '<tr>';
+html += '<td><strong>' + escapeHtml(p.nome) + '</strong></td>';
+html += '<td>' + escapeHtml(p.empresa || '') + '</td>';
+html += '<td>' + escapeHtml(p.turma || '') + '</td>';
+html += '<td>' + escapeHtml(p.cargo || '') + '</td>';
+html += '<td>' + emailHtml + '</td>';
+html += '<td class="mono">' + escapeHtml(p.telefone || '') + '</td>';
+html += '<td><span class="badge-num">' + n + '</span></td>';
+html += '<td style="white-space:nowrap;">';
+html += '<button type="button" class="btn-acao" onclick="editarParticipante(\'' + p.id + '\')">Editar</button>';
+html += '<button type="button" class="btn-acao" onclick="verPresencas(\'' + p.id + '\')">Ver presenças</button>';
+if (ehCoordenacao()) {
+html += '<button type="button" class="btn-acao perigo" onclick="excluirParticipante(\'' + p.id + '\')">Excluir</button>';
+}
+html += '</td></tr>';
+}
+tbody.innerHTML = html;
+}
+
+function renderizarResumo() {
+var total = DADOS.participantes.length;
+var empresas = {};
+var semEmail = 0;
+for (var i = 0; i < DADOS.participantes.length; i++) {
+var p = DADOS.participantes[i];
+if (p.empresa) empresas[p.empresa] = true;
+if (!p.email) semEmail++;
+}
+var qtdEmpresas = Object.keys(empresas).length;
+document.getElementById('kpiTotal').textContent = String(total);
+document.getElementById('kpiEmpresas').textContent = String(qtdEmpresas);
+var el = document.getElementById('kpiSemEmail');
+el.textContent = String(semEmail);
+el.className = 'kpi-valor' + (semEmail > 0 ? ' alerta' : '');
+document.getElementById('kpiSemEmailCaption').textContent = semEmail > 0 ? 'Complete o e-mail para envio de comunicados' : 'Todos com contato de e-mail';
+var hoje = new Date();
+var dataTxt = hoje.toLocaleDateString('pt-BR');
+document.getElementById('rodapeData').textContent = 'Programa PRODFOR · Registro Operacional · v3.0 · Participantes · ' + dataTxt;
+}
+
+function exportarCSV() {
+try {
+var lista = participantesFiltrados();
+var linhas = [['Nome', 'Empresa', 'Turma', 'Cargo', 'E-mail', 'Telefone', 'Nº de presenças', 'Cadastrado por', 'Data/hora do cadastro']];
+for (var i = 0; i < lista.length; i++) {
+var p = lista[i];
+linhas.push([
+p.nome, p.empresa, p.turma, p.cargo || '', p.email || '', p.telefone || '',
+String(contarPresencas(p.nome)), p.registradoPor || '',
+p.dataHoraRegistro ? new Date(p.dataHoraRegistro).toLocaleString('pt-BR') : ''
+]);
+}
+var csv = '';
+for (var r = 0; r < linhas.length; r++) {
+var campos = [];
+for (var c = 0; c < linhas[r].length; c++) {
+campos.push('"' + String(linhas[r][c]).replace(/"/g, '""') + '"');
+}
+csv += campos.join(';') + '\r\n';
+}
+var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+var url = URL.createObjectURL(blob);
+var a = document.createElement('a');
+a.href = url;
+a.download = 'participantes_prodfor.csv';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+mostrarToast('CSV exportado com ' + lista.length + ' participante(s).', 'sucesso');
+} catch (e) {
+mostrarToast('Não foi possível exportar o CSV.', 'erro');
+}
+}
+
+function iniciar() {
+try {
+carregarDados();
+garantirUsuarioPadrao();
+criarDadosDemonstracao();
+salvarDados();
+document.getElementById('loginEmail').value = '';
+if (DADOS.sessao && DADOS.sessao.usuarioId && usuarioLogado()) {
+exibirApp();
+} else {
+document.getElementById('tela-login').style.display = 'flex';
+document.getElementById('tela-app').style.display = 'none';
+}
+} catch (e) {
+var b = document.getElementById('banner-erro');
+b.style.display = 'block';
+b.textContent = 'Erro ao iniciar: ' + e.message;
+document.getElementById('tela-login').style.display = 'flex';
+}
+}
+
+document.addEventListener('DOMContentLoaded', iniciar);
+</script>
+</body>
+</html>

@@ -1,0 +1,2393 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRODFOR — Visão Geral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Skip artifact shell — fixed styles served beside every artifact.
+   Tokens, utilities and components (basecoat 1.0 markup, no CDN); artifacts
+   override --accent for their own identity. */
+:root {
+  color-scheme: light dark;
+  --accent: #2563eb;
+  --accent-contrast: #ffffff;
+  --accent-text: color-mix(in srgb, var(--accent) 72%, #000);
+  --bg: #f8f9fb;
+  --surface: #ffffff;
+  --text: #14171f;
+  --text-muted: #5b6472;
+  --border: rgba(20, 23, 31, 0.10);
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(20, 23, 31, 0.08);
+  --space: 16px;
+  --success: #0a7a35;
+  --danger: #c0262d;
+  --warning: #8a5300;
+}
+/* Theme resolution. Without data-theme the viewer's system preference decides,
+   as it always did. With it, the artifact's own choice wins in BOTH directions:
+   a page that hardcodes one palette must not be handed the opposite set of
+   tokens by the machine it happens to be opened on. The dark values appear
+   twice because a media query cannot be folded into a selector list.
+   The attribute sits inside :where() so these blocks keep the specificity of a
+   bare :root — the page's own <style> is linked after this file and must go on
+   overriding any token it wants, exactly as it could before. */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    --accent-text: color-mix(in srgb, var(--accent) 78%, #fff);
+    --bg: #101318;
+    --surface: #181c23;
+    --text: #eef1f6;
+    --text-muted: #9aa4b2;
+    --border: rgba(238, 241, 246, 0.12);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --success: #4ade80;
+    --danger: #f87171;
+    --warning: #fbbf24;
+  }
+}
+:root:where([data-theme="dark"]) {
+  color-scheme: dark;
+  --accent-text: color-mix(in srgb, var(--accent) 78%, #fff);
+  --bg: #101318;
+  --surface: #181c23;
+  --text: #eef1f6;
+  --text-muted: #9aa4b2;
+  --border: rgba(238, 241, 246, 0.12);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --success: #4ade80;
+  --danger: #f87171;
+  --warning: #fbbf24;
+}
+:root:where([data-theme="light"]) { color-scheme: light; }
+/* Pages generated before the shell had its own components still link the
+   basecoat CDN, which reads its own tokens and switches theme only on a
+   .dark class. Bridged to the shell's, whatever of it those pages use takes
+   the page's accent and follows the declared theme. Its --accent token is a
+   hover tint, renamed in its theme as --color-accent; the shell's --accent is
+   the brand colour, so the tint is derived from it here. */
+:root {
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface);
+  --popover-foreground: var(--text);
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-contrast);
+  --secondary: color-mix(in srgb, var(--text) 7%, var(--surface));
+  --secondary-foreground: var(--text);
+  --muted: color-mix(in srgb, var(--text) 5%, var(--surface));
+  --muted-foreground: var(--text-muted);
+  --color-accent: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  --color-accent-foreground: var(--text);
+  --destructive: var(--danger);
+  --input: var(--border);
+  --ring: var(--accent);
+}
+* { box-sizing: border-box; }
+/* The reset the pages were written against: they all linked basecoat, which
+   ships Tailwind's. Its components now live here, so the reset does too. */
+*, ::before, ::after, ::backdrop { margin: 0; padding: 0; border: 0 solid; }
+/* Preflight's rule too: without it a component class that sets display
+   (.alert, .card, .btn…) beats the hidden attribute and shows the element. */
+[hidden]:where(:not([hidden="until-found"])) { display: none !important; }
+.hidden { display: none !important; }
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+a { color: inherit; text-decoration: inherit; }
+b, strong { font-weight: bolder; }
+ol, ul, menu { list-style: none; }
+svg, video, canvas, iframe { display: block; vertical-align: middle; }
+button, input, select, textarea { color: inherit; background-color: transparent; border-radius: 0; }
+table { border-collapse: collapse; }
+hr { height: 0; color: inherit; border-top-width: 1px; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+
+.shell-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.shell-section { padding: calc(var(--space) * 2) 0; }
+.shell-grid { display: grid; gap: var(--space); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.shell-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: var(--space); }
+.shell-footer { padding: 24px 0 40px; color: var(--text-muted); font-size: 13px; }
+
+.shell-hero { padding: calc(var(--space) * 3) 0 calc(var(--space) * 2); }
+.shell-hero h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.15; margin: 0 0 10px; text-wrap: balance; }
+.shell-hero p { color: var(--text-muted); max-width: 60ch; margin: 0; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space);
+}
+
+.kpi { display: flex; flex-direction: column; gap: 4px; }
+.kpi .kpi-value { font-size: clamp(22px, 2.3vw, 28px); font-weight: 650; line-height: 1.1; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.kpi .kpi-label { font-size: 13px; color: var(--text-muted); }
+.kpi .kpi-delta { font-size: 12.5px; font-weight: 600; }
+.kpi .kpi-delta.up { color: var(--success); }
+.kpi .kpi-delta.down { color: var(--danger); }
+
+table.shell-table { border-collapse: collapse; width: 100%; font-size: 14px; }
+table.shell-table th {
+  text-align: left; font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--text-muted); font-weight: 600;
+}
+table.shell-table th, table.shell-table td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--border); }
+table.shell-table td.num, table.shell-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.shell-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+
+.chart-box { width: 100%; min-height: 220px; }
+.chart-box svg { width: 100%; height: auto; display: block; }
+.chart-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; margin-top: 12px; font-size: 12.5px; color: var(--text-muted); }
+.chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.chart-legend b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.muted { color: var(--text-muted); }
+.accent { color: var(--accent-text); }
+.shell-badge, .eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent-text);
+}
+/* A pill keeps its content width inside flex and grid columns, which would
+   otherwise stretch it across the card; a centred parent still centres it. */
+.shell-badge, .eyebrow, .badge { width: fit-content; max-width: 100%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .shell-fade { animation: shell-fade 400ms ease both; }
+  @keyframes shell-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+
+/* Layout and type utilities: what the pages kept spelling in style="".
+   Spacing and type sizes follow Tailwind's scale; there is no Tailwind. */
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.stack { display: flex; flex-direction: column; gap: var(--space); }
+.between { justify-content: space-between; }
+.grow { flex: 1 1 0; min-width: 0; }
+.cols-2, .cols-3, .cols-4, .cols-5 { display: grid; gap: var(--space); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 720px) {
+  .cols-2, .cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cols-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1000px) { .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; }
+.m-0 { margin: 0; }
+.mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
+.mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-6 { margin-bottom: 24px; }
+.p-2 { padding: 8px; } .p-3 { padding: 12px; } .p-4 { padding: 16px; } .p-6 { padding: 24px; }
+.text-xs { font-size: 12px; } .text-sm { font-size: 14px; } .text-base { font-size: 16px; }
+.text-lg { font-size: 18px; } .text-xl { font-size: 20px; line-height: 1.35; }
+.text-2xl { font-size: 24px; line-height: 1.25; } .text-3xl { font-size: 30px; line-height: 1.2; }
+.font-medium { font-weight: 500; } .font-semibold { font-weight: 600; } .font-bold { font-weight: 700; }
+.text-right { text-align: right; } .text-center { text-align: center; }
+.nowrap { white-space: nowrap; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+.w-full { width: 100%; }
+.text-success { color: var(--success); } .text-danger { color: var(--danger); } .text-warning { color: var(--warning); }
+
+/* Components, with basecoat 1.0 markup (variants and sizes are data
+   attributes) and the shell tokens, so a page needs neither component CSS
+   nor a CSS framework. An older page that also links basecoat gets these
+   rules after it, over the same properties. */
+button, input, select, textarea { font: inherit; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 36px; padding: 0 14px; border: 1px solid transparent; border-radius: calc(var(--radius) - 2px);
+  background: var(--accent); color: var(--accent-contrast);
+  font-size: 14px; font-weight: 500; line-height: 1; white-space: nowrap; text-decoration: none; cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.btn:hover { background: color-mix(in srgb, var(--accent) 86%, #000); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+.btn[data-variant="secondary"] { background: color-mix(in srgb, var(--text) 8%, var(--surface)); color: var(--text); }
+.btn[data-variant="secondary"]:hover { background: color-mix(in srgb, var(--text) 14%, var(--surface)); }
+.btn[data-variant="outline"] { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn[data-variant="ghost"] { background: transparent; color: var(--text); }
+.btn[data-variant="outline"]:hover, .btn[data-variant="ghost"]:hover { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.btn[data-variant="destructive"] { background: var(--danger); color: var(--bg); }
+.btn[data-variant="destructive"]:hover { background: color-mix(in srgb, var(--danger) 86%, var(--text)); }
+.btn[data-variant="link"] { height: auto; padding: 0; background: none; color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+.btn[data-size="sm"] { height: 30px; padding: 0 10px; font-size: 13px; }
+.btn[data-size="lg"] { height: 42px; padding: 0 20px; font-size: 15px; }
+.btn[data-size="icon"] { width: 36px; padding: 0; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+  border: 1px solid transparent; border-radius: 999px; background: var(--accent); color: var(--accent-contrast);
+  font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap;
+}
+.badge[data-variant="secondary"] { background: color-mix(in srgb, var(--text) 8%, var(--surface)); color: var(--text); }
+.badge[data-variant="outline"] { background: transparent; color: var(--text); border-color: var(--border); }
+.badge[data-variant="destructive"] { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); color: var(--danger); }
+
+.alert {
+  display: grid; gap: 4px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); font-size: 14px;
+}
+.alert h2, .alert h3 { margin: 0; font-size: 14px; font-weight: 600; }
+.alert p, .alert section { margin: 0; color: var(--text-muted); }
+.alert[data-variant="destructive"] { border-color: color-mix(in srgb, var(--danger) 45%, var(--border)); background: color-mix(in srgb, var(--danger) 7%, var(--surface)); color: var(--danger); }
+
+.card {
+  display: flex; flex-direction: column; gap: 16px; padding: 20px 0;
+  border: 1px solid var(--border); border-radius: calc(var(--radius) + 2px);
+  background: var(--surface); color: var(--text); box-shadow: var(--shadow);
+}
+.card > header, .card > section, .card > footer { padding: 0 20px; }
+.card > header { display: grid; gap: 4px; }
+.card > header h2, .card > header h3 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; }
+.card > header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+.card > footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+.input {
+  width: 100%; min-height: 36px; padding: 6px 12px; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px);
+  background: var(--surface); color: var(--text); font-size: 14px;
+}
+textarea.input { min-height: 84px; resize: vertical; }
+.input::placeholder { color: var(--text-muted); }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 14px; font-weight: 500; }
+.field [role="alert"] { color: var(--danger); font-size: 13px; }
+
+dialog.dialog {
+  width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 32px); margin: auto; padding: 0;
+  border: 1px solid var(--border); border-radius: calc(var(--radius) + 4px);
+  background: var(--surface); color: var(--text); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+dialog.dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+dialog.dialog > div { display: grid; gap: 16px; padding: 24px; }
+dialog.dialog header { display: grid; gap: 4px; }
+dialog.dialog header h2 { margin: 0; font-size: 18px; font-weight: 600; }
+dialog.dialog header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+dialog.dialog footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+.tabs { display: grid; gap: 12px; }
+.tabs > [role="tablist"] {
+  display: inline-flex; gap: 4px; width: fit-content; max-width: 100%; padding: 4px; overflow-x: auto;
+  border-radius: var(--radius); background: color-mix(in srgb, var(--text) 6%, var(--surface));
+}
+.tabs [role="tab"] {
+  padding: 6px 12px; border: 0; border-radius: calc(var(--radius) - 4px); background: transparent;
+  color: var(--text-muted); font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer;
+}
+.tabs [role="tab"][aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.tabs [role="tabpanel"][hidden] { display: none; }
+
+.accordion > details { border-bottom: 1px solid var(--border); }
+.accordion > details > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 0; font-weight: 500; list-style: none; cursor: pointer;
+}
+.accordion > details > summary::-webkit-details-marker { display: none; }
+.accordion > details > summary::after { content: "+"; color: var(--text-muted); font-size: 18px; line-height: 1; }
+.accordion > details[open] > summary::after { content: "\2212"; }
+.accordion > details > :not(summary) { margin: 0 0 14px; color: var(--text-muted); }
+
+.toaster {
+  position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; flex-direction: column-reverse; gap: 8px;
+  width: min(360px, calc(100vw - 32px)); pointer-events: none;
+}
+.toaster .toast { pointer-events: auto; transition: opacity 200ms ease, transform 200ms ease; }
+.toaster .toast[aria-hidden="true"] { opacity: 0; transform: translateY(8px); }
+.toaster .toast-content {
+  padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); font-size: 13px;
+}
+.toaster .toast-content h2 { margin: 0 0 2px; font-size: 14px; font-weight: 600; }
+.toaster .toast-content p { margin: 0; color: var(--text-muted); }
+
+/* skipUI building blocks. */
+.skip-table-search { max-width: 320px; margin-bottom: 12px; }
+.skip-table-wrap { overflow-x: auto; }
+table.shell-table th[data-sort] { cursor: pointer; user-select: none; }
+table.shell-table th[aria-sort="ascending"]::after { content: " \25B2"; font-size: 9px; }
+table.shell-table th[aria-sort="descending"]::after { content: " \25BC"; font-size: 9px; }
+table.shell-table td.skip-table-empty { color: var(--text-muted); text-align: center; padding: 24px 0; }
+.skip-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: 13px; color: var(--text-muted); }
+.toaster .toast[data-type="success"] .toast-content { border-left: 3px solid var(--success); }
+.toaster .toast[data-type="error"] .toast-content { border-left: 3px solid var(--danger); }
+
+</style>
+<script>
+/* Skip artifact shell — fixed helpers served beside every artifact. */
+(function () {
+  "use strict";
+
+  var fmt = {
+    num: function (v, opts) { return new Intl.NumberFormat("pt-BR", opts || {}).format(v); },
+    brl: function (v) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v); },
+    pct: function (v) { return new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 1 }).format(v); },
+    compact: function (v) { return new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(v); },
+    brlCompact: function (v) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", notation: "compact", maximumFractionDigits: 1 }).format(v); }
+  };
+
+  // axisLabels formats the five y-axis ticks in the unit the chart declared
+  // (percent, BRL or plain numbers), compact so long values never clip, with
+  // the fewest decimals that still print every tick exactly (1,5 mi, not 2 mi).
+  function axisLabels(format, ticks) {
+    function at(digits) {
+      var opts = { notation: "compact", maximumFractionDigits: digits };
+      if (format === "pct") opts = { style: "percent", maximumFractionDigits: digits };
+      else if (format === "brl") opts = { style: "currency", currency: "BRL", notation: "compact", maximumFractionDigits: digits };
+      var nf = new Intl.NumberFormat("pt-BR", opts);
+      return ticks.map(function (t) { return nf.format(t); });
+    }
+    for (var digits = 0; digits < 2; digits++) {
+      if (at(digits).join("|") === at(digits + 1).join("|")) return at(digits);
+    }
+    return at(2);
+  }
+
+  // yAxisPad formats the ticks and measures the left padding they need from
+  // the longest one; drawYAxis then draws the grid and the labels.
+  function yAxisPad(format, max) {
+    var labels = axisLabels(format, [0, max / 4, max / 2, (max * 3) / 4, max]);
+    var longest = labels.reduce(function (m, l) { return Math.max(m, l.length); }, 0);
+    return { labels: labels, padL: Math.max(40, Math.round(longest * 6.2) + 14) };
+  }
+  function drawYAxis(svg, axis, W, padR, padT, plotH) {
+    for (var g = 0; g <= 4; g++) {
+      var gy = padT + plotH - (plotH * g) / 4;
+      svg.appendChild(svgEl("line", { x1: axis.padL, y1: gy, x2: W - padR, y2: gy, stroke: "currentColor", "stroke-opacity": 0.08 }));
+      var lbl = svgEl("text", { x: axis.padL - 8, y: gy + 4, "text-anchor": "end", "font-size": 10, fill: mutedColor() });
+      lbl.textContent = axis.labels[g];
+      svg.appendChild(lbl);
+    }
+  }
+
+  // xLabelStep: show every k-th category label so labels never overlap, and
+  // always the last one (counted back from the end).
+  function xLabelStep(labels, step) {
+    var longest = labels.reduce(function (m, l) { return Math.max(m, String(l).length); }, 0);
+    return Math.max(1, Math.ceil((longest * 6.4 + 8) / Math.max(step, 1)));
+  }
+  function drawXLabel(svg, text, x, y, W, edgeGuard) {
+    var anchor = "middle";
+    var half = String(text).length * 3.2;
+    if (edgeGuard && x - half < 4) anchor = "start";
+    if (edgeGuard && x + half > W - 4) anchor = "end";
+    var tx = svgEl("text", { x: x, y: y, "text-anchor": anchor, "font-size": 11, fill: mutedColor() });
+    tx.textContent = text;
+    svg.appendChild(tx);
+  }
+  // categoryLines fits a bar's category name in its slot: one line, two lines
+  // split at a space, or cut with "…". A bar without its name can't be read, so
+  // categories are never skipped; null when the slot is too narrow for that.
+  function categoryLines(text, slot) {
+    var fit = Math.floor((slot - 6) / 6.4);
+    var s = String(text);
+    if (fit < 4) return null;
+    if (s.length <= fit) return [s];
+    var cut = function (t) { return t.length <= fit ? t : t.slice(0, fit - 1).trimEnd() + "…"; };
+    var best = -1;
+    for (var i = 0; i < s.length; i++) {
+      if (s[i] === " " && (best < 0 || Math.abs(s.length / 2 - i) < Math.abs(s.length / 2 - best))) best = i;
+    }
+    if (best < 0) return [cut(s)];
+    return [cut(s.slice(0, best)), cut(s.slice(best + 1))];
+  }
+  function legend(el, items) {
+    var box = document.createElement("div");
+    box.className = "chart-legend";
+    items.forEach(function (it) {
+      var row = document.createElement("span");
+      var dot = document.createElement("i");
+      dot.style.background = it.color;
+      row.appendChild(dot);
+      row.appendChild(document.createTextNode((it.label || "") + (it.value ? " " : "")));
+      if (it.value) {
+        var v = document.createElement("b");
+        v.textContent = it.value;
+        row.appendChild(v);
+      }
+      box.appendChild(row);
+    });
+    resolve(el).appendChild(box);
+  }
+  var seriesPalette = ["#1baf7a", "#eda100", "#e34948", "#4a3aa7", "#e87ba4", "#0ea5b7"];
+
+  // format accepts a function OR one of the fmt names ("num" | "brl" | "pct").
+  // A page's function may return nothing or throw: the chart prints its
+  // number instead of taking the rest of the page script down with it.
+  function coerceFormat(spec) {
+    if (typeof spec === "function") {
+      return function (v) {
+        try {
+          var out = spec(v);
+          return out == null ? "" : String(out);
+        } catch (e) {
+          return fmt.num(v);
+        }
+      };
+    }
+    if (typeof spec === "string" && fmt[spec]) return fmt[spec];
+    return function (v) { return fmt.num(v); };
+  }
+
+  function accent() {
+    return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2563eb";
+  }
+  function mutedColor() {
+    return getComputedStyle(document.documentElement).getPropertyValue("--text-muted").trim() || "#5b6472";
+  }
+  function svgEl(tag, attrs) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (var k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+  function frame(el, w, h) {
+    var svg = svgEl("svg", { viewBox: "0 0 " + w + " " + h, role: "img" });
+    el = resolve(el);
+    el.innerHTML = "";
+    el.appendChild(svg);
+    return svg;
+  }
+
+  // maxOf guards the axis scale: empty values would give -Infinity (truthy,
+  // so "|| 1" can't catch it) and a non-positive max would flip the chart.
+  // finite reads a chart value as a number, 0 when it is not one (NaN,
+  // Infinity, a stray string), so one bad value cannot blank the axis.
+  function finite(v) {
+    var n = +v;
+    return isFinite(n) ? n : 0;
+  }
+
+  function maxOf(values) {
+    var m = values.length ? Math.max.apply(null, values.map(finite)) : 0;
+    return m > 0 ? m : 1;
+  }
+
+  // labelsFor pads or trims the category names to the n points drawn: pages
+  // pass labels and values of different lengths, and one throw here loses
+  // every section the page renders after the chart.
+  function labelsFor(cfg, n) {
+    var out = [];
+    for (var i = 0; i < n; i++) out.push(cfg.labels && cfg.labels[i] != null ? String(cfg.labels[i]) : "");
+    return out;
+  }
+
+  // niceMax rounds the scale up so the four grid steps land on round values
+  // (1, 1.5, 2, 2.5, 3, 4, 5, 6 or 8 × 10^k) and the tick labels read exactly.
+  function niceMax(max) {
+    var raw = max / 4;
+    var mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var res = raw / mag;
+    var steps = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+    var nice = steps.filter(function (s) { return s >= res - 1e-9; })[0];
+    return nice * mag * 4;
+  }
+
+  // bar(el, {labels:[], values:[], color?, format?}) — vertical bar chart.
+  function bar(el, cfg) {
+    var W = 640, H = 280, padB = 30, padT = 12, padR = 12;
+    var max = niceMax(maxOf(cfg.values));
+    var axis = yAxisPad(cfg.format, max);
+    var svg = frame(el, W, H);
+    var n = cfg.values.length;
+    var labels = labelsFor(cfg, n);
+    var plotW = W - axis.padL - padR;
+    var step = plotW / n, bw = Math.min(step * 0.62, 64);
+    var names = labels.map(function (l) { return categoryLines(l, step); });
+    var named = names.every(Boolean);
+    if (named && names.some(function (l) { return l.length > 1; })) padB = 42;
+    var plotH = H - padT - padB;
+    var color = cfg.color || accent();
+    var f = coerceFormat(cfg.format);
+    var every = xLabelStep(labels, step);
+    drawYAxis(svg, axis, W, padR, padT, plotH);
+    cfg.values.forEach(function (v, i) {
+      var bh = Math.max(0, (finite(v) / max) * plotH);
+      var x = axis.padL + i * step + (step - bw) / 2;
+      var y = padT + plotH - bh;
+      var r = svgEl("rect", { x: x, y: y, width: bw, height: bh, rx: 4, fill: (cfg.colors && cfg.colors[i]) || color });
+      var t = svgEl("title", {});
+      t.textContent = labels[i] + ": " + f(v);
+      r.appendChild(t);
+      svg.appendChild(r);
+      if (named) {
+        names[i].forEach(function (text, li) {
+          drawXLabel(svg, text, x + bw / 2, padT + plotH + 18 + li * 13, W, false);
+        });
+      } else if ((n - 1 - i) % every === 0) {
+        drawXLabel(svg, labels[i], x + bw / 2, H - 10, W, false);
+      }
+    });
+  }
+
+  // line(el, {labels:[], values:[] | series:[{label, values, color?}], color?, format?})
+  // — one line, or several series on one scale with a legend under the chart.
+  function line(el, cfg) {
+    var W = 640, H = 280, padB = 30, padT = 12, padR = 16;
+    var series = cfg.series && cfg.series.length
+      ? cfg.series
+      : [{ label: "", values: cfg.values || [], color: cfg.color }];
+    var all = [];
+    series.forEach(function (s) { all = all.concat(s.values || []); });
+    var max = niceMax(maxOf(all));
+    var axis = yAxisPad(cfg.format, max);
+    var svg = frame(el, W, H);
+    var n = series.reduce(function (m, s) { return Math.max(m, (s.values || []).length); }, 0);
+    var labels = labelsFor(cfg, n);
+    var plotW = W - axis.padL - padR, plotH = H - padT - padB;
+    var f = coerceFormat(cfg.format);
+    drawYAxis(svg, axis, W, padR, padT, plotH);
+    var xs = labels.map(function (_, i) { return axis.padL + (n === 1 ? plotW / 2 : (plotW * i) / (n - 1)); });
+    var every = xLabelStep(labels, n > 1 ? plotW / (n - 1) : plotW);
+    labels.forEach(function (label, i) {
+      if ((n - 1 - i) % every === 0) drawXLabel(svg, label, xs[i], H - 10, W, true);
+    });
+    var colors = series.map(function (s, si) {
+      return s.color || (si === 0 ? (cfg.color || accent()) : seriesPalette[(si - 1) % seriesPalette.length]);
+    });
+    series.forEach(function (s, si) {
+      var color = colors[si];
+      var pts = (s.values || []).map(function (v, i) { return [xs[i], padT + plotH - (finite(v) / max) * plotH]; });
+      var d = pts.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" ");
+      svg.appendChild(svgEl("path", { d: d, fill: "none", stroke: color, "stroke-width": 2, "stroke-linejoin": "round" }));
+      pts.forEach(function (p, i) {
+        var c = svgEl("circle", { cx: p[0], cy: p[1], r: 3.5, fill: color });
+        var t = svgEl("title", {});
+        t.textContent = (s.label ? s.label + " · " : "") + labels[i] + ": " + f(s.values[i]);
+        c.appendChild(t);
+        svg.appendChild(c);
+      });
+    });
+    if (series.length > 1) {
+      legend(el, series.map(function (s, si) { return { label: s.label, color: colors[si] }; }));
+    }
+  }
+
+  // donut(el, {labels:[], values:[], colors?, format?, center?, centerLabel?, legend?})
+  // — donut with a short total in the centre (compact, in the declared unit)
+  // and, with legend: true, the labels and shares listed under it.
+  function donut(el, cfg) {
+    var W = 320, H = 280, cx = W / 2, cy = H / 2, R = 92, r = 58;
+    var svg = frame(el, W, H);
+    // At 100% of a wide container the donut outgrows the height pages give
+    // the box and spills over the next section: keep it at its own size.
+    svg.style.maxWidth = W + "px";
+    svg.style.margin = "0 auto";
+    var values = cfg.values.map(finite);
+    var labels = labelsFor(cfg, values.length);
+    var sum = values.reduce(function (a, b) { return a + b; }, 0);
+    var total = sum || 1;
+    var palette = cfg.colors || [accent()].concat(seriesPalette);
+    // The hover keeps the full value; the centre has room for a short one.
+    var full = coerceFormat(cfg.format);
+    var short = typeof cfg.format === "function" ? full : cfg.format === "brl" ? fmt.brlCompact : fmt.compact;
+    var a0 = -Math.PI / 2;
+    values.forEach(function (v, i) {
+      var a1 = a0 + (v / total) * Math.PI * 2;
+      var large = a1 - a0 > Math.PI ? 1 : 0;
+      var p = ["M", cx + R * Math.cos(a0), cy + R * Math.sin(a0),
+        "A", R, R, 0, large, 1, cx + R * Math.cos(a1), cy + R * Math.sin(a1),
+        "L", cx + r * Math.cos(a1), cy + r * Math.sin(a1),
+        "A", r, r, 0, large, 0, cx + r * Math.cos(a0), cy + r * Math.sin(a0), "Z"].join(" ");
+      var path = svgEl("path", { d: p, fill: palette[i % palette.length] });
+      var t = svgEl("title", {});
+      t.textContent = labels[i] + ": " + full(v) + " (" + fmt.pct(v / total) + ")";
+      path.appendChild(t);
+      svg.appendChild(path);
+      a0 = a1;
+    });
+    // A share chart has no total worth printing: without its own centre text
+    // the caption alone takes the middle.
+    var text = cfg.center != null ? String(cfg.center) : (cfg.format === "pct" ? "" : short(sum));
+    if (text) {
+      var size = text.length > 9 ? 14 : text.length > 7 ? 17 : 20;
+      var center = svgEl("text", { x: cx, y: cfg.centerLabel ? cy + 1 : cy + 6, "text-anchor": "middle", "font-size": size, "font-weight": 650, fill: "currentColor" });
+      center.textContent = text;
+      svg.appendChild(center);
+    }
+    if (cfg.centerLabel) {
+      var cap = svgEl("text", { x: cx, y: text ? cy + 19 : cy + 5, "text-anchor": "middle", "font-size": 11, fill: mutedColor() });
+      cap.textContent = cfg.centerLabel;
+      svg.appendChild(cap);
+    }
+    if (cfg.legend) {
+      legend(el, labels.map(function (label, i) {
+        return { label: label, color: palette[i % palette.length], value: fmt.pct(values[i] / total) };
+      }));
+    }
+  }
+
+  // ---- Page building blocks: what dashboards and small systems kept
+  // re-implementing — a searchable sortable table, a KPI row, tabs, toasts,
+  // dialogs, saved state and mock data. Every call is opt-in, so a page that
+  // brings its own versions keeps them.
+
+  function resolve(target) {
+    return typeof target === "string" ? document.querySelector(target) : target;
+  }
+
+  function node(tag, className, text) {
+    var el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text != null) el.textContent = text;
+    return el;
+  }
+
+  function isNumberColumn(col) {
+    return col.align === "right" || col.format === "num" || col.format === "brl" || col.format === "pct";
+  }
+
+  function cellText(col, row) {
+    var value = row[col.key];
+    if (value == null) return "";
+    return col.format ? coerceFormat(col.format)(value) : String(value);
+  }
+
+  function compareValues(a, b) {
+    if (typeof a === "number" && typeof b === "number") return a - b;
+    return String(a == null ? "" : a).localeCompare(String(b == null ? "" : b), "pt-BR", { numeric: true });
+  }
+
+  // table(el, {columns, rows, search?, pageSize?, empty?, onRowClick?}) — a
+  // table.shell-table with sortable headers, an optional search box and
+  // pager. A column is {key, label, format?, align?, sortable? (true),
+  // render?(value, row) returning a Node or an HTML string — the page writes
+  // its cell templates as markup}. Plain values are always set as text.
+  // Returns {setRows, rows}.
+  function table(target, cfg) {
+    var root = resolve(target);
+    var cols = cfg.columns || [];
+    var pageSize = cfg.pageSize || 0;
+    var state = { rows: (cfg.rows || []).slice(), query: "", key: null, dir: 1, page: 0 };
+    root.innerHTML = "";
+    if (cfg.search) {
+      var search = node("input", "input skip-table-search");
+      search.type = "search";
+      search.placeholder = typeof cfg.search === "string" ? cfg.search : "Buscar…";
+      search.setAttribute("aria-label", search.placeholder);
+      search.addEventListener("input", function () {
+        state.query = search.value.trim().toLowerCase();
+        state.page = 0;
+        draw();
+      });
+      root.appendChild(search);
+    }
+    var tableEl = node("table", "shell-table");
+    var headRow = node("tr");
+    var heads = cols.map(function (col) {
+      var th = node("th", isNumberColumn(col) ? "num" : "", col.label == null ? col.key : col.label);
+      th.scope = "col";
+      if (col.sortable !== false) {
+        var toggle = function () {
+          state.dir = state.key === col.key ? -state.dir : 1;
+          state.key = col.key;
+          draw();
+        };
+        th.setAttribute("data-sort", col.key);
+        th.tabIndex = 0;
+        th.addEventListener("click", toggle);
+        th.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+        });
+      }
+      headRow.appendChild(th);
+      return th;
+    });
+    var thead = node("thead");
+    var tbody = node("tbody");
+    var wrap = node("div", "skip-table-wrap");
+    var pager = node("div", "skip-pager");
+    thead.appendChild(headRow);
+    tableEl.appendChild(thead);
+    tableEl.appendChild(tbody);
+    wrap.appendChild(tableEl);
+    root.appendChild(wrap);
+    if (pageSize) root.appendChild(pager);
+
+    function visibleRows() {
+      var rows = state.rows;
+      if (state.query) {
+        rows = rows.filter(function (row) {
+          return cols.some(function (col) { return cellText(col, row).toLowerCase().indexOf(state.query) >= 0; });
+        });
+      }
+      if (state.key) {
+        var key = state.key, dir = state.dir;
+        rows = rows.slice().sort(function (a, b) { return dir * compareValues(a[key], b[key]); });
+      }
+      return rows;
+    }
+
+    function drawRow(row) {
+      var tr = node("tr");
+      cols.forEach(function (col) {
+        var td = node("td", isNumberColumn(col) ? "num" : "");
+        if (!col.render) {
+          td.textContent = cellText(col, row);
+        } else {
+          var content = col.render(row[col.key], row);
+          if (content instanceof Node) td.appendChild(content);
+          else td.innerHTML = content == null ? "" : String(content);
+        }
+        tr.appendChild(td);
+      });
+      // The row stays a row (no role) and takes focus, so a keyboard reaches
+      // the same action; keys pressed on a control inside a cell are its own.
+      if (cfg.onRowClick) {
+        tr.style.cursor = "pointer";
+        tr.tabIndex = 0;
+        tr.addEventListener("click", function () { cfg.onRowClick(row); });
+        tr.addEventListener("keydown", function (e) {
+          if (e.target !== tr || (e.key !== "Enter" && e.key !== " ")) return;
+          e.preventDefault();
+          cfg.onRowClick(row);
+        });
+      }
+      return tr;
+    }
+
+    function pagerButton(label, disabled, step) {
+      var button = node("button", "btn", label);
+      button.type = "button";
+      button.setAttribute("data-variant", "outline");
+      button.setAttribute("data-size", "sm");
+      button.disabled = disabled;
+      button.addEventListener("click", function () { state.page += step; draw(); });
+      return button;
+    }
+
+    function draw() {
+      var rows = visibleRows();
+      heads.forEach(function (th, i) {
+        if (cols[i].key === state.key) th.setAttribute("aria-sort", state.dir > 0 ? "ascending" : "descending");
+        else th.removeAttribute("aria-sort");
+      });
+      var pages = pageSize ? Math.max(1, Math.ceil(rows.length / pageSize)) : 1;
+      state.page = Math.min(state.page, pages - 1);
+      var shown = pageSize ? rows.slice(state.page * pageSize, (state.page + 1) * pageSize) : rows;
+      tbody.innerHTML = "";
+      if (!shown.length) {
+        var empty = node("td", "skip-table-empty", cfg.empty || "Nenhum registro encontrado.");
+        empty.colSpan = cols.length;
+        tbody.appendChild(node("tr")).appendChild(empty);
+      }
+      shown.forEach(function (row) { tbody.appendChild(drawRow(row)); });
+      if (!pageSize) return;
+      pager.innerHTML = "";
+      var from = rows.length ? state.page * pageSize + 1 : 0;
+      pager.appendChild(node("span", "", from + "–" + Math.min(rows.length, (state.page + 1) * pageSize) + " de " + rows.length));
+      var nav = node("div", "row gap-2");
+      nav.appendChild(pagerButton("Anterior", state.page === 0, -1));
+      nav.appendChild(pagerButton("Próxima", state.page >= pages - 1, 1));
+      pager.appendChild(nav);
+    }
+
+    draw();
+    return {
+      setRows: function (rows) { state.rows = rows.slice(); draw(); },
+      rows: visibleRows
+    };
+  }
+
+  // kpis(el, [{label, value, format?, delta?, hint?}]) — KPI cards in a
+  // responsive grid; delta is a fraction (0.12 renders as ▲ 12%).
+  function kpis(target, items) {
+    var root = resolve(target);
+    root.innerHTML = "";
+    root.classList.add("shell-grid");
+    items.forEach(function (item) {
+      var card = node("div", "panel kpi");
+      card.appendChild(node("span", "kpi-label", item.label));
+      // Large money values go compact ("R$ 27,5 mi"): the full amount does
+      // not fit a KPI card at four per row.
+      var kpiFormat = item.format === "brl" && Math.abs(item.value) >= 1e6 ? fmt.brlCompact : (item.format ? coerceFormat(item.format) : null);
+      card.appendChild(node("span", "kpi-value", kpiFormat ? kpiFormat(item.value) : String(item.value)));
+      if (typeof item.delta === "number") {
+        var up = item.delta >= 0;
+        card.appendChild(node("span", "kpi-delta " + (up ? "up" : "down"), (up ? "▲ " : "▼ ") + fmt.pct(Math.abs(item.delta))));
+      }
+      if (item.hint) card.appendChild(node("span", "kpi-label", item.hint));
+      root.appendChild(card);
+    });
+  }
+
+  // badge(text, variant?) — a .badge node for table cells and lists;
+  // variant is "secondary" | "outline" | "destructive" (default: primary).
+  function badge(text, variant) {
+    var el = node("span", "badge", text);
+    if (variant) el.setAttribute("data-variant", variant);
+    return el;
+  }
+
+  // tabs(el) — wires one .tabs block: [role=tab] buttons inside
+  // [role=tablist], each with aria-controls naming its [role=tabpanel].
+  function tabs(target) {
+    var root = resolve(target);
+    var buttons = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+    function select(chosen) {
+      buttons.forEach(function (b) {
+        var on = b === chosen;
+        b.setAttribute("aria-selected", on ? "true" : "false");
+        b.tabIndex = on ? 0 : -1;
+        var panel = document.getElementById(b.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !on;
+      });
+    }
+    buttons.forEach(function (b, i) {
+      b.addEventListener("click", function () { select(b); });
+      b.addEventListener("keydown", function (e) {
+        var step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        var next = buttons[(i + step + buttons.length) % buttons.length];
+        next.focus();
+        select(next);
+      });
+    });
+    select(buttons.filter(function (b) { return b.getAttribute("aria-selected") === "true"; })[0] || buttons[0]);
+  }
+
+  // toast(message, {type?: "success" | "error", title?, duration?}) — a
+  // .toast in a shared .toaster at the bottom of the page.
+  function toast(message, opts) {
+    opts = opts || {};
+    var toaster = document.querySelector(".toaster") || document.body.appendChild(node("div", "toaster"));
+    var item = node("div", "toast");
+    item.setAttribute("role", opts.type === "error" ? "alert" : "status");
+    item.setAttribute("aria-hidden", "true");
+    if (opts.type) item.setAttribute("data-type", opts.type);
+    var content = node("div", "toast-content");
+    var section = node("section");
+    if (opts.title) section.appendChild(node("h2", "", opts.title));
+    section.appendChild(node("p", "", message));
+    content.appendChild(section);
+    item.appendChild(content);
+    toaster.appendChild(item);
+    requestAnimationFrame(function () { item.setAttribute("aria-hidden", "false"); });
+    setTimeout(function () {
+      item.setAttribute("aria-hidden", "true");
+      setTimeout(function () { item.remove(); }, 400);
+    }, opts.duration || 3000);
+  }
+
+  // Dialogs are native <dialog class="dialog">: a [data-dialog-open="id"]
+  // anywhere opens one, a [data-dialog-close] inside closes it, and a click on
+  // its backdrop closes it too. Plain dialog.showModal()/close() still work.
+  document.addEventListener("click", function (e) {
+    var target = e.target;
+    if (!(target instanceof Element)) return;
+    var opener = target.closest("[data-dialog-open]");
+    if (opener) {
+      var dialog = document.getElementById(opener.getAttribute("data-dialog-open"));
+      if (dialog && dialog.showModal && !dialog.open) dialog.showModal();
+      return;
+    }
+    var closer = target.closest("[data-dialog-close]");
+    if (closer && closer.closest("dialog")) {
+      closer.closest("dialog").close();
+      return;
+    }
+    if (target.tagName === "DIALOG" && target.classList.contains("dialog") && target.open) target.close();
+  });
+
+  // store(key, fallback) — JSON state in localStorage that never throws (a
+  // private window or a full quota falls back to memory): {get, set, update}.
+  function store(key, fallback) {
+    var memory;
+    // Set while the last write did not reach localStorage: what is stored
+    // there is older than memory until a write goes through again.
+    var unsaved = false;
+    var initial = function () { return fallback === undefined ? undefined : JSON.parse(JSON.stringify(fallback)); };
+    function get() {
+      if (!unsaved) {
+        try {
+          var raw = localStorage.getItem(key);
+          if (raw != null) return JSON.parse(raw);
+        } catch (e) { /* storage unavailable: memory below */ }
+      }
+      return memory !== undefined ? memory : initial();
+    }
+    function set(value) {
+      memory = value;
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        unsaved = false;
+      } catch (e) {
+        unsaved = true;
+      }
+      return value;
+    }
+    return { get: get, set: set, update: function (fn) { return set(fn(get())); } };
+  }
+
+  // mock — seeded random data, so a page asks for 90 days of numbers in one
+  // line instead of writing them out; the same seed gives the same data.
+  var FIRST = ["Ana", "Bruno", "Carla", "Diego", "Eduarda", "Felipe", "Gabriela", "Henrique", "Isabela", "João",
+    "Larissa", "Marcos", "Natália", "Otávio", "Paula", "Rafael", "Sofia", "Thiago", "Vanessa", "Lucas"];
+  var LAST = ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Costa", "Rodrigues", "Almeida", "Nascimento", "Lima",
+    "Araújo", "Fernandes", "Carvalho", "Gomes", "Martins", "Rocha", "Ribeiro", "Barbosa"];
+  var INITIALS = "ABCDEFGHIJLMNOPRSTV".split("");
+  var CITIES = ["São Paulo, SP", "Rio de Janeiro, RJ", "Belo Horizonte, MG", "Curitiba, PR", "Porto Alegre, RS",
+    "Salvador, BA", "Recife, PE", "Fortaleza, CE", "Brasília, DF", "Goiânia, GO", "Campinas, SP", "Florianópolis, SC",
+    "Manaus, AM", "Belém, PA", "Vitória, ES", "Natal, RN"];
+
+  function createMock(seed) {
+    var state = seed >>> 0;
+    var names = 0;
+    function random() {
+      state = (state + 0x6d2b79f5) >>> 0;
+      var t = state;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    function int(min, max) { return min + Math.floor(random() * (max - min + 1)); }
+    function pick(list) { return list[Math.floor(random() * list.length)]; }
+    var mock = {
+      seed: function (value) { state = value >>> 0; names = 0; return mock; },
+      random: random,
+      int: int,
+      float: function (min, max, decimals) {
+        var factor = Math.pow(10, decimals == null ? 2 : decimals);
+        return Math.round((min + random() * (max - min)) * factor) / factor;
+      },
+      pick: pick,
+      chance: function (p) { return random() < p; },
+      // There are 360 first/last pairs. A page that draws until the name is
+      // new (do { … } while (used.has(name))) froze the tab past them, so
+      // later draws widen the space: a second surname after 200 (6,480), a
+      // middle initial after 4,000.
+      name: function () {
+        names++;
+        var middle = names > 4000 ? pick(INITIALS) + ". " : "";
+        return pick(FIRST) + " " + middle + (names > 200 ? pick(LAST) + " " : "") + pick(LAST);
+      },
+      city: function () { return pick(CITIES); },
+      // series(n, {start, trend, noise, min, decimals}) — a walk: each value
+      // moves by trend (fraction per step) plus up to ±noise of itself.
+      series: function (n, opts) {
+        opts = opts || {};
+        var value = opts.start == null ? 100 : opts.start;
+        var factor = Math.pow(10, opts.decimals || 0);
+        var out = [];
+        for (var i = 0; i < n; i++) {
+          out.push(Math.max(opts.min == null ? 0 : opts.min, Math.round(value * factor) / factor));
+          value = value * (1 + (opts.trend || 0)) * (1 + (random() * 2 - 1) * (opts.noise == null ? 0.08 : opts.noise));
+        }
+        return out;
+      },
+      // dates(n, {end?, step?: "day" | "week" | "month"}) — ISO dates
+      // (YYYY-MM-DD), oldest first, ending at end (default: today).
+      dates: function (n, opts) {
+        opts = opts || {};
+        var end = opts.end ? new Date(opts.end) : new Date();
+        var out = [];
+        for (var i = n - 1; i >= 0; i--) {
+          var d = new Date(end.getTime());
+          if (opts.step === "month") d.setMonth(d.getMonth() - i);
+          else d.setDate(d.getDate() - i * (opts.step === "week" ? 7 : 1));
+          out.push(d.toISOString().slice(0, 10));
+        }
+        return out;
+      },
+      // rows(n, spec) — n objects; each spec value is a function(i), a list
+      // to pick from, or a constant.
+      rows: function (n, spec) {
+        var out = [];
+        for (var i = 0; i < n; i++) {
+          var row = {};
+          for (var key in spec) {
+            var value = spec[key];
+            row[key] = typeof value === "function" ? value(i) : Array.isArray(value) ? pick(value) : value;
+          }
+          out.push(row);
+        }
+        return out;
+      }
+    };
+    return mock;
+  }
+
+  window.skipShell = { fmt: fmt };
+  window.skipChart = { bar: bar, line: line, donut: donut };
+  window.skipUI = { table: table, kpis: kpis, badge: badge, tabs: tabs, toast: toast };
+  window.skipStore = store;
+  window.skipMock = createMock(20261022);
+})();
+
+</script>
+<style>
+:root {
+--azul: #004A87;
+--ciano: #00A0E4;
+--petroleo: #0B2430;
+--ambar: #E08A3C;
+--salvia: #CFDCD3;
+--creme: #F4F1E8;
+--grafite: #1F2A2E;
+--verde: #2E7D5B;
+--vermelho: #B3453A;
+--accent: #004A87;
+--accent-text: #004A87;
+--accent-contrast: #ffffff;
+--cinza-barra: #9AA5A0;
+--font-title: 'Archivo Black', 'DM Sans', sans-serif;
+--font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+--font-mono: 'DM Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+body {
+margin: 0;
+font-family: var(--font-body);
+background: var(--creme);
+color: var(--grafite);
+min-height: 100vh;
+}
+h1, h2, h3, .title-font { font-family: var(--font-title); font-weight: 400; margin: 0; }
+.mono { font-family: var(--font-mono); }
+.hidden { display: none !important; }
+
+#errorBar {
+display: none;
+position: fixed;
+top: 0; left: 0; right: 0;
+background: var(--vermelho);
+color: #ffffff;
+padding: 10px 16px;
+font-size: 13px;
+z-index: 1000;
+box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Login */
+#loginView {
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 24px;
+background: linear-gradient(160deg, var(--petroleo) 0%, var(--azul) 100%);
+}
+.login-card {
+background: #ffffff;
+border-radius: 12px;
+padding: 32px;
+width: 100%;
+max-width: 400px;
+box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+.login-logo {
+display: flex;
+justify-content: center;
+background: var(--petroleo);
+border-radius: 8px;
+padding: 14px;
+margin-bottom: 20px;
+}
+.login-card h1 { font-size: 22px; color: var(--petroleo); margin-bottom: 4px; text-align: center; }
+.login-card .sub { font-size: 13px; color: var(--grafite); opacity: 0.7; text-align: center; margin-bottom: 20px; }
+.login-hint {
+margin-top: 16px;
+padding: 10px 12px;
+border: 1px dashed var(--salvia);
+border-radius: 8px;
+font-size: 12px;
+color: var(--grafite);
+background: var(--creme);
+}
+.link-btn {
+background: none;
+border: none;
+color: var(--azul);
+text-decoration: underline;
+cursor: pointer;
+font-size: 13px;
+font-family: var(--font-body);
+padding: 0;
+}
+.link-btn:focus-visible { outline: 2px solid var(--ciano); outline-offset: 2px; }
+.login-msg { font-size: 13px; color: var(--vermelho); min-height: 18px; margin-top: 10px; }
+.pass-wrap { position: relative; }
+.pass-wrap input { padding-right: 44px; }
+.eye-btn {
+position: absolute;
+right: 6px; top: 50%;
+transform: translateY(-50%);
+background: none;
+border: none;
+cursor: pointer;
+color: var(--grafite);
+padding: 6px;
+display: flex;
+align-items: center;
+}
+.eye-btn:focus-visible { outline: 2px solid var(--ciano); border-radius: 4px; }
+
+/* Forms */
+.field-label {
+display: block;
+font-size: 11px;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+color: var(--grafite);
+opacity: 0.7;
+margin-bottom: 6px;
+font-weight: 600;
+}
+.ctl {
+width: 100%;
+height: 40px;
+border: 1px solid var(--salvia);
+border-radius: 8px;
+padding: 0 12px;
+font-family: var(--font-body);
+font-size: 14px;
+background: #ffffff;
+color: var(--grafite);
+box-sizing: border-box;
+}
+.ctl:focus { outline: none; border-color: var(--ciano); box-shadow: 0 0 0 3px rgba(0,160,228,0.2); }
+.ctl-wrap { margin-bottom: 14px; }
+
+.btn-primary {
+background: var(--azul);
+color: #ffffff;
+height: 40px;
+padding: 0 20px;
+border-radius: 8px;
+border: none;
+cursor: pointer;
+font-family: var(--font-body);
+font-weight: 600;
+font-size: 14px;
+white-space: nowrap;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+transition: background 0.15s, transform 0.1s;
+}
+.btn-primary:hover { background: #003a6b; }
+.btn-primary:active { transform: translateY(1px); }
+.btn-primary:focus-visible { outline: 3px solid var(--ciano); outline-offset: 2px; }
+.btn-primary.full { width: 100%; }
+.btn-secondary {
+background: transparent;
+color: var(--azul);
+border: 1px solid var(--azul);
+height: 40px;
+padding: 0 20px;
+border-radius: 8px;
+cursor: pointer;
+font-family: var(--font-body);
+font-weight: 600;
+font-size: 14px;
+white-space: nowrap;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+flex: 0 0 auto;
+transition: background 0.15s;
+}
+.btn-secondary:hover { background: rgba(0,74,135,0.06); }
+.btn-secondary:focus-visible { outline: 3px solid var(--ciano); outline-offset: 2px; }
+.btn-secondary.full { width: 100%; }
+.btn-secondary.small { height: 32px; font-size: 12px; padding: 0 12px; }
+
+/* Layout */
+#appView { display: flex; min-height: 100vh; }
+.sidebar {
+width: 260px;
+flex: 0 0 260px;
+background: var(--petroleo);
+color: #ffffff;
+display: flex;
+flex-direction: column;
+padding: 22px 18px;
+position: sticky;
+top: 0;
+height: 100vh;
+}
+.side-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.side-prog { font-size: 12px; opacity: 0.75; margin-bottom: 22px; line-height: 1.4; }
+.user-block {
+background: rgba(255,255,255,0.08);
+border-radius: 10px;
+padding: 14px;
+margin-bottom: 22px;
+}
+.user-block .uname { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+.badge-perfil {
+display: inline-block;
+padding: 3px 10px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
+background: var(--ciano);
+color: var(--petroleo);
+margin-bottom: 10px;
+}
+.nav-item {
+display: block;
+padding: 10px 12px 10px 14px;
+border-left: 3px solid transparent;
+border-radius: 6px;
+color: #ffffff;
+font-size: 14px;
+font-weight: 500;
+background: rgba(255,255,255,0.12);
+border-left-color: var(--ciano);
+}
+.side-footer { margin-top: auto; font-size: 11px; opacity: 0.6; }
+.sidebar .btn-secondary { border-color: #ffffff; color: #ffffff; }
+.sidebar .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+.main { flex: 1 1 auto; min-width: 0; padding: 28px 32px 40px; }
+.topbar {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 16px;
+flex-wrap: wrap;
+margin-bottom: 20px;
+}
+.eyebrow {
+display: inline-block;
+background: var(--salvia);
+color: var(--petroleo);
+padding: 3px 10px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
+margin-bottom: 8px;
+}
+.page-title { font-size: 28px; color: var(--petroleo); }
+.page-sub { font-size: 14px; color: var(--grafite); opacity: 0.75; margin-top: 4px; }
+.top-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.card {
+background: #ffffff;
+border-radius: 12px;
+padding: 24px;
+box-shadow: 0 2px 10px rgba(11,36,48,0.08);
+margin-bottom: 20px;
+}
+.card-head { margin-bottom: 16px; }
+.card-head h2 { font-size: 17px; color: var(--petroleo); }
+.card-head p { font-size: 13px; color: var(--grafite); opacity: 0.7; margin: 4px 0 0; }
+
+.banner {
+display: none;
+background: #fff7ed;
+border: 1px solid var(--ambar);
+border-radius: 10px;
+padding: 14px 16px;
+margin-bottom: 20px;
+font-size: 14px;
+}
+.banner.show { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+/* Filters */
+.filter-row {
+display: flex;
+flex-direction: row;
+flex-wrap: nowrap;
+align-items: flex-end;
+gap: 16px;
+width: 100%;
+}
+.filter-field { flex: 1 1 0; min-width: 0; }
+.filter-field select { width: 100%; height: 40px; box-sizing: border-box; }
+.actions-row {
+display: flex;
+flex-direction: row;
+gap: 12px;
+margin-top: 16px;
+justify-content: flex-start;
+flex-wrap: wrap;
+}
+.period-row {
+display: flex;
+flex-direction: row;
+align-items: flex-end;
+gap: 12px;
+margin-top: 16px;
+flex-wrap: wrap;
+}
+.period-row .ctl-wrap { margin-bottom: 0; width: 200px; }
+.context-line { font-size: 12px; color: var(--grafite); opacity: 0.7; margin-top: 14px; }
+
+/* KPI */
+.kpi-grid {
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 16px;
+margin-bottom: 20px;
+}
+.kpi {
+background: #ffffff;
+border-radius: 12px;
+padding: 20px;
+box-shadow: 0 2px 10px rgba(11,36,48,0.08);
+border-top: 3px solid var(--azul);
+}
+.kpi-label {
+font-size: 11px;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+color: var(--grafite);
+opacity: 0.7;
+font-weight: 600;
+}
+.kpi-value { font-family: var(--font-mono); font-size: 32px; color: var(--azul); margin-top: 8px; line-height: 1.1; }
+.kpi-cap { font-size: 12px; color: var(--grafite); opacity: 0.7; margin-top: 6px; }
+
+/* Bar charts */
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.bar-label { width: 140px; flex: 0 0 140px; text-align: right; font-size: 12px; color: var(--grafite); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { flex: 1 1 auto; min-width: 0; }
+.bar-fill { height: 22px; border-radius: 4px; background: var(--azul); min-width: 2px; transition: width 0.4s ease; }
+.bar-val { font-family: var(--font-mono); font-size: 13px; min-width: 36px; text-align: right; }
+.empty-msg { font-size: 13px; color: var(--grafite); opacity: 0.7; padding: 12px 0; }
+.charts-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; margin-bottom: 20px; }
+
+/* Table */
+.table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--salvia); }
+table.resumo { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1100px; }
+table.resumo thead th {
+background: var(--azul);
+color: #ffffff;
+text-align: left;
+padding: 10px;
+font-weight: 600;
+white-space: nowrap;
+}
+table.resumo tbody td { padding: 10px; border-bottom: 1px solid var(--salvia); white-space: nowrap; }
+table.resumo tbody tr:nth-child(even) { background: #F9F9F7; }
+table.resumo tfoot td { padding: 10px; font-weight: 700; background: var(--creme); border-top: 2px solid var(--azul); }
+.num { text-align: right; font-family: var(--font-mono); }
+.badge {
+display: inline-block;
+padding: 3px 10px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
+white-space: nowrap;
+}
+.b-verde { background: var(--verde); color: #ffffff; }
+.b-ambar { background: var(--ambar); color: var(--petroleo); }
+.b-verm { background: var(--vermelho); color: #ffffff; }
+.b-cinza { background: var(--salvia); color: var(--grafite); }
+.b-azul { background: var(--azul); color: #ffffff; }
+
+.empty-state {
+text-align: center;
+padding: 36px 20px;
+}
+.empty-state p { font-size: 14px; color: var(--grafite); opacity: 0.8; margin-bottom: 14px; }
+.hint-box {
+margin-top: 12px;
+font-size: 13px;
+color: var(--grafite);
+background: var(--creme);
+border-radius: 8px;
+padding: 10px 12px;
+display: none;
+}
+.hint-box.show { display: block; }
+.cmp-card { margin-top: 24px; }
+.cmp-sub { font-size: 13px; color: var(--grafite); opacity: 0.7; margin-bottom: 20px; }
+.cmp-title { font-family: var(--font-title); font-weight: 400; font-size: 18px; color: var(--azul); }
+.cmp-bars { margin-bottom: 20px; }
+.cmp-bars .bar-row { margin-bottom: 10px; }
+.cmp-bars .bar-label { width: 160px; flex: 0 0 160px; font-size: 12px; }
+.cmp-bars .bar-fill { height: 24px; border-radius: 4px; }
+.cmp-bars .bar-val { font-family: var(--font-mono); }
+.cmp-bars .bar-fill.melhor { background: var(--verde); }
+.cmp-bars .bar-fill.comum { background: var(--azul); }
+.cmp-bars .bar-fill.volume { background: var(--ciano); }
+.cmp-row-best td { background: var(--creme) !important; }
+.cmp-detail summary { cursor: pointer; color: var(--azul); font-weight: 600; font-size: 13px; margin: 16px 0 10px; }
+.cmp-actions { margin-top: 14px; }
+table.comparativo { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1100px; }
+table.comparativo thead th { background: var(--azul); color: #ffffff; text-align: left; padding: 10px; font-weight: 600; white-space: nowrap; }
+table.comparativo tbody td { padding: 10px; border-bottom: 1px solid var(--salvia); white-space: nowrap; }
+table.comparativo tbody tr:nth-child(even) { background: #F9F9F7; }
+.cmp-tag { margin-left: 8px; }
+.footer-line {
+font-size: 12px;
+color: var(--grafite);
+opacity: 0.7;
+text-align: center;
+margin-top: 24px;
+padding-top: 16px;
+border-top: 1px solid var(--salvia);
+}
+
+/* Toasts */
+#toastBox {
+position: fixed;
+bottom: 20px;
+right: 20px;
+display: flex;
+flex-direction: column;
+gap: 8px;
+z-index: 900;
+}
+.toast-item {
+background: var(--petroleo);
+color: #ffffff;
+padding: 12px 16px;
+border-radius: 8px;
+font-size: 13px;
+box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+max-width: 340px;
+}
+.toast-item.err { background: var(--vermelho); }
+
+/* Responsive */
+@media (max-width: 1100px) {
+.kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.charts-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+#appView { flex-direction: column; }
+.sidebar {
+width: 100%;
+flex: none;
+height: auto;
+position: static;
+flex-direction: row;
+flex-wrap: wrap;
+align-items: center;
+gap: 12px;
+padding: 12px 16px;
+}
+.side-prog, .side-footer { display: none; }
+.user-block { margin-bottom: 0; padding: 8px 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.user-block .uname { margin-bottom: 0; }
+.badge-perfil { margin-bottom: 0; }
+.nav-item { padding: 6px 12px; border-left: none; border-bottom: 3px solid var(--ciano); }
+.sidebar .side-nav { display: flex; }
+.main { padding: 20px 16px 32px; }
+}
+@media (max-width: 640px) {
+.kpi-grid { grid-template-columns: 1fr; }
+.filter-row { flex-wrap: wrap; }
+.filter-field { flex: 1 1 100%; }
+.actions-row .btn-primary, .actions-row .btn-secondary { flex: 1 1 auto; }
+}
+
+@media print {
+.sidebar, .actions-row, .top-actions, .filter-row, #toastBox, #errorBar { display: none !important; }
+body { background: #fff; }
+.card { box-shadow: none; border: 1px solid #ccc; }
+}
+</style>
+</head>
+<body>
+<div id="errorBar" role="alert"></div>
+
+<!-- LOGIN -->
+<div id="loginView">
+<div class="login-card">
+<div class="login-logo">
+<img src="https://adapta-one-prod.s3.sa-east-1.amazonaws.com/frankvixp%40gmail.com/png/Logo_PRODFOR_IA.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3FLD6RMYLYFE2L2Q%2F20261105%2Fsa-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261105T170500Z&X-Amz-Expires=3600&X-Amz-Signature=PLACEHOLDER&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject" alt="PRODFOR" style="height:44px;width:auto;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.style.display='none';document.getElementById('logoFallbackLogin').style.display='inline-block'">
+<span id="logoFallbackLogin" style="display:none;font-family:'Archivo Black',sans-serif;color:#fff;font-size:20px;letter-spacing:2px">PRODFOR</span>
+</div>
+<h1>Acesse o painel</h1>
+<p class="sub">Visão Geral do Programa PRODFOR</p>
+<form id="loginForm" onsubmit="return false;">
+<div class="ctl-wrap">
+<label class="field-label" for="loginEmail">E-mail</label>
+<input class="ctl" id="loginEmail" type="text" autocomplete="username" placeholder="seu.nome@prodfor.com.br">
+</div>
+<div class="ctl-wrap">
+<label class="field-label" for="loginSenha">Senha</label>
+<div class="pass-wrap">
+<input class="ctl" id="loginSenha" type="password" autocomplete="current-password" placeholder="Digite sua senha">
+<button type="button" class="eye-btn" id="eyeLogin" aria-label="Mostrar senha" onclick="alternarSenha('loginSenha', 'eyeLogin')">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" class="icon-open"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
+</div>
+</div>
+<button type="button" class="btn-primary full" onclick="entrar()">Entrar</button>
+<div style="height:10px"></div>
+<button type="button" class="btn-secondary full" onclick="entrarDemo()">Entrar como coordenação (demonstração)</button>
+<div style="margin-top:14px;text-align:center">
+<button type="button" class="link-btn" onclick="restaurarAcesso()">Restaurar acesso padrão</button>
+</div>
+<div class="login-msg" id="loginMsg" role="status"></div>
+</form>
+<div class="login-hint">Acesso inicial: <strong>coordenacao@prodfor.com.br</strong> / <strong>prodfor2027</strong></div>
+</div>
+</div>
+
+<!-- APP -->
+<div id="appView" style="display:none">
+<aside class="sidebar">
+<div class="side-logo">
+<img src="https://adapta-one-prod.s3.sa-east-1.amazonaws.com/frankvixp%40gmail.com/png/Logo_PRODFOR_IA.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3FLD6RMYLYFE2L2Q%2F20261105%2Fsa-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261105T170500Z&X-Amz-Expires=3600&X-Amz-Signature=PLACEHOLDER&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject" alt="PRODFOR" style="height:44px;width:auto;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline-block'">
+<span id="logoFallback" style="display:none;font-family:'Archivo Black',sans-serif;color:#fff;font-size:20px;letter-spacing:2px">PRODFOR</span>
+</div>
+<div class="side-prog">Programa PRODFOR · Registro Operacional</div>
+<div class="user-block">
+<div class="uname" id="sideNome">—</div>
+<span class="badge-perfil" id="sidePerfil">coordenação</span>
+<button type="button" class="btn-secondary small" onclick="sair()">Sair</button>
+</div>
+<nav class="side-nav" aria-label="Navegação">
+<a href="#" class="nav-item" aria-current="page" onclick="event.preventDefault();">Visão geral</a>
+</nav>
+<div class="side-footer">v3.0 · Visão Geral</div>
+</aside>
+
+<main class="main">
+<div class="topbar">
+<div>
+<span class="eyebrow">Painel consolidado</span>
+<h1 class="page-title">PRODFOR — Visão Geral</h1>
+<p class="page-sub">Indicadores consolidados de presenças, consultorias, diagnósticos e auditorias do programa.</p>
+</div>
+<div class="top-actions">
+<button type="button" class="btn-secondary" onclick="window.print()">Imprimir / PDF</button>
+</div>
+</div>
+
+<div class="banner" id="bannerLive">
+<span id="bannerText"></span>
+</div>
+
+<section class="card" aria-labelledby="filtrosTitulo">
+<div class="card-head">
+<h2 id="filtrosTitulo">Filtros do painel</h2>
+<p>Escolha o programa, depois a turma e a empresa. Cada seleção restringe as opções seguintes.</p>
+</div>
+
+<div id="emptyPrograma" class="empty-state hidden">
+<p>Nenhum programa cadastrado. Cadastre um programa e ative uma turma para visualizar os indicadores.</p>
+<button type="button" class="btn-primary" onclick="irPara('programas')">Ir para Programas</button>
+<div class="hint-box" id="hintProgramas">Abra a página de Gestão de Programas para cadastrar um novo programa.</div>
+</div>
+
+<div id="emptyTurma" class="empty-state hidden">
+<p>Nenhuma turma ativa. Ative uma turma para começar o acompanhamento.</p>
+<button type="button" class="btn-primary" onclick="irPara('turmas')">Ir para Turmas ativas</button>
+<div class="hint-box" id="hintTurmas">Abra a página de Turmas ativas para vincular uma turma ao programa.</div>
+</div>
+
+<div id="filtrosBox">
+<div class="filter-row">
+<div class="filter-field">
+<label class="field-label" for="fPrograma">Programa</label>
+<select class="ctl" id="fPrograma" onchange="atualizarTurmas()"></select>
+</div>
+<div class="filter-field">
+<label class="field-label" for="fTurma">Turma</label>
+<select class="ctl" id="fTurma" onchange="atualizarEmpresas()"></select>
+</div>
+<div class="filter-field">
+<label class="field-label" for="fEmpresa">Empresa</label>
+<select class="ctl" id="fEmpresa"></select>
+</div>
+</div>
+<div class="actions-row">
+<button type="button" class="btn-primary" onclick="aplicarFiltros()">Aplicar</button>
+<button type="button" class="btn-secondary" onclick="limparFiltros()">Limpar filtros</button>
+<button type="button" class="btn-secondary" onclick="exportarTudo()">Exportar tudo</button>
+</div>
+<div class="period-row">
+<div class="ctl-wrap">
+<label class="field-label" for="pIni">Período (opcional) · Data inicial</label>
+<input class="ctl" type="date" id="pIni" onchange="aplicarFiltros()">
+</div>
+<div class="ctl-wrap">
+<label class="field-label" for="pFim">Data final</label>
+<input class="ctl" type="date" id="pFim" onchange="aplicarFiltros()">
+</div>
+</div>
+<div class="context-line" id="contextLine">Exibindo: —</div>
+</div>
+</section>
+
+<section aria-label="Indicadores">
+<div class="kpi-grid" id="kpiGrid"></div>
+</section>
+
+<section class="charts-grid">
+<div class="card">
+<div class="card-head">
+<h2>Presenças por evento</h2>
+<p>Quantidade de presenças registradas em cada evento do escopo.</p>
+</div>
+<div id="chartEventos"></div>
+</div>
+<div class="card">
+<div class="card-head">
+<h2>Consultorias por empresa</h2>
+<p>Número de consultorias realizadas por empresa no escopo.</p>
+</div>
+<div id="chartConsultorias"></div>
+</div>
+<div class="card">
+<div class="card-head">
+<h2>Diagnósticos por resultado</h2>
+<p>Distribuição dos diagnósticos registrados por resultado.</p>
+</div>
+<div id="chartDiagnosticos"></div>
+</div>
+</section>
+
+<section class="card">
+<div class="card-head">
+<h2>Resumo por empresa</h2>
+<p>Ordenado por pontuação decrescente. Pontuações com asterisco são estimativas calculadas a partir dos registros.</p>
+</div>
+<div class="table-wrap" id="tabelaWrap"></div>
+</section>
+
+<section class="card cmp-card" id="secComparativo" aria-labelledby="cmpTitulo">
+<div class="card-head">
+<h2 class="cmp-title" id="cmpTitulo">Comparativo entre turmas</h2>
+<p class="cmp-sub">Desempenho lado a lado das turmas do programa selecionado.</p>
+</div>
+<div id="cmpConteudo"></div>
+</section>
+
+<div class="footer-line">Programa PRODFOR · Registro Operacional · v3.0 · Visão Geral · <span id="footerDate"></span></div>
+</main>
+</div>
+
+<div id="toastBox" aria-live="polite"></div>
+
+<script>
+// ---------- utilidades ----------
+function mostrarErro(msg) {
+var bar = document.getElementById('errorBar');
+if (bar) {
+bar.textContent = 'Erro: ' + msg;
+bar.style.display = 'block';
+}
+}
+function limparErro() {
+var bar = document.getElementById('errorBar');
+if (bar) { bar.style.display = 'none'; bar.textContent = ''; }
+}
+window.onerror = function (message, source, lineno) {
+mostrarErro(String(message) + ' (linha ' + lineno + ')');
+return false;
+};
+function toast(msg, tipo) {
+try {
+var box = document.getElementById('toastBox');
+var el = document.createElement('div');
+el.className = 'toast-item' + (tipo === 'err' ? ' err' : '');
+el.textContent = msg;
+box.appendChild(el);
+setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 3200);
+} catch (e) { }
+}
+function lerLS(chave, padrao) {
+try {
+var raw = localStorage.getItem(chave);
+if (raw === null || raw === undefined) return padrao;
+var v = JSON.parse(raw);
+return v === null || v === undefined ? padrao : v;
+} catch (e) { return padrao; }
+}
+function gravarLS(chave, valor) {
+try { localStorage.setItem(chave, JSON.stringify(valor)); } catch (e) { mostrarErro('Não foi possível gravar ' + chave); }
+}
+function textoPadraoHoje() {
+var d = new Date();
+var dd = String(d.getDate()).length < 2 ? '0' + d.getDate() : '' + d.getDate();
+var mm = String(d.getMonth() + 1).length < 2 ? '0' + (d.getMonth() + 1) : '' + (d.getMonth() + 1);
+return dd + '/' + mm + '/' + d.getFullYear();
+}
+function esc(s) {
+return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, function (c) {
+return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+});
+}
+
+// ---------- estado ----------
+var DADOS = {};
+var FILTRO = { programa: '', turma: '', empresa: '', ini: '', fim: '' };
+var SESSAO = null;
+
+// ---------- dados ----------
+function carregarDados() {
+try {
+DADOS.usuarios = lerLS('prodfor_usuarios', []);
+DADOS.sessao = lerLS('prodfor_sessao', null);
+DADOS.presencas = lerLS('prodfor_presencas', []);
+DADOS.consultorias = lerLS('prodfor_consultorias', []);
+DADOS.diagnosticos = lerLS('prodfor_diagnosticos', []);
+DADOS.auditorias = lerLS('prodfor_auditorias', []);
+DADOS.programas = lerLS('prodfor_programas', []);
+DADOS.turmas = lerLS('prodfor_turmas_ativas', []);
+DADOS.empresas = lerLS('prodfor_empresas', []);
+if (!DADOS.programas.length && !localStorage.getItem('prodfor_programas')) {
+DADOS.programas = [{ cod: 'PRG-001', nome: 'Qualidade – SGQ', versao: '2026-01', num_works: 9, num_diagnostico: 3, num_pitch: 2, curso_aiq: 'SIM', norma: 'ISO 9001:2015', pontuacao_maxima: 1000 }];
+gravarLS('prodfor_programas', DADOS.programas);
+}
+if (!DADOS.turmas.length && !localStorage.getItem('prodfor_turmas_ativas')) {
+DADOS.turmas = [{ id: 'SGQ T2027-01', programaCod: 'PRG-001', nome: 'T2027-1', ano: 2027 }];
+gravarLS('prodfor_turmas_ativas', DADOS.turmas);
+}
+if (!DADOS.empresas.length && !localStorage.getItem('prodfor_empresas')) {
+DADOS.empresas = [
+{ nome: 'Empresa Alfa', turma: 'SGQ T2027-01', programa: 'PRG-001', pontuacao: 1100 },
+{ nome: 'Empresa Beta', turma: 'SGQ T2027-01', programa: 'PRG-001', pontuacao: 1100 },
+{ nome: 'Empresa Gama', turma: 'SGQ T2027-01', programa: 'PRG-001', pontuacao: 603 },
+{ nome: 'Empresa Delta', turma: 'SGQ T2027-01', programa: 'PRG-001', pontuacao: 44 },
+{ nome: 'Empresa Épsilon', turma: 'SGQ T2027-01', programa: 'PRG-001', pontuacao: 0 }
+];
+gravarLS('prodfor_empresas', DADOS.empresas);
+}
+} catch (e) {
+mostrarErro('Falha ao carregar dados: ' + e.message);
+}
+}
+function salvarDados() {
+gravarLS('prodfor_usuarios', DADOS.usuarios);
+gravarLS('prodfor_sessao', DADOS.sessao);
+gravarLS('prodfor_presencas', DADOS.presencas);
+gravarLS('prodfor_consultorias', DADOS.consultorias);
+gravarLS('prodfor_diagnosticos', DADOS.diagnosticos);
+gravarLS('prodfor_auditorias', DADOS.auditorias);
+gravarLS('prodfor_programas', DADOS.programas);
+gravarLS('prodfor_turmas_ativas', DADOS.turmas);
+gravarLS('prodfor_empresas', DADOS.empresas);
+}
+function garantirUsuarioPadrao() {
+try {
+if (!DADOS.usuarios || !DADOS.usuarios.length) DADOS.usuarios = [];
+var achou = false;
+for (var i = 0; i < DADOS.usuarios.length; i++) {
+var u = DADOS.usuarios[i];
+if (u && u.email === 'coordenacao@prodfor.com.br' && u.ativo === true && String(u.senha) === 'prodfor2027') {
+achou = true;
+}
+}
+if (!achou) {
+var filtrados = [];
+for (var j = 0; j < DADOS.usuarios.length; j++) {
+if (DADOS.usuarios[j] && DADOS.usuarios[j].email !== 'coordenacao@prodfor.com.br') filtrados.push(DADOS.usuarios[j]);
+}
+filtrados.unshift({ id: 'u1', nome: 'Coordenação PRODFOR', email: 'coordenacao@prodfor.com.br', senha: 'prodfor2027', perfil: 'coordenação', ativo: true });
+DADOS.usuarios = filtrados;
+gravarLS('prodfor_usuarios', DADOS.usuarios);
+}
+} catch (e) { mostrarErro('Falha no usuário padrão: ' + e.message); }
+}
+
+// ---------- login ----------
+function entrar() {
+var msg = document.getElementById('loginMsg');
+var email = String(document.getElementById('loginEmail').value || '').trim().toLowerCase();
+var senha = String(document.getElementById('loginSenha').value || '');
+msg.textContent = '';
+if (!email) { msg.textContent = 'Informe o e-mail.'; return; }
+if (!senha) { msg.textContent = 'Informe a senha.'; return; }
+var usuario = null;
+for (var i = 0; i < DADOS.usuarios.length; i++) {
+if (DADOS.usuarios[i] && String(DADOS.usuarios[i].email || '').toLowerCase() === email) { usuario = DADOS.usuarios[i]; break; }
+}
+if (!usuario) { msg.textContent = 'E-mail não cadastrado.'; return; }
+if (usuario.ativo !== true) { msg.textContent = 'Usuário inativo. Procure a coordenação.'; return; }
+if (String(usuario.senha) !== String(senha)) { msg.textContent = 'Senha incorreta.'; return; }
+DADOS.sessao = { id: usuario.id, nome: usuario.nome, email: usuario.email, perfil: usuario.perfil };
+gravarLS('prodfor_sessao', DADOS.sessao);
+exibirApp();
+toast('Bem-vindo(a), ' + usuario.nome + '.');
+}
+function entrarDemo() {
+garantirUsuarioPadrao();
+document.getElementById('loginEmail').value = 'coordenacao@prodfor.com.br';
+document.getElementById('loginSenha').value = 'prodfor2027';
+entrar();
+}
+function restaurarAcesso() {
+DADOS.usuarios = [];
+garantirUsuarioPadrao();
+document.getElementById('loginMsg').textContent = '';
+toast('Acesso padrão restaurado: coordenacao@prodfor.com.br / prodfor2027');
+}
+function sair() {
+DADOS.sessao = null;
+gravarLS('prodfor_sessao', null);
+document.getElementById('appView').style.display = 'none';
+document.getElementById('loginView').style.display = 'flex';
+document.getElementById('loginSenha').value = '';
+document.getElementById('loginMsg').textContent = '';
+toast('Sessão encerrada.');
+}
+function alternarSenha(idInput, idBotao) {
+var input = document.getElementById(idInput);
+var btn = document.getElementById(idBotao);
+if (!input || !btn) return;
+var mostrar = input.type === 'password';
+input.type = mostrar ? 'text' : 'password';
+btn.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+btn.innerHTML = mostrar
+? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+
+// ---------- filtros em cascata ----------
+function obterProgramaPorCod(cod) {
+for (var i = 0; i < DADOS.programas.length; i++) if (DADOS.programas[i].cod === cod) return DADOS.programas[i];
+return null;
+}
+function obterPontuacaoMaxima(codPrograma) {
+var p = obterProgramaPorCod(codPrograma);
+if (p && p.pontuacao_maxima) return Number(p.pontuacao_maxima) || null;
+return null;
+}
+function calcularFaixa(pontuacao, maxima) {
+if (!maxima) return '—';
+if (pontuacao >= 800) return 'QUALIFICADA';
+if (pontuacao >= 600) return 'RECOMENDADA MEDIANTE AJUSTES';
+return 'NÃO RECOMENDADA';
+}
+function preencherFiltros() {
+var selP = document.getElementById('fPrograma');
+var html = '<option value="">Todos os programas</option>';
+for (var i = 0; i < DADOS.programas.length; i++) {
+var p = DADOS.programas[i];
+html += '<option value="' + esc(p.cod) + '">' + esc(p.cod) + ' — ' + esc(p.nome) + ' (' + esc(p.versao) + ')</option>';
+}
+selP.innerHTML = html;
+selP.value = FILTRO.programa;
+atualizarTurmas();
+}
+function atualizarTurmas() {
+FILTRO.programa = document.getElementById('fPrograma').value;
+FILTRO.turma = '';
+FILTRO.empresa = '';
+var selT = document.getElementById('fTurma');
+var html = '<option value="">Todas as turmas</option>';
+for (var i = 0; i < DADOS.turmas.length; i++) {
+var t = DADOS.turmas[i];
+if (FILTRO.programa && t.programaCod !== FILTRO.programa) continue;
+var prog = obterProgramaPorCod(t.programaCod);
+var nomeProg = prog ? prog.nome : t.programaCod;
+html += '<option value="' + esc(t.id) + '">' + esc(t.id) + ' — ' + esc(nomeProg) + '</option>';
+}
+selT.innerHTML = html;
+selT.value = '';
+atualizarEmpresas();
+}
+function atualizarEmpresas() {
+FILTRO.turma = document.getElementById('fTurma').value;
+FILTRO.empresa = '';
+var selE = document.getElementById('fEmpresa');
+var html = '<option value="">Todas as empresas</option>';
+for (var i = 0; i < DADOS.empresas.length; i++) {
+var e = DADOS.empresas[i];
+if (FILTRO.turma && e.turma !== FILTRO.turma) continue;
+if (!FILTRO.turma && FILTRO.programa && e.programa !== FILTRO.programa) continue;
+html += '<option value="' + esc(e.nome) + '">' + esc(e.nome) + ' — ' + esc(e.turma) + '</option>';
+}
+selE.innerHTML = html;
+selE.value = '';
+aplicarFiltros();
+}
+function aplicarFiltros() {
+FILTRO.programa = document.getElementById('fPrograma').value;
+FILTRO.turma = document.getElementById('fTurma').value;
+FILTRO.empresa = document.getElementById('fEmpresa').value;
+FILTRO.ini = document.getElementById('pIni').value;
+FILTRO.fim = document.getElementById('pFim').value;
+renderizarTudo();
+}
+function limparFiltros() {
+FILTRO = { programa: '', turma: '', empresa: '', ini: '', fim: '' };
+document.getElementById('pIni').value = '';
+document.getElementById('pFim').value = '';
+preencherFiltros();
+toast('Filtros limpos.');
+}
+function irPara(pagina) {
+if (pagina === 'programas') toast('Abra a página de Gestão de Programas para cadastrar um programa.');
+else toast('Abra a página de Turmas ativas para ativar uma turma.');
+var hint = document.getElementById(pagina === 'programas' ? 'hintProgramas' : 'hintTurmas');
+if (hint) hint.classList.add('show');
+}
+
+// ---------- escopo e cálculos ----------
+function obterEscopo() {
+var turmasOk = [];
+for (var i = 0; i < DADOS.turmas.length; i++) {
+var t = DADOS.turmas[i];
+if (FILTRO.programa && t.programaCod !== FILTRO.programa) continue;
+if (FILTRO.turma && t.id !== FILTRO.turma) continue;
+turmasOk.push(t.id);
+}
+var empresas = [];
+for (var j = 0; j < DADOS.empresas.length; j++) {
+var e = DADOS.empresas[j];
+if (FILTRO.programa && e.programa !== FILTRO.programa) continue;
+if (FILTRO.turma && e.turma !== FILTRO.turma) continue;
+if (FILTRO.empresa && e.nome !== FILTRO.empresa) continue;
+empresas.push(e);
+}
+return { empresas: empresas, turmas: turmasOk };
+}
+function dentroPeriodo(data) {
+if (!FILTRO.ini && !FILTRO.fim) return true;
+if (!data) return true;
+var d = String(data).substring(0, 10);
+if (FILTRO.ini && d < FILTRO.ini) return false;
+if (FILTRO.fim && d > FILTRO.fim) return false;
+return true;
+}
+function registrosDaEmpresa(lista, nomeEmpresa) {
+var out = [];
+for (var i = 0; i < lista.length; i++) {
+var r = lista[i];
+if (!r) continue;
+if (r.empresa === nomeEmpresa && dentroPeriodo(r.data)) out.push(r);
+}
+return out;
+}
+function obterResultadoFinal(nomeEmpresa) {
+for (var i = 0; i < DADOS.diagnosticos.length; i++) {
+var d = DADOS.diagnosticos[i];
+if (d && d.empresa === nomeEmpresa && String(d.codigo || '').indexOf('Final') !== -1) return String(d.resultado || '—');
+}
+return '—';
+}
+function obterAuditoria(nomeEmpresa) {
+for (var i = 0; i < DADOS.auditorias.length; i++) {
+var a = DADOS.auditorias[i];
+if (a && a.empresa === nomeEmpresa) return a.realizada === false || a.realizada === 'NÃO' ? 'NÃO' : 'SIM';
+}
+return '—';
+}
+function calcularIndicadores() {
+var escopo = obterEscopo();
+var linhas = [];
+var totais = { presencas: 0, consultorias: 0, diagnosticos: 0, naoConf: 0, comDiagFinal: 0, pontuacao: 0, pct: 0 };
+var eventos = {}, consPorEmp = {}, resultados = { '1,0': 0, '0,8': 0, '0,0': 0, 'Vazio': 0 };
+var maxima = FILTRO.programa ? obterPontuacaoMaxima(FILTRO.programa) : null;
+var somaNC = 0, qtdNC = 0;
+
+for (var i = 0; i < escopo.empresas.length; i++) {
+var e = escopo.empresas[i];
+var pres = registrosDaEmpresa(DADOS.presencas, e.nome);
+var cons = registrosDaEmpresa(DADOS.consultorias, e.nome);
+var diag = registrosDaEmpresa(DADOS.diagnosticos, e.nome);
+for (var a = 0; a < pres.length; a++) {
+var ev = pres[a].evento || 'Sem evento';
+eventos[ev] = (eventos[ev] || 0) + 1;
+}
+consPorEmp[e.nome] = cons.length;
+for (var b = 0; b < diag.length; b++) {
+var res = String(diag[b].resultado || '').trim();
+if (res === '1,0' || res === '1.0') resultados['1,0']++;
+else if (res === '0,8' || res === '0.8') resultados['0,8']++;
+else if (res === '0,0' || res === '0.0') resultados['0,0']++;
+else resultados['Vazio']++;
+if (diag[b].naoConformidades !== undefined && diag[b].naoConformidades !== null && diag[b].naoConformidades !== '') {
+somaNC += Number(diag[b].naoConformidades) || 0;
+qtdNC++;
+}
+}
+var resFinal = obterResultadoFinal(e.nome);
+var aud = obterAuditoria(e.nome);
+var temPontuacao = e.pontuacao !== undefined && e.pontuacao !== null && e.pontuacao !== '';
+var pontuacao = temPontuacao ? Number(e.pontuacao) : (pres.length * 10 + cons.length * 25 + diag.length * 50);
+var estimativa = !temPontuacao;
+var pct = maxima ? (pontuacao / maxima) * 100 : null;
+var faixa = calcularFaixa(pontuacao, maxima);
+
+totais.presencas += pres.length;
+totais.consultorias += cons.length;
+totais.diagnosticos += diag.length;
+totais.pontuacao += pontuacao;
+if (resFinal !== '—') totais.comDiagFinal++;
+
+linhas.push({
+empresa: e.nome, turma: e.turma, programa: e.programa,
+presencas: pres.length, consultorias: cons.length, diagnosticos: diag.length,
+resFinal: resFinal, auditoria: aud, pontuacao: pontuacao, estimativa: estimativa,
+pct: pct, faixa: faixa
+});
+}
+linhas.sort(function (x, y) { return y.pontuacao - x.pontuacao; });
+
+var pctTotal = maxima && linhas.length ? null : null;
+var ncMedia = qtdNC ? somaNC / qtdNC : 0;
+
+return {
+escopo: escopo, linhas: linhas, totais: totais, eventos: eventos, consPorEmp: consPorEmp,
+resultados: resultados, maxima: maxima, ncMedia: ncMedia, qtdNC: qtdNC
+};
+}
+
+// ---------- renderização ----------
+function formatarNumero(n) {
+return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+function renderizarKPIs(ind) {
+var cores = ['#004A87', '#00A0E4', '#E08A3C', '#2E7D5B'];
+var itens = [
+{ label: 'Presenças registradas', valor: formatarNumero(ind.totais.presencas), cap: 'Total no escopo selecionado' },
+{ label: 'Consultorias realizadas', valor: formatarNumero(ind.totais.consultorias), cap: 'Atendimentos de consultoria' },
+{ label: 'Diagnósticos registrados', valor: formatarNumero(ind.totais.diagnosticos), cap: 'Diagnósticos lançados' },
+{ label: 'Auditorias internas', valor: formatarNumero(ind.linhas.filter(function (l) { return l.auditoria === 'SIM'; }).length), cap: 'Empresas com auditoria realizada' },
+{ label: 'Empresas com diagnóstico final', valor: formatarNumero(ind.totais.comDiagFinal), cap: 'Diagnóstico final registrado' },
+{ label: 'Média de não conformidades', valor: ind.qtdNC ? ind.ncMedia.toFixed(1).replace('.', ',') : '—', cap: 'Média por diagnóstico' },
+{ label: 'Pontuação máxima do programa', valor: ind.maxima ? formatarNumero(ind.maxima) : '—', cap: ind.maxima ? 'Referência para o percentual' : 'Selecione um programa' },
+{ label: 'Empresas acompanhadas', valor: formatarNumero(ind.escopo.empresas.length), cap: 'Empresas no escopo' }
+];
+var html = '';
+for (var i = 0; i < itens.length; i++) {
+html += '<div class="kpi" style="border-top-color:' + cores[i % 4] + '">' +
+'<div class="kpi-label">' + esc(itens[i].label) + '</div>' +
+'<div class="kpi-value">' + esc(itens[i].valor) + '</div>' +
+'<div class="kpi-cap">' + esc(itens[i].cap) + '</div></div>';
+}
+document.getElementById('kpiGrid').innerHTML = html;
+}
+function renderizarBarras(elId, dados, cor, vazio) {
+var el = document.getElementById(elId);
+var chaves = Object.keys(dados);
+if (!chaves.length) { el.innerHTML = '<p class="empty-msg">' + esc(vazio) + '</p>'; return; }
+var max = 0;
+for (var i = 0; i < chaves.length; i++) if (dados[chaves[i]] > max) max = dados[chaves[i]];
+var html = '';
+for (var j = 0; j < chaves.length; j++) {
+var v = dados[chaves[j]];
+var pct = max ? Math.round((v / max) * 100) : 0;
+html += '<div class="bar-row"><div class="bar-label" title="' + esc(chaves[j]) + '">' + esc(chaves[j]) + '</div>' +
+'<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + cor + '"></div></div>' +
+'<div class="bar-val">' + v + '</div></div>';
+}
+el.innerHTML = html;
+}
+function renderizarGraficoEventos(ind) {
+renderizarBarras('chartEventos', ind.eventos, '#004A87', 'Nenhuma presença registrada no escopo selecionado.');
+}
+function renderizarGraficoConsultorias(ind) {
+renderizarBarras('chartConsultorias', ind.consPorEmp, '#00A0E4', 'Nenhuma consultoria registrada no escopo selecionado.');
+}
+function renderizarGraficoDiagnosticos(ind) {
+var el = document.getElementById('chartDiagnosticos');
+var r = ind.resultados;
+var itens = [
+{ k: '1,0', v: r['1,0'], c: '#2E7D5B' },
+{ k: '0,8', v: r['0,8'], c: '#E08A3C' },
+{ k: '0,0', v: r['0,0'], c: '#B3453A' },
+{ k: 'Vazio', v: r['Vazio'], c: '#9AA5A0' }
+];
+var max = 0;
+for (var i = 0; i < itens.length; i++) if (itens[i].v > max) max = itens[i].v;
+if (!max) { el.innerHTML = '<p class="empty-msg">Nenhum diagnóstico registrado no escopo selecionado.</p>'; return; }
+var html = '';
+for (var j = 0; j < itens.length; j++) {
+var pct = Math.round((itens[j].v / max) * 100);
+html += '<div class="bar-row"><div class="bar-label">' + itens[j].k + '</div>' +
+'<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + itens[j].c + '"></div></div>' +
+'<div class="bar-val">' + itens[j].v + '</div></div>';
+}
+el.innerHTML = html;
+}
+function badgeResultado(v) {
+if (v === '1,0' || v === '1.0') return '<span class="badge b-verde">' + v + '</span>';
+if (v === '0,8' || v === '0.8') return '<span class="badge b-ambar">' + v + '</span>';
+if (v === '0,0' || v === '0.0') return '<span class="badge b-verm">' + v + '</span>';
+return '<span class="badge b-cinza">—</span>';
+}
+function badgeAuditoria(v) {
+if (v === 'SIM') return '<span class="badge b-verde">SIM</span>';
+if (v === 'NÃO') return '<span class="badge b-verm">NÃO</span>';
+return '<span class="badge b-cinza">—</span>';
+}
+function badgeFaixa(f) {
+if (f === 'QUALIFICADA') return '<span class="badge b-verde">QUALIFICADA</span>';
+if (f === 'RECOMENDADA MEDIANTE AJUSTES') return '<span class="badge b-ambar">RECOMENDADA MEDIANTE AJUSTES</span>';
+if (f === 'NÃO RECOMENDADA') return '<span class="badge b-verm">NÃO RECOMENDADA</span>';
+return '<span class="badge b-cinza">—</span>';
+}
+function renderizarTabelaResumo(ind) {
+var wrap = document.getElementById('tabelaWrap');
+if (!ind.linhas.length) {
+wrap.innerHTML = '<div class="empty-state"><p>Nenhuma empresa encontrada para os filtros selecionados.</p>' +
+'<button type="button" class="btn-primary" onclick="limparFiltros()">Limpar filtros</button></div>';
+return;
+}
+var t = ind.totais;
+var html = '<table class="resumo"><thead><tr>' +
+'<th>Empresa</th><th>Turma</th><th>Programa</th><th class="num">Presenças</th><th class="num">Consultorias</th>' +
+'<th class="num">Diagnósticos</th><th>Resultado do diagnóstico final</th><th>Auditoria</th>' +
+'<th class="num">Pontuação</th><th class="num">% do máximo</th><th>Faixa</th></tr></thead><tbody>';
+for (var i = 0; i < ind.linhas.length; i++) {
+var l = ind.linhas[i];
+html += '<tr><td>' + esc(l.empresa) + '</td><td>' + esc(l.turma) + '</td><td>' + esc(l.programa) + '</td>' +
+'<td class="num">' + l.presencas + '</td><td class="num">' + l.consultorias + '</td><td class="num">' + l.diagnosticos + '</td>' +
+'<td>' + badgeResultado(l.resFinal) + '</td><td>' + badgeAuditoria(l.auditoria) + '</td>' +
+'<td class="num">' + formatarNumero(l.pontuacao) + (l.estimativa ? '*' : '') + '</td>' +
+'<td class="num">' + (l.pct === null ? '—' : l.pct.toFixed(1).replace('.', ',') + '%') + '</td>' +
+'<td>' + badgeFaixa(l.faixa) + '</td></tr>';
+}
+var somaPct = ind.maxima && t.pontuacao !== undefined ? ((t.pontuacao / (ind.maxima * ind.linhas.length)) * 100) : null;
+html += '</tbody><tfoot><tr><td>Total</td><td></td><td></td>' +
+'<td class="num">' + t.presencas + '</td><td class="num">' + t.consultorias + '</td><td class="num">' + t.diagnosticos + '</td>' +
+'<td></td><td></td><td class="num">' + formatarNumero(t.pontuacao) + '</td>' +
+'<td class="num">' + (somaPct === null ? '—' : somaPct.toFixed(1).replace('.', ',') + '%') + '</td><td></td></tr></tfoot></table>';
+wrap.innerHTML = html;
+}
+function atualizarContexto(ind) {
+var progNome = 'Todos os programas';
+if (FILTRO.programa) {
+var p = obterProgramaPorCod(FILTRO.programa);
+progNome = p ? p.cod + ' — ' + p.nome : FILTRO.programa;
+}
+var turmaNome = FILTRO.turma ? FILTRO.turma : 'todas as turmas';
+document.getElementById('contextLine').textContent = 'Exibindo: ' + progNome + ' · ' + turmaNome + ' · ' + ind.escopo.empresas.length + ' empresas';
+var banner = document.getElementById('bannerLive');
+var txt = '';
+if (ind.maxima) txt = 'Pontuação máxima do programa: ' + formatarNumero(ind.maxima) + ' pontos.';
+document.getElementById('bannerText').textContent = txt;
+if (txt) banner.classList.add('show'); else banner.classList.remove('show');
+}
+function renderizarTudo() {
+var ind = calcularIndicadores();
+atualizarContexto(ind);
+var vazioProg = document.getElementById('emptyPrograma');
+var vazioTurma = document.getElementById('emptyTurma');
+var filtros = document.getElementById('filtrosBox');
+vazioProg.classList.toggle('hidden', DADOS.programas.length > 0);
+filtros.classList.toggle('hidden', DADOS.programas.length === 0);
+var temTurmaAtiva = DADOS.turmas.length > 0;
+vazioTurma.classList.toggle('hidden', !(DADOS.programas.length > 0 && !temTurmaAtiva));
+renderizarKPIs(ind);
+renderizarGraficoEventos(ind);
+renderizarGraficoConsultorias(ind);
+renderizarGraficoDiagnosticos(ind);
+renderizarTabelaResumo(ind);
+renderizarComparativoTurmas();
+}
+function obterTurmasComparativo() {
+var lista = [];
+for (var i = 0; i < DADOS.turmas.length; i++) {
+var t = DADOS.turmas[i];
+if (FILTRO.programa && t.programaCod !== FILTRO.programa) continue;
+lista.push(t);
+}
+return lista;
+}
+function calcularMetricasTurma(idTurma) {
+var turma = null;
+for (var i = 0; i < DADOS.turmas.length; i++) if (DADOS.turmas[i].id === idTurma) turma = DADOS.turmas[i];
+var progCod = turma ? turma.programaCod : '';
+var maxima = obterPontuacaoMaxima(progCod);
+var empresas = [];
+for (var j = 0; j < DADOS.empresas.length; j++) {
+var e = DADOS.empresas[j];
+if (e.turma !== idTurma) continue;
+var pres = registrosDaEmpresa(DADOS.presencas, e.nome).length;
+var cons = registrosDaEmpresa(DADOS.consultorias, e.nome).length;
+var diag = registrosDaEmpresa(DADOS.diagnosticos, e.nome).length;
+var tem = e.pontuacao !== undefined && e.pontuacao !== null && e.pontuacao !== '';
+var pont = tem ? Number(e.pontuacao) : (pres * 10 + cons * 25 + diag * 50);
+empresas.push({ nome: e.nome, turma: e.turma, programa: e.programa, presencas: pres, consultorias: cons, diagnosticos: diag, pontuacao: pont, temPontuacao: tem, pct: maxima ? (pont / maxima) * 100 : null, faixa: calcularFaixa(pont, maxima) });
+}
+var comPont = empresas.filter(function (x) { return x.temPontuacao; });
+var media = null, pctMedio = null;
+if (comPont.length) {
+var soma = 0, somaPct = 0, temPct = false;
+for (var k = 0; k < comPont.length; k++) { soma += comPont[k].pontuacao; if (comPont[k].pct !== null) { somaPct += comPont[k].pct; temPct = true; } }
+media = soma / comPont.length;
+pctMedio = temPct ? somaPct / comPont.length : null;
+}
+var reg = { presencas: 0, consultorias: 0, diagnosticos: 0, auditorias: 0 };
+for (var m = 0; m < empresas.length; m++) { reg.presencas += empresas[m].presencas; reg.consultorias += empresas[m].consultorias; reg.diagnosticos += empresas[m].diagnosticos; }
+for (var n = 0; n < DADOS.auditorias.length; n++) {
+for (var q = 0; q < empresas.length; q++) if (DADOS.auditorias[n] && DADOS.auditorias[n].empresa === empresas[q].nome) reg.auditorias++;
+}
+return {
+id: idTurma, programa: progCod, programaNome: turma && obterProgramaPorCod(progCod) ? obterProgramaPorCod(progCod).nome : progCod,
+empresas: empresas, numEmpresas: empresas.length, registros: reg,
+totalRegistros: reg.presencas + reg.consultorias + reg.diagnosticos + reg.auditorias,
+media: media, pctMedio: pctMedio, faixa: obterFaixaPredominante(empresas), melhor: obterMelhorEmpresa(empresas)
+};
+}
+function obterFaixaPredominante(listaEmpresas) {
+var cont = { 'QUALIFICADA': 0, 'RECOMENDADA MEDIANTE AJUSTES': 0, 'NÃO RECOMENDADA': 0 };
+var ordem = ['NÃO RECOMENDADA', 'RECOMENDADA MEDIANTE AJUSTES', 'QUALIFICADA'];
+for (var i = 0; i < listaEmpresas.length; i++) if (cont.hasOwnProperty(listaEmpresas[i].faixa)) cont[listaEmpresas[i].faixa]++;
+var melhor = null, qtd = -1;
+for (var j = 0; j < ordem.length; j++) {
+if (cont[ordem[j]] >= qtd && cont[ordem[j]] > 0) { if (cont[ordem[j]] > qtd || melhor === null) { melhor = ordem[j]; qtd = cont[ordem[j]]; } }
+}
+return melhor || '—';
+}
+function obterMelhorEmpresa(listaEmpresas) {
+var melhor = null;
+for (var i = 0; i < listaEmpresas.length; i++) {
+if (!listaEmpresas[i].temPontuacao) continue;
+if (!melhor || listaEmpresas[i].pontuacao > melhor.pontuacao) melhor = listaEmpresas[i];
+}
+return melhor ? melhor.nome + ' (' + formatarNumero(melhor.pontuacao) + ')' : '—';
+}
+function badgeFaixaCmp(f) { return badgeFaixa(f); }
+function renderizarComparativoTurmas() {
+var cont = document.getElementById('cmpConteudo');
+if (!cont) return;
+var turmas = obterTurmasComparativo();
+if (!turmas.length) { cont.innerHTML = ''; document.getElementById('secComparativo').classList.add('hidden'); return; }
+document.getElementById('secComparativo').classList.remove('hidden');
+if (turmas.length < 2) {
+cont.innerHTML = '<p class="empty-msg">Este programa possui apenas uma turma ativa. Ative uma segunda turma para habilitar o comparativo.</p>';
+return;
+}
+var metricas = [];
+for (var i = 0; i < turmas.length; i++) metricas.push(calcularMetricasTurma(turmas[i].id));
+var comMedia = metricas.filter(function (x) { return x.media !== null; });
+var max = 0, min = null, melhorId = null, piorId = null, todasIguais = true, primeiro = comMedia.length ? comMedia[0].media : null;
+for (var a = 0; a < comMedia.length; a++) {
+if (comMedia[a].media !== primeiro) todasIguais = false;
+if (comMedia[a].media > max) { max = comMedia[a].media; melhorId = comMedia[a].id; }
+if (min === null || comMedia[a].media < min) { min = comMedia[a].media; piorId = comMedia[a].id; }
+}
+if (todasIguais) { melhorId = null; piorId = null; }
+var html = '<h3 class="mono" style="font-size:13px;margin-bottom:10px">Pontuação média por turma</h3><div class="cmp-bars">';
+if (!comMedia.length) html += '<p class="empty-msg">Sem pontuação registrada para comparar.</p>';
+else for (var b = 0; b < comMedia.length; b++) {
+var pct = max ? Math.round((comMedia[b].media / max) * 100) : 0;
+html += '<div class="bar-row"><div class="bar-label">' + esc(comMedia[b].id) + '</div><div class="bar-track"><div class="bar-fill ' + (comMedia[b].id === melhorId && !todasIguais ? 'melhor' : 'comum') + '" style="width:' + pct + '%"></div></div><div class="bar-val">' + formatarNumero(comMedia[b].media) + '</div></div>';
+}
+html += '</div><h3 class="mono" style="font-size:13px;margin-bottom:10px">Volume de registros por turma</h3><div class="cmp-bars">';
+var maxVol = 0;
+for (var c = 0; c < metricas.length; c++) if (metricas[c].totalRegistros > maxVol) maxVol = metricas[c].totalRegistros;
+for (var d = 0; d < metricas.length; d++) {
+var pv = maxVol ? Math.round((metricas[d].totalRegistros / maxVol) * 100) : 0;
+html += '<div class="bar-row"><div class="bar-label">' + esc(metricas[d].id) + '</div><div class="bar-track"><div class="bar-fill volume" style="width:' + pv + '%"></div></div><div class="bar-val">' + metricas[d].totalRegistros + '</div></div>';
+}
+html += '</div><div class="table-wrap"><table class="comparativo"><thead><tr><th>Turma</th><th>Programa</th><th class="num">Empresas</th><th class="num">Presenças</th><th class="num">Consultorias</th><th class="num">Diagnósticos</th><th class="num">Auditorias</th><th class="num">Pontuação média</th><th class="num">% médio do máximo</th><th>Faixa predominante</th><th>Melhor empresa</th></tr></thead><tbody>';
+for (var e = 0; e < metricas.length; e++) {
+var m = metricas[e];
+var cls = m.id === melhorId ? ' class="cmp-row-best"' : '';
+var tag = '';
+if (m.id === melhorId) tag = ' <span class="badge b-verde cmp-tag">Melhor desempenho</span>';
+else if (m.id === piorId) tag = ' <span class="badge b-ambar cmp-tag">Atenção</span>';
+html += '<tr' + cls.replace('class="', 'class="') + '><td>' + esc(m.id) + tag + '</td><td>' + esc(m.programaNome) + '</td>' +
+'<td class="num">' + m.numEmpresas + '</td><td class="num">' + m.registros.presencas + '</td><td class="num">' + m.registros.consultorias + '</td><td class="num">' + m.registros.diagnosticos + '</td><td class="num">' + m.registros.auditorias + '</td>' +
+'<td class="num">' + (m.media === null ? '—' : m.media.toFixed(1).replace('.', ',')) + '</td>' +
+'<td class="num">' + (m.pctMedio === null ? '—' : m.pctMedio.toFixed(1).replace('.', ',') + '%') + '</td>' +
+'<td>' + badgeFaixa(m.faixa) + '</td><td>' + esc(m.melhor) + '</td></tr>';
+}
+html += '</tbody></table></div>';
+var det = [];
+for (var f = 0; f < metricas.length; f++) for (var g = 0; g < metricas[f].empresas.length; g++) det.push(metricas[f].empresas[g]);
+det.sort(function (x, y) { if (x.turma !== y.turma) return x.turma < y.turma ? -1 : 1; return y.pontuacao - x.pontuacao; });
+html += '<details class="cmp-detail"><summary>Ver detalhamento por empresa</summary><div class="table-wrap"><table class="comparativo" style="min-width:900px"><thead><tr><th>Turma</th><th>Empresa</th><th class="num">Presenças</th><th class="num">Consultorias</th><th class="num">Diagnósticos</th><th class="num">Pontuação</th><th class="num">% do máximo</th><th>Faixa</th></tr></thead><tbody>';
+for (var h = 0; h < det.length; h++) {
+var x = det[h];
+html += '<tr><td>' + esc(x.turma) + '</td><td>' + esc(x.nome) + '</td><td class="num">' + x.presencas + '</td><td class="num">' + x.consultorias + '</td><td class="num">' + x.diagnosticos + '</td><td class="num">' + formatarNumero(x.pontuacao) + '</td><td class="num">' + (x.pct === null ? '—' : x.pct.toFixed(1).replace('.', ',') + '%') + '</td><td>' + badgeFaixa(x.faixa) + '</td></tr>';
+}
+html += '</tbody></table></div></details><div class="cmp-actions"><button type="button" class="btn-secondary" onclick="exportarComparativoCSV()">Exportar comparativo em CSV</button></div>';
+cont.innerHTML = html;
+}
+function exportarComparativoCSV() {
+try {
+var turmas = obterTurmasComparativo();
+var cab = ['Turma', 'Programa', 'Empresas', 'Presenças', 'Consultorias', 'Diagnósticos', 'Auditorias', 'Pontuação média', '% médio do máximo', 'Faixa predominante', 'Melhor empresa'];
+var linhas = [cab.join(';')];
+for (var i = 0; i < turmas.length; i++) {
+var m = calcularMetricasTurma(turmas[i].id);
+var campos = [m.id, m.programaNome, m.numEmpresas, m.registros.presencas, m.registros.consultorias, m.registros.diagnosticos, m.registros.auditorias,
+m.media === null ? '—' : m.media.toFixed(1).replace('.', ','), m.pctMedio === null ? '—' : m.pctMedio.toFixed(1).replace('.', ',') + '%', m.faixa, m.melhor];
+var esc2 = [];
+for (var c = 0; c < campos.length; c++) esc2.push('"' + String(campos[c]).replace(/"/g, '""') + '"');
+linhas.push(esc2.join(';'));
+}
+var blob = new Blob(['\uFEFF' + linhas.join('\n')], { type: 'text/csv;charset=utf-8;' });
+var url = URL.createObjectURL(blob);
+var a = document.createElement('a');
+a.href = url; a.download = 'prodfor_comparativo_turmas.csv';
+document.body.appendChild(a); a.click(); document.body.removeChild(a);
+setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+toast('Comparativo exportado em CSV.');
+} catch (e) { toast('Falha ao exportar: ' + e.message, 'err'); }
+}
+function exportarTudo() {
+try {
+var ind = calcularIndicadores();
+var cab = ['Empresa', 'Turma', 'Programa', 'Presenças', 'Consultorias', 'Diagnósticos', 'Resultado do diagnóstico final', 'Auditoria', 'Pontuação', 'Estimativa', '% do máximo', 'Faixa'];
+var linhas = [cab.join(';')];
+for (var i = 0; i < ind.linhas.length; i++) {
+var l = ind.linhas[i];
+var campos = [l.empresa, l.turma, l.programa, l.presencas, l.consultorias, l.diagnosticos, l.resFinal, l.auditoria, l.pontuacao, l.estimativa ? 'SIM' : 'NÃO', l.pct === null ? '—' : l.pct.toFixed(1).replace('.', ','), l.faixa];
+var escapados = [];
+for (var c = 0; c < campos.length; c++) escapados.push('"' + String(campos[c]).replace(/"/g, '""') + '"');
+linhas.push(escapados.join(';'));
+}
+var blob = new Blob(['\uFEFF' + linhas.join('\n')], { type: 'text/csv;charset=utf-8;' });
+var url = URL.createObjectURL(blob);
+var a = document.createElement('a');
+a.href = url;
+a.download = 'prodfor_visao_geral.csv';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+toast('CSV consolidado exportado com ' + ind.linhas.length + ' empresas.');
+} catch (e) { toast('Falha ao exportar: ' + e.message, 'err'); }
+}
+
+// ---------- app ----------
+function exibirApp() {
+document.getElementById('loginView').style.display = 'none';
+document.getElementById('appView').style.display = 'flex';
+var nome = DADOS.sessao && DADOS.sessao.nome ? DADOS.sessao.nome : 'Coordenação PRODFOR';
+var perfil = DADOS.sessao && DADOS.sessao.perfil ? DADOS.sessao.perfil : 'coordenação';
+document.getElementById('sideNome').textContent = nome;
+document.getElementById('sidePerfil').textContent = perfil;
+preencherFiltros();
+renderizarTudo();
+}
+function iniciarRodape() {
+document.getElementById('footerDate').textContent = textoPadraoHoje();
+}
+
+// ---------- boot ----------
+(function boot() {
+try {
+limparErro();
+carregarDados();
+garantirUsuarioPadrao();
+iniciarRodape();
+if (DADOS.sessao && DADOS.sessao.id) {
+exibirApp();
+} else {
+document.getElementById('loginView').style.display = 'flex';
+document.getElementById('appView').style.display = 'none';
+}
+} catch (e) {
+mostrarErro('Falha na inicialização: ' + e.message);
+document.getElementById('loginView').style.display = 'flex';
+}
+})();
+</script>
+</body>
+</html>

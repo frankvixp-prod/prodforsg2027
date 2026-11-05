@@ -1,0 +1,2648 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRODFOR — Registros Operacionais</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Skip artifact shell — fixed styles served beside every artifact.
+   Tokens, utilities and components (basecoat 1.0 markup, no CDN); artifacts
+   override --accent for their own identity. */
+:root {
+  color-scheme: light dark;
+  --accent: #2563eb;
+  --accent-contrast: #ffffff;
+  --accent-text: color-mix(in srgb, var(--accent) 72%, #000);
+  --bg: #f8f9fb;
+  --surface: #ffffff;
+  --text: #14171f;
+  --text-muted: #5b6472;
+  --border: rgba(20, 23, 31, 0.10);
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(20, 23, 31, 0.08);
+  --space: 16px;
+  --success: #0a7a35;
+  --danger: #c0262d;
+  --warning: #8a5300;
+}
+/* Theme resolution. Without data-theme the viewer's system preference decides,
+   as it always did. With it, the artifact's own choice wins in BOTH directions:
+   a page that hardcodes one palette must not be handed the opposite set of
+   tokens by the machine it happens to be opened on. The dark values appear
+   twice because a media query cannot be folded into a selector list.
+   The attribute sits inside :where() so these blocks keep the specificity of a
+   bare :root — the page's own <style> is linked after this file and must go on
+   overriding any token it wants, exactly as it could before. */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    --accent-text: color-mix(in srgb, var(--accent) 78%, #fff);
+    --bg: #101318;
+    --surface: #181c23;
+    --text: #eef1f6;
+    --text-muted: #9aa4b2;
+    --border: rgba(238, 241, 246, 0.12);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --success: #4ade80;
+    --danger: #f87171;
+    --warning: #fbbf24;
+  }
+}
+:root:where([data-theme="dark"]) {
+  color-scheme: dark;
+  --accent-text: color-mix(in srgb, var(--accent) 78%, #fff);
+  --bg: #101318;
+  --surface: #181c23;
+  --text: #eef1f6;
+  --text-muted: #9aa4b2;
+  --border: rgba(238, 241, 246, 0.12);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --success: #4ade80;
+  --danger: #f87171;
+  --warning: #fbbf24;
+}
+:root:where([data-theme="light"]) { color-scheme: light; }
+/* Pages generated before the shell had its own components still link the
+   basecoat CDN, which reads its own tokens and switches theme only on a
+   .dark class. Bridged to the shell's, whatever of it those pages use takes
+   the page's accent and follows the declared theme. Its --accent token is a
+   hover tint, renamed in its theme as --color-accent; the shell's --accent is
+   the brand colour, so the tint is derived from it here. */
+:root {
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface);
+  --popover-foreground: var(--text);
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-contrast);
+  --secondary: color-mix(in srgb, var(--text) 7%, var(--surface));
+  --secondary-foreground: var(--text);
+  --muted: color-mix(in srgb, var(--text) 5%, var(--surface));
+  --muted-foreground: var(--text-muted);
+  --color-accent: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  --color-accent-foreground: var(--text);
+  --destructive: var(--danger);
+  --input: var(--border);
+  --ring: var(--accent);
+}
+* { box-sizing: border-box; }
+/* The reset the pages were written against: they all linked basecoat, which
+   ships Tailwind's. Its components now live here, so the reset does too. */
+*, ::before, ::after, ::backdrop { margin: 0; padding: 0; border: 0 solid; }
+/* Preflight's rule too: without it a component class that sets display
+   (.alert, .card, .btn…) beats the hidden attribute and shows the element. */
+[hidden]:where(:not([hidden="until-found"])) { display: none !important; }
+.hidden { display: none !important; }
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+a { color: inherit; text-decoration: inherit; }
+b, strong { font-weight: bolder; }
+ol, ul, menu { list-style: none; }
+svg, video, canvas, iframe { display: block; vertical-align: middle; }
+button, input, select, textarea { color: inherit; background-color: transparent; border-radius: 0; }
+table { border-collapse: collapse; }
+hr { height: 0; color: inherit; border-top-width: 1px; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+
+.shell-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.shell-section { padding: calc(var(--space) * 2) 0; }
+.shell-grid { display: grid; gap: var(--space); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.shell-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: var(--space); }
+.shell-footer { padding: 24px 0 40px; color: var(--text-muted); font-size: 13px; }
+
+.shell-hero { padding: calc(var(--space) * 3) 0 calc(var(--space) * 2); }
+.shell-hero h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.15; margin: 0 0 10px; text-wrap: balance; }
+.shell-hero p { color: var(--text-muted); max-width: 60ch; margin: 0; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space);
+}
+
+.kpi { display: flex; flex-direction: column; gap: 4px; }
+.kpi .kpi-value { font-size: clamp(22px, 2.3vw, 28px); font-weight: 650; line-height: 1.1; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.kpi .kpi-label { font-size: 13px; color: var(--text-muted); }
+.kpi .kpi-delta { font-size: 12.5px; font-weight: 600; }
+.kpi .kpi-delta.up { color: var(--success); }
+.kpi .kpi-delta.down { color: var(--danger); }
+
+table.shell-table { border-collapse: collapse; width: 100%; font-size: 14px; }
+table.shell-table th {
+  text-align: left; font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--text-muted); font-weight: 600;
+}
+table.shell-table th, table.shell-table td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--border); }
+table.shell-table td.num, table.shell-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.shell-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+
+.chart-box { width: 100%; min-height: 220px; }
+.chart-box svg { width: 100%; height: auto; display: block; }
+.chart-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; margin-top: 12px; font-size: 12.5px; color: var(--text-muted); }
+.chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.chart-legend b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.muted { color: var(--text-muted); }
+.accent { color: var(--accent-text); }
+.shell-badge, .eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent-text);
+}
+/* A pill keeps its content width inside flex and grid columns, which would
+   otherwise stretch it across the card; a centred parent still centres it. */
+.shell-badge, .eyebrow, .badge { width: fit-content; max-width: 100%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .shell-fade { animation: shell-fade 400ms ease both; }
+  @keyframes shell-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+
+/* Layout and type utilities: what the pages kept spelling in style="".
+   Spacing and type sizes follow Tailwind's scale; there is no Tailwind. */
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.stack { display: flex; flex-direction: column; gap: var(--space); }
+.between { justify-content: space-between; }
+.grow { flex: 1 1 0; min-width: 0; }
+.cols-2, .cols-3, .cols-4, .cols-5 { display: grid; gap: var(--space); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 720px) {
+  .cols-2, .cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cols-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1000px) { .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; }
+.m-0 { margin: 0; }
+.mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
+.mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-6 { margin-bottom: 24px; }
+.p-2 { padding: 8px; } .p-3 { padding: 12px; } .p-4 { padding: 16px; } .p-6 { padding: 24px; }
+.text-xs { font-size: 12px; } .text-sm { font-size: 14px; } .text-base { font-size: 16px; }
+.text-lg { font-size: 18px; } .text-xl { font-size: 20px; line-height: 1.35; }
+.text-2xl { font-size: 24px; line-height: 1.25; } .text-3xl { font-size: 30px; line-height: 1.2; }
+.font-medium { font-weight: 500; } .font-semibold { font-weight: 600; } .font-bold { font-weight: 700; }
+.text-right { text-align: right; } .text-center { text-align: center; }
+.nowrap { white-space: nowrap; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+.w-full { width: 100%; }
+.text-success { color: var(--success); } .text-danger { color: var(--danger); } .text-warning { color: var(--warning); }
+
+/* Components, with basecoat 1.0 markup (variants and sizes are data
+   attributes) and the shell tokens, so a page needs neither component CSS
+   nor a CSS framework. An older page that also links basecoat gets these
+   rules after it, over the same properties. */
+button, input, select, textarea { font: inherit; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 36px; padding: 0 14px; border: 1px solid transparent; border-radius: calc(var(--radius) - 2px);
+  background: var(--accent); color: var(--accent-contrast);
+  font-size: 14px; font-weight: 500; line-height: 1; white-space: nowrap; text-decoration: none; cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.btn:hover { background: color-mix(in srgb, var(--accent) 86%, #000); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+.btn[data-variant="secondary"] { background: color-mix(in srgb, var(--text) 8%, var(--surface)); color: var(--text); }
+.btn[data-variant="secondary"]:hover { background: color-mix(in srgb, var(--text) 14%, var(--surface)); }
+.btn[data-variant="outline"] { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn[data-variant="ghost"] { background: transparent; color: var(--text); }
+.btn[data-variant="outline"]:hover, .btn[data-variant="ghost"]:hover { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.btn[data-variant="destructive"] { background: var(--danger); color: var(--bg); }
+.btn[data-variant="destructive"]:hover { background: color-mix(in srgb, var(--danger) 86%, var(--text)); }
+.btn[data-variant="link"] { height: auto; padding: 0; background: none; color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+.btn[data-size="sm"] { height: 30px; padding: 0 10px; font-size: 13px; }
+.btn[data-size="lg"] { height: 42px; padding: 0 20px; font-size: 15px; }
+.btn[data-size="icon"] { width: 36px; padding: 0; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+  border: 1px solid transparent; border-radius: 999px; background: var(--accent); color: var(--accent-contrast);
+  font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap;
+}
+.badge[data-variant="secondary"] { background: color-mix(in srgb, var(--text) 8%, var(--surface)); color: var(--text); }
+.badge[data-variant="outline"] { background: transparent; color: var(--text); border-color: var(--border); }
+.badge[data-variant="destructive"] { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); color: var(--danger); }
+
+.alert {
+  display: grid; gap: 4px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); font-size: 14px;
+}
+.alert h2, .alert h3 { margin: 0; font-size: 14px; font-weight: 600; }
+.alert p, .alert section { margin: 0; color: var(--text-muted); }
+.alert[data-variant="destructive"] { border-color: color-mix(in srgb, var(--danger) 45%, var(--border)); background: color-mix(in srgb, var(--danger) 7%, var(--surface)); color: var(--danger); }
+
+.card {
+  display: flex; flex-direction: column; gap: 16px; padding: 20px 0;
+  border: 1px solid var(--border); border-radius: calc(var(--radius) + 2px);
+  background: var(--surface); color: var(--text); box-shadow: var(--shadow);
+}
+.card > header, .card > section, .card > footer { padding: 0 20px; }
+.card > header { display: grid; gap: 4px; }
+.card > header h2, .card > header h3 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; }
+.card > header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+.card > footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+.input {
+  width: 100%; min-height: 36px; padding: 6px 12px; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px);
+  background: var(--surface); color: var(--text); font-size: 14px;
+}
+textarea.input { min-height: 84px; resize: vertical; }
+.input::placeholder { color: var(--text-muted); }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 14px; font-weight: 500; }
+.field [role="alert"] { color: var(--danger); font-size: 13px; }
+
+dialog.dialog {
+  width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 32px); margin: auto; padding: 0;
+  border: 1px solid var(--border); border-radius: calc(var(--radius) + 4px);
+  background: var(--surface); color: var(--text); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+dialog.dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+dialog.dialog > div { display: grid; gap: 16px; padding: 24px; }
+dialog.dialog header { display: grid; gap: 4px; }
+dialog.dialog header h2 { margin: 0; font-size: 18px; font-weight: 600; }
+dialog.dialog header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+dialog.dialog footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+.tabs { display: grid; gap: 12px; }
+.tabs > [role="tablist"] {
+  display: inline-flex; gap: 4px; width: fit-content; max-width: 100%; padding: 4px; overflow-x: auto;
+  border-radius: var(--radius); background: color-mix(in srgb, var(--text) 6%, var(--surface));
+}
+.tabs [role="tab"] {
+  padding: 6px 12px; border: 0; border-radius: calc(var(--radius) - 4px); background: transparent;
+  color: var(--text-muted); font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer;
+}
+.tabs [role="tab"][aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.tabs [role="tabpanel"][hidden] { display: none; }
+
+.accordion > details { border-bottom: 1px solid var(--border); }
+.accordion > details > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 0; font-weight: 500; list-style: none; cursor: pointer;
+}
+.accordion > details > summary::-webkit-details-marker { display: none; }
+.accordion > details > summary::after { content: "+"; color: var(--text-muted); font-size: 18px; line-height: 1; }
+.accordion > details[open] > summary::after { content: "\2212"; }
+.accordion > details > :not(summary) { margin: 0 0 14px; color: var(--text-muted); }
+
+.toaster {
+  position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; flex-direction: column-reverse; gap: 8px;
+  width: min(360px, calc(100vw - 32px)); pointer-events: none;
+}
+.toaster .toast { pointer-events: auto; transition: opacity 200ms ease, transform 200ms ease; }
+.toaster .toast[aria-hidden="true"] { opacity: 0; transform: translateY(8px); }
+.toaster .toast-content {
+  padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); font-size: 13px;
+}
+.toaster .toast-content h2 { margin: 0 0 2px; font-size: 14px; font-weight: 600; }
+.toaster .toast-content p { margin: 0; color: var(--text-muted); }
+
+/* skipUI building blocks. */
+.skip-table-search { max-width: 320px; margin-bottom: 12px; }
+.skip-table-wrap { overflow-x: auto; }
+table.shell-table th[data-sort] { cursor: pointer; user-select: none; }
+table.shell-table th[aria-sort="ascending"]::after { content: " \25B2"; font-size: 9px; }
+table.shell-table th[aria-sort="descending"]::after { content: " \25BC"; font-size: 9px; }
+table.shell-table td.skip-table-empty { color: var(--text-muted); text-align: center; padding: 24px 0; }
+.skip-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: 13px; color: var(--text-muted); }
+.toaster .toast[data-type="success"] .toast-content { border-left: 3px solid var(--success); }
+.toaster .toast[data-type="error"] .toast-content { border-left: 3px solid var(--danger); }
+
+</style>
+<script>
+/* Skip artifact shell — fixed helpers served beside every artifact. */
+(function () {
+  "use strict";
+
+  var fmt = {
+    num: function (v, opts) { return new Intl.NumberFormat("pt-BR", opts || {}).format(v); },
+    brl: function (v) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v); },
+    pct: function (v) { return new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 1 }).format(v); },
+    compact: function (v) { return new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(v); },
+    brlCompact: function (v) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", notation: "compact", maximumFractionDigits: 1 }).format(v); }
+  };
+
+  // axisLabels formats the five y-axis ticks in the unit the chart declared
+  // (percent, BRL or plain numbers), compact so long values never clip, with
+  // the fewest decimals that still print every tick exactly (1,5 mi, not 2 mi).
+  function axisLabels(format, ticks) {
+    function at(digits) {
+      var opts = { notation: "compact", maximumFractionDigits: digits };
+      if (format === "pct") opts = { style: "percent", maximumFractionDigits: digits };
+      else if (format === "brl") opts = { style: "currency", currency: "BRL", notation: "compact", maximumFractionDigits: digits };
+      var nf = new Intl.NumberFormat("pt-BR", opts);
+      return ticks.map(function (t) { return nf.format(t); });
+    }
+    for (var digits = 0; digits < 2; digits++) {
+      if (at(digits).join("|") === at(digits + 1).join("|")) return at(digits);
+    }
+    return at(2);
+  }
+
+  // yAxisPad formats the ticks and measures the left padding they need from
+  // the longest one; drawYAxis then draws the grid and the labels.
+  function yAxisPad(format, max) {
+    var labels = axisLabels(format, [0, max / 4, max / 2, (max * 3) / 4, max]);
+    var longest = labels.reduce(function (m, l) { return Math.max(m, l.length); }, 0);
+    return { labels: labels, padL: Math.max(40, Math.round(longest * 6.2) + 14) };
+  }
+  function drawYAxis(svg, axis, W, padR, padT, plotH) {
+    for (var g = 0; g <= 4; g++) {
+      var gy = padT + plotH - (plotH * g) / 4;
+      svg.appendChild(svgEl("line", { x1: axis.padL, y1: gy, x2: W - padR, y2: gy, stroke: "currentColor", "stroke-opacity": 0.08 }));
+      var lbl = svgEl("text", { x: axis.padL - 8, y: gy + 4, "text-anchor": "end", "font-size": 10, fill: mutedColor() });
+      lbl.textContent = axis.labels[g];
+      svg.appendChild(lbl);
+    }
+  }
+
+  // xLabelStep: show every k-th category label so labels never overlap, and
+  // always the last one (counted back from the end).
+  function xLabelStep(labels, step) {
+    var longest = labels.reduce(function (m, l) { return Math.max(m, String(l).length); }, 0);
+    return Math.max(1, Math.ceil((longest * 6.4 + 8) / Math.max(step, 1)));
+  }
+  function drawXLabel(svg, text, x, y, W, edgeGuard) {
+    var anchor = "middle";
+    var half = String(text).length * 3.2;
+    if (edgeGuard && x - half < 4) anchor = "start";
+    if (edgeGuard && x + half > W - 4) anchor = "end";
+    var tx = svgEl("text", { x: x, y: y, "text-anchor": anchor, "font-size": 11, fill: mutedColor() });
+    tx.textContent = text;
+    svg.appendChild(tx);
+  }
+  // categoryLines fits a bar's category name in its slot: one line, two lines
+  // split at a space, or cut with "…". A bar without its name can't be read, so
+  // categories are never skipped; null when the slot is too narrow for that.
+  function categoryLines(text, slot) {
+    var fit = Math.floor((slot - 6) / 6.4);
+    var s = String(text);
+    if (fit < 4) return null;
+    if (s.length <= fit) return [s];
+    var cut = function (t) { return t.length <= fit ? t : t.slice(0, fit - 1).trimEnd() + "…"; };
+    var best = -1;
+    for (var i = 0; i < s.length; i++) {
+      if (s[i] === " " && (best < 0 || Math.abs(s.length / 2 - i) < Math.abs(s.length / 2 - best))) best = i;
+    }
+    if (best < 0) return [cut(s)];
+    return [cut(s.slice(0, best)), cut(s.slice(best + 1))];
+  }
+  function legend(el, items) {
+    var box = document.createElement("div");
+    box.className = "chart-legend";
+    items.forEach(function (it) {
+      var row = document.createElement("span");
+      var dot = document.createElement("i");
+      dot.style.background = it.color;
+      row.appendChild(dot);
+      row.appendChild(document.createTextNode((it.label || "") + (it.value ? " " : "")));
+      if (it.value) {
+        var v = document.createElement("b");
+        v.textContent = it.value;
+        row.appendChild(v);
+      }
+      box.appendChild(row);
+    });
+    resolve(el).appendChild(box);
+  }
+  var seriesPalette = ["#1baf7a", "#eda100", "#e34948", "#4a3aa7", "#e87ba4", "#0ea5b7"];
+
+  // format accepts a function OR one of the fmt names ("num" | "brl" | "pct").
+  // A page's function may return nothing or throw: the chart prints its
+  // number instead of taking the rest of the page script down with it.
+  function coerceFormat(spec) {
+    if (typeof spec === "function") {
+      return function (v) {
+        try {
+          var out = spec(v);
+          return out == null ? "" : String(out);
+        } catch (e) {
+          return fmt.num(v);
+        }
+      };
+    }
+    if (typeof spec === "string" && fmt[spec]) return fmt[spec];
+    return function (v) { return fmt.num(v); };
+  }
+
+  function accent() {
+    return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2563eb";
+  }
+  function mutedColor() {
+    return getComputedStyle(document.documentElement).getPropertyValue("--text-muted").trim() || "#5b6472";
+  }
+  function svgEl(tag, attrs) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (var k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+  function frame(el, w, h) {
+    var svg = svgEl("svg", { viewBox: "0 0 " + w + " " + h, role: "img" });
+    el = resolve(el);
+    el.innerHTML = "";
+    el.appendChild(svg);
+    return svg;
+  }
+
+  // maxOf guards the axis scale: empty values would give -Infinity (truthy,
+  // so "|| 1" can't catch it) and a non-positive max would flip the chart.
+  // finite reads a chart value as a number, 0 when it is not one (NaN,
+  // Infinity, a stray string), so one bad value cannot blank the axis.
+  function finite(v) {
+    var n = +v;
+    return isFinite(n) ? n : 0;
+  }
+
+  function maxOf(values) {
+    var m = values.length ? Math.max.apply(null, values.map(finite)) : 0;
+    return m > 0 ? m : 1;
+  }
+
+  // labelsFor pads or trims the category names to the n points drawn: pages
+  // pass labels and values of different lengths, and one throw here loses
+  // every section the page renders after the chart.
+  function labelsFor(cfg, n) {
+    var out = [];
+    for (var i = 0; i < n; i++) out.push(cfg.labels && cfg.labels[i] != null ? String(cfg.labels[i]) : "");
+    return out;
+  }
+
+  // niceMax rounds the scale up so the four grid steps land on round values
+  // (1, 1.5, 2, 2.5, 3, 4, 5, 6 or 8 × 10^k) and the tick labels read exactly.
+  function niceMax(max) {
+    var raw = max / 4;
+    var mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var res = raw / mag;
+    var steps = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+    var nice = steps.filter(function (s) { return s >= res - 1e-9; })[0];
+    return nice * mag * 4;
+  }
+
+  // bar(el, {labels:[], values:[], color?, format?}) — vertical bar chart.
+  function bar(el, cfg) {
+    var W = 640, H = 280, padB = 30, padT = 12, padR = 12;
+    var max = niceMax(maxOf(cfg.values));
+    var axis = yAxisPad(cfg.format, max);
+    var svg = frame(el, W, H);
+    var n = cfg.values.length;
+    var labels = labelsFor(cfg, n);
+    var plotW = W - axis.padL - padR;
+    var step = plotW / n, bw = Math.min(step * 0.62, 64);
+    var names = labels.map(function (l) { return categoryLines(l, step); });
+    var named = names.every(Boolean);
+    if (named && names.some(function (l) { return l.length > 1; })) padB = 42;
+    var plotH = H - padT - padB;
+    var color = cfg.color || accent();
+    var f = coerceFormat(cfg.format);
+    var every = xLabelStep(labels, step);
+    drawYAxis(svg, axis, W, padR, padT, plotH);
+    cfg.values.forEach(function (v, i) {
+      var bh = Math.max(0, (finite(v) / max) * plotH);
+      var x = axis.padL + i * step + (step - bw) / 2;
+      var y = padT + plotH - bh;
+      var r = svgEl("rect", { x: x, y: y, width: bw, height: bh, rx: 4, fill: (cfg.colors && cfg.colors[i]) || color });
+      var t = svgEl("title", {});
+      t.textContent = labels[i] + ": " + f(v);
+      r.appendChild(t);
+      svg.appendChild(r);
+      if (named) {
+        names[i].forEach(function (text, li) {
+          drawXLabel(svg, text, x + bw / 2, padT + plotH + 18 + li * 13, W, false);
+        });
+      } else if ((n - 1 - i) % every === 0) {
+        drawXLabel(svg, labels[i], x + bw / 2, H - 10, W, false);
+      }
+    });
+  }
+
+  // line(el, {labels:[], values:[] | series:[{label, values, color?}], color?, format?})
+  // — one line, or several series on one scale with a legend under the chart.
+  function line(el, cfg) {
+    var W = 640, H = 280, padB = 30, padT = 12, padR = 16;
+    var series = cfg.series && cfg.series.length
+      ? cfg.series
+      : [{ label: "", values: cfg.values || [], color: cfg.color }];
+    var all = [];
+    series.forEach(function (s) { all = all.concat(s.values || []); });
+    var max = niceMax(maxOf(all));
+    var axis = yAxisPad(cfg.format, max);
+    var svg = frame(el, W, H);
+    var n = series.reduce(function (m, s) { return Math.max(m, (s.values || []).length); }, 0);
+    var labels = labelsFor(cfg, n);
+    var plotW = W - axis.padL - padR, plotH = H - padT - padB;
+    var f = coerceFormat(cfg.format);
+    drawYAxis(svg, axis, W, padR, padT, plotH);
+    var xs = labels.map(function (_, i) { return axis.padL + (n === 1 ? plotW / 2 : (plotW * i) / (n - 1)); });
+    var every = xLabelStep(labels, n > 1 ? plotW / (n - 1) : plotW);
+    labels.forEach(function (label, i) {
+      if ((n - 1 - i) % every === 0) drawXLabel(svg, label, xs[i], H - 10, W, true);
+    });
+    var colors = series.map(function (s, si) {
+      return s.color || (si === 0 ? (cfg.color || accent()) : seriesPalette[(si - 1) % seriesPalette.length]);
+    });
+    series.forEach(function (s, si) {
+      var color = colors[si];
+      var pts = (s.values || []).map(function (v, i) { return [xs[i], padT + plotH - (finite(v) / max) * plotH]; });
+      var d = pts.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" ");
+      svg.appendChild(svgEl("path", { d: d, fill: "none", stroke: color, "stroke-width": 2, "stroke-linejoin": "round" }));
+      pts.forEach(function (p, i) {
+        var c = svgEl("circle", { cx: p[0], cy: p[1], r: 3.5, fill: color });
+        var t = svgEl("title", {});
+        t.textContent = (s.label ? s.label + " · " : "") + labels[i] + ": " + f(s.values[i]);
+        c.appendChild(t);
+        svg.appendChild(c);
+      });
+    });
+    if (series.length > 1) {
+      legend(el, series.map(function (s, si) { return { label: s.label, color: colors[si] }; }));
+    }
+  }
+
+  // donut(el, {labels:[], values:[], colors?, format?, center?, centerLabel?, legend?})
+  // — donut with a short total in the centre (compact, in the declared unit)
+  // and, with legend: true, the labels and shares listed under it.
+  function donut(el, cfg) {
+    var W = 320, H = 280, cx = W / 2, cy = H / 2, R = 92, r = 58;
+    var svg = frame(el, W, H);
+    // At 100% of a wide container the donut outgrows the height pages give
+    // the box and spills over the next section: keep it at its own size.
+    svg.style.maxWidth = W + "px";
+    svg.style.margin = "0 auto";
+    var values = cfg.values.map(finite);
+    var labels = labelsFor(cfg, values.length);
+    var sum = values.reduce(function (a, b) { return a + b; }, 0);
+    var total = sum || 1;
+    var palette = cfg.colors || [accent()].concat(seriesPalette);
+    // The hover keeps the full value; the centre has room for a short one.
+    var full = coerceFormat(cfg.format);
+    var short = typeof cfg.format === "function" ? full : cfg.format === "brl" ? fmt.brlCompact : fmt.compact;
+    var a0 = -Math.PI / 2;
+    values.forEach(function (v, i) {
+      var a1 = a0 + (v / total) * Math.PI * 2;
+      var large = a1 - a0 > Math.PI ? 1 : 0;
+      var p = ["M", cx + R * Math.cos(a0), cy + R * Math.sin(a0),
+        "A", R, R, 0, large, 1, cx + R * Math.cos(a1), cy + R * Math.sin(a1),
+        "L", cx + r * Math.cos(a1), cy + r * Math.sin(a1),
+        "A", r, r, 0, large, 0, cx + r * Math.cos(a0), cy + r * Math.sin(a0), "Z"].join(" ");
+      var path = svgEl("path", { d: p, fill: palette[i % palette.length] });
+      var t = svgEl("title", {});
+      t.textContent = labels[i] + ": " + full(v) + " (" + fmt.pct(v / total) + ")";
+      path.appendChild(t);
+      svg.appendChild(path);
+      a0 = a1;
+    });
+    // A share chart has no total worth printing: without its own centre text
+    // the caption alone takes the middle.
+    var text = cfg.center != null ? String(cfg.center) : (cfg.format === "pct" ? "" : short(sum));
+    if (text) {
+      var size = text.length > 9 ? 14 : text.length > 7 ? 17 : 20;
+      var center = svgEl("text", { x: cx, y: cfg.centerLabel ? cy + 1 : cy + 6, "text-anchor": "middle", "font-size": size, "font-weight": 650, fill: "currentColor" });
+      center.textContent = text;
+      svg.appendChild(center);
+    }
+    if (cfg.centerLabel) {
+      var cap = svgEl("text", { x: cx, y: text ? cy + 19 : cy + 5, "text-anchor": "middle", "font-size": 11, fill: mutedColor() });
+      cap.textContent = cfg.centerLabel;
+      svg.appendChild(cap);
+    }
+    if (cfg.legend) {
+      legend(el, labels.map(function (label, i) {
+        return { label: label, color: palette[i % palette.length], value: fmt.pct(values[i] / total) };
+      }));
+    }
+  }
+
+  // ---- Page building blocks: what dashboards and small systems kept
+  // re-implementing — a searchable sortable table, a KPI row, tabs, toasts,
+  // dialogs, saved state and mock data. Every call is opt-in, so a page that
+  // brings its own versions keeps them.
+
+  function resolve(target) {
+    return typeof target === "string" ? document.querySelector(target) : target;
+  }
+
+  function node(tag, className, text) {
+    var el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text != null) el.textContent = text;
+    return el;
+  }
+
+  function isNumberColumn(col) {
+    return col.align === "right" || col.format === "num" || col.format === "brl" || col.format === "pct";
+  }
+
+  function cellText(col, row) {
+    var value = row[col.key];
+    if (value == null) return "";
+    return col.format ? coerceFormat(col.format)(value) : String(value);
+  }
+
+  function compareValues(a, b) {
+    if (typeof a === "number" && typeof b === "number") return a - b;
+    return String(a == null ? "" : a).localeCompare(String(b == null ? "" : b), "pt-BR", { numeric: true });
+  }
+
+  // table(el, {columns, rows, search?, pageSize?, empty?, onRowClick?}) — a
+  // table.shell-table with sortable headers, an optional search box and
+  // pager. A column is {key, label, format?, align?, sortable? (true),
+  // render?(value, row) returning a Node or an HTML string — the page writes
+  // its cell templates as markup}. Plain values are always set as text.
+  // Returns {setRows, rows}.
+  function table(target, cfg) {
+    var root = resolve(target);
+    var cols = cfg.columns || [];
+    var pageSize = cfg.pageSize || 0;
+    var state = { rows: (cfg.rows || []).slice(), query: "", key: null, dir: 1, page: 0 };
+    root.innerHTML = "";
+    if (cfg.search) {
+      var search = node("input", "input skip-table-search");
+      search.type = "search";
+      search.placeholder = typeof cfg.search === "string" ? cfg.search : "Buscar…";
+      search.setAttribute("aria-label", search.placeholder);
+      search.addEventListener("input", function () {
+        state.query = search.value.trim().toLowerCase();
+        state.page = 0;
+        draw();
+      });
+      root.appendChild(search);
+    }
+    var tableEl = node("table", "shell-table");
+    var headRow = node("tr");
+    var heads = cols.map(function (col) {
+      var th = node("th", isNumberColumn(col) ? "num" : "", col.label == null ? col.key : col.label);
+      th.scope = "col";
+      if (col.sortable !== false) {
+        var toggle = function () {
+          state.dir = state.key === col.key ? -state.dir : 1;
+          state.key = col.key;
+          draw();
+        };
+        th.setAttribute("data-sort", col.key);
+        th.tabIndex = 0;
+        th.addEventListener("click", toggle);
+        th.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+        });
+      }
+      headRow.appendChild(th);
+      return th;
+    });
+    var thead = node("thead");
+    var tbody = node("tbody");
+    var wrap = node("div", "skip-table-wrap");
+    var pager = node("div", "skip-pager");
+    thead.appendChild(headRow);
+    tableEl.appendChild(thead);
+    tableEl.appendChild(tbody);
+    wrap.appendChild(tableEl);
+    root.appendChild(wrap);
+    if (pageSize) root.appendChild(pager);
+
+    function visibleRows() {
+      var rows = state.rows;
+      if (state.query) {
+        rows = rows.filter(function (row) {
+          return cols.some(function (col) { return cellText(col, row).toLowerCase().indexOf(state.query) >= 0; });
+        });
+      }
+      if (state.key) {
+        var key = state.key, dir = state.dir;
+        rows = rows.slice().sort(function (a, b) { return dir * compareValues(a[key], b[key]); });
+      }
+      return rows;
+    }
+
+    function drawRow(row) {
+      var tr = node("tr");
+      cols.forEach(function (col) {
+        var td = node("td", isNumberColumn(col) ? "num" : "");
+        if (!col.render) {
+          td.textContent = cellText(col, row);
+        } else {
+          var content = col.render(row[col.key], row);
+          if (content instanceof Node) td.appendChild(content);
+          else td.innerHTML = content == null ? "" : String(content);
+        }
+        tr.appendChild(td);
+      });
+      // The row stays a row (no role) and takes focus, so a keyboard reaches
+      // the same action; keys pressed on a control inside a cell are its own.
+      if (cfg.onRowClick) {
+        tr.style.cursor = "pointer";
+        tr.tabIndex = 0;
+        tr.addEventListener("click", function () { cfg.onRowClick(row); });
+        tr.addEventListener("keydown", function (e) {
+          if (e.target !== tr || (e.key !== "Enter" && e.key !== " ")) return;
+          e.preventDefault();
+          cfg.onRowClick(row);
+        });
+      }
+      return tr;
+    }
+
+    function pagerButton(label, disabled, step) {
+      var button = node("button", "btn", label);
+      button.type = "button";
+      button.setAttribute("data-variant", "outline");
+      button.setAttribute("data-size", "sm");
+      button.disabled = disabled;
+      button.addEventListener("click", function () { state.page += step; draw(); });
+      return button;
+    }
+
+    function draw() {
+      var rows = visibleRows();
+      heads.forEach(function (th, i) {
+        if (cols[i].key === state.key) th.setAttribute("aria-sort", state.dir > 0 ? "ascending" : "descending");
+        else th.removeAttribute("aria-sort");
+      });
+      var pages = pageSize ? Math.max(1, Math.ceil(rows.length / pageSize)) : 1;
+      state.page = Math.min(state.page, pages - 1);
+      var shown = pageSize ? rows.slice(state.page * pageSize, (state.page + 1) * pageSize) : rows;
+      tbody.innerHTML = "";
+      if (!shown.length) {
+        var empty = node("td", "skip-table-empty", cfg.empty || "Nenhum registro encontrado.");
+        empty.colSpan = cols.length;
+        tbody.appendChild(node("tr")).appendChild(empty);
+      }
+      shown.forEach(function (row) { tbody.appendChild(drawRow(row)); });
+      if (!pageSize) return;
+      pager.innerHTML = "";
+      var from = rows.length ? state.page * pageSize + 1 : 0;
+      pager.appendChild(node("span", "", from + "–" + Math.min(rows.length, (state.page + 1) * pageSize) + " de " + rows.length));
+      var nav = node("div", "row gap-2");
+      nav.appendChild(pagerButton("Anterior", state.page === 0, -1));
+      nav.appendChild(pagerButton("Próxima", state.page >= pages - 1, 1));
+      pager.appendChild(nav);
+    }
+
+    draw();
+    return {
+      setRows: function (rows) { state.rows = rows.slice(); draw(); },
+      rows: visibleRows
+    };
+  }
+
+  // kpis(el, [{label, value, format?, delta?, hint?}]) — KPI cards in a
+  // responsive grid; delta is a fraction (0.12 renders as ▲ 12%).
+  function kpis(target, items) {
+    var root = resolve(target);
+    root.innerHTML = "";
+    root.classList.add("shell-grid");
+    items.forEach(function (item) {
+      var card = node("div", "panel kpi");
+      card.appendChild(node("span", "kpi-label", item.label));
+      // Large money values go compact ("R$ 27,5 mi"): the full amount does
+      // not fit a KPI card at four per row.
+      var kpiFormat = item.format === "brl" && Math.abs(item.value) >= 1e6 ? fmt.brlCompact : (item.format ? coerceFormat(item.format) : null);
+      card.appendChild(node("span", "kpi-value", kpiFormat ? kpiFormat(item.value) : String(item.value)));
+      if (typeof item.delta === "number") {
+        var up = item.delta >= 0;
+        card.appendChild(node("span", "kpi-delta " + (up ? "up" : "down"), (up ? "▲ " : "▼ ") + fmt.pct(Math.abs(item.delta))));
+      }
+      if (item.hint) card.appendChild(node("span", "kpi-label", item.hint));
+      root.appendChild(card);
+    });
+  }
+
+  // badge(text, variant?) — a .badge node for table cells and lists;
+  // variant is "secondary" | "outline" | "destructive" (default: primary).
+  function badge(text, variant) {
+    var el = node("span", "badge", text);
+    if (variant) el.setAttribute("data-variant", variant);
+    return el;
+  }
+
+  // tabs(el) — wires one .tabs block: [role=tab] buttons inside
+  // [role=tablist], each with aria-controls naming its [role=tabpanel].
+  function tabs(target) {
+    var root = resolve(target);
+    var buttons = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+    function select(chosen) {
+      buttons.forEach(function (b) {
+        var on = b === chosen;
+        b.setAttribute("aria-selected", on ? "true" : "false");
+        b.tabIndex = on ? 0 : -1;
+        var panel = document.getElementById(b.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !on;
+      });
+    }
+    buttons.forEach(function (b, i) {
+      b.addEventListener("click", function () { select(b); });
+      b.addEventListener("keydown", function (e) {
+        var step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        var next = buttons[(i + step + buttons.length) % buttons.length];
+        next.focus();
+        select(next);
+      });
+    });
+    select(buttons.filter(function (b) { return b.getAttribute("aria-selected") === "true"; })[0] || buttons[0]);
+  }
+
+  // toast(message, {type?: "success" | "error", title?, duration?}) — a
+  // .toast in a shared .toaster at the bottom of the page.
+  function toast(message, opts) {
+    opts = opts || {};
+    var toaster = document.querySelector(".toaster") || document.body.appendChild(node("div", "toaster"));
+    var item = node("div", "toast");
+    item.setAttribute("role", opts.type === "error" ? "alert" : "status");
+    item.setAttribute("aria-hidden", "true");
+    if (opts.type) item.setAttribute("data-type", opts.type);
+    var content = node("div", "toast-content");
+    var section = node("section");
+    if (opts.title) section.appendChild(node("h2", "", opts.title));
+    section.appendChild(node("p", "", message));
+    content.appendChild(section);
+    item.appendChild(content);
+    toaster.appendChild(item);
+    requestAnimationFrame(function () { item.setAttribute("aria-hidden", "false"); });
+    setTimeout(function () {
+      item.setAttribute("aria-hidden", "true");
+      setTimeout(function () { item.remove(); }, 400);
+    }, opts.duration || 3000);
+  }
+
+  // Dialogs are native <dialog class="dialog">: a [data-dialog-open="id"]
+  // anywhere opens one, a [data-dialog-close] inside closes it, and a click on
+  // its backdrop closes it too. Plain dialog.showModal()/close() still work.
+  document.addEventListener("click", function (e) {
+    var target = e.target;
+    if (!(target instanceof Element)) return;
+    var opener = target.closest("[data-dialog-open]");
+    if (opener) {
+      var dialog = document.getElementById(opener.getAttribute("data-dialog-open"));
+      if (dialog && dialog.showModal && !dialog.open) dialog.showModal();
+      return;
+    }
+    var closer = target.closest("[data-dialog-close]");
+    if (closer && closer.closest("dialog")) {
+      closer.closest("dialog").close();
+      return;
+    }
+    if (target.tagName === "DIALOG" && target.classList.contains("dialog") && target.open) target.close();
+  });
+
+  // store(key, fallback) — JSON state in localStorage that never throws (a
+  // private window or a full quota falls back to memory): {get, set, update}.
+  function store(key, fallback) {
+    var memory;
+    // Set while the last write did not reach localStorage: what is stored
+    // there is older than memory until a write goes through again.
+    var unsaved = false;
+    var initial = function () { return fallback === undefined ? undefined : JSON.parse(JSON.stringify(fallback)); };
+    function get() {
+      if (!unsaved) {
+        try {
+          var raw = localStorage.getItem(key);
+          if (raw != null) return JSON.parse(raw);
+        } catch (e) { /* storage unavailable: memory below */ }
+      }
+      return memory !== undefined ? memory : initial();
+    }
+    function set(value) {
+      memory = value;
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        unsaved = false;
+      } catch (e) {
+        unsaved = true;
+      }
+      return value;
+    }
+    return { get: get, set: set, update: function (fn) { return set(fn(get())); } };
+  }
+
+  // mock — seeded random data, so a page asks for 90 days of numbers in one
+  // line instead of writing them out; the same seed gives the same data.
+  var FIRST = ["Ana", "Bruno", "Carla", "Diego", "Eduarda", "Felipe", "Gabriela", "Henrique", "Isabela", "João",
+    "Larissa", "Marcos", "Natália", "Otávio", "Paula", "Rafael", "Sofia", "Thiago", "Vanessa", "Lucas"];
+  var LAST = ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Costa", "Rodrigues", "Almeida", "Nascimento", "Lima",
+    "Araújo", "Fernandes", "Carvalho", "Gomes", "Martins", "Rocha", "Ribeiro", "Barbosa"];
+  var INITIALS = "ABCDEFGHIJLMNOPRSTV".split("");
+  var CITIES = ["São Paulo, SP", "Rio de Janeiro, RJ", "Belo Horizonte, MG", "Curitiba, PR", "Porto Alegre, RS",
+    "Salvador, BA", "Recife, PE", "Fortaleza, CE", "Brasília, DF", "Goiânia, GO", "Campinas, SP", "Florianópolis, SC",
+    "Manaus, AM", "Belém, PA", "Vitória, ES", "Natal, RN"];
+
+  function createMock(seed) {
+    var state = seed >>> 0;
+    var names = 0;
+    function random() {
+      state = (state + 0x6d2b79f5) >>> 0;
+      var t = state;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    function int(min, max) { return min + Math.floor(random() * (max - min + 1)); }
+    function pick(list) { return list[Math.floor(random() * list.length)]; }
+    var mock = {
+      seed: function (value) { state = value >>> 0; names = 0; return mock; },
+      random: random,
+      int: int,
+      float: function (min, max, decimals) {
+        var factor = Math.pow(10, decimals == null ? 2 : decimals);
+        return Math.round((min + random() * (max - min)) * factor) / factor;
+      },
+      pick: pick,
+      chance: function (p) { return random() < p; },
+      // There are 360 first/last pairs. A page that draws until the name is
+      // new (do { … } while (used.has(name))) froze the tab past them, so
+      // later draws widen the space: a second surname after 200 (6,480), a
+      // middle initial after 4,000.
+      name: function () {
+        names++;
+        var middle = names > 4000 ? pick(INITIALS) + ". " : "";
+        return pick(FIRST) + " " + middle + (names > 200 ? pick(LAST) + " " : "") + pick(LAST);
+      },
+      city: function () { return pick(CITIES); },
+      // series(n, {start, trend, noise, min, decimals}) — a walk: each value
+      // moves by trend (fraction per step) plus up to ±noise of itself.
+      series: function (n, opts) {
+        opts = opts || {};
+        var value = opts.start == null ? 100 : opts.start;
+        var factor = Math.pow(10, opts.decimals || 0);
+        var out = [];
+        for (var i = 0; i < n; i++) {
+          out.push(Math.max(opts.min == null ? 0 : opts.min, Math.round(value * factor) / factor));
+          value = value * (1 + (opts.trend || 0)) * (1 + (random() * 2 - 1) * (opts.noise == null ? 0.08 : opts.noise));
+        }
+        return out;
+      },
+      // dates(n, {end?, step?: "day" | "week" | "month"}) — ISO dates
+      // (YYYY-MM-DD), oldest first, ending at end (default: today).
+      dates: function (n, opts) {
+        opts = opts || {};
+        var end = opts.end ? new Date(opts.end) : new Date();
+        var out = [];
+        for (var i = n - 1; i >= 0; i--) {
+          var d = new Date(end.getTime());
+          if (opts.step === "month") d.setMonth(d.getMonth() - i);
+          else d.setDate(d.getDate() - i * (opts.step === "week" ? 7 : 1));
+          out.push(d.toISOString().slice(0, 10));
+        }
+        return out;
+      },
+      // rows(n, spec) — n objects; each spec value is a function(i), a list
+      // to pick from, or a constant.
+      rows: function (n, spec) {
+        var out = [];
+        for (var i = 0; i < n; i++) {
+          var row = {};
+          for (var key in spec) {
+            var value = spec[key];
+            row[key] = typeof value === "function" ? value(i) : Array.isArray(value) ? pick(value) : value;
+          }
+          out.push(row);
+        }
+        return out;
+      }
+    };
+    return mock;
+  }
+
+  window.skipShell = { fmt: fmt };
+  window.skipChart = { bar: bar, line: line, donut: donut };
+  window.skipUI = { table: table, kpis: kpis, badge: badge, tabs: tabs, toast: toast };
+  window.skipStore = store;
+  window.skipMock = createMock(20261022);
+})();
+
+</script>
+<style>
+:root {
+--azul: #004A87; --ciano: #00A0E4; --petroleo: #0B2430; --ambar: #E08A3C;
+--salvia: #CFDCD3; --creme: #F4F1E8; --grafite: #1F2A2E; --verde: #2E7D5B; --vermelho: #B3453A;
+--accent: #004A87; --accent-text: #004A87; --accent-contrast: #ffffff;
+--prodfor-border: #CFDCD3;
+font-family: 'DM Sans', system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #EEF2F0; color: var(--grafite); font-family: 'DM Sans', system-ui, sans-serif; }
+h1, h2, h3 { font-family: 'Archivo Black', sans-serif; letter-spacing: 0.2px; }
+.mono { font-family: 'DM Mono', monospace; }
+.hidden { display: none !important; }
+
+/* Erro global */
+#errorBar { display:none; position:fixed; top:0; left:0; right:0; z-index:999; background:var(--vermelho); color:#fff; padding:10px 16px; font-size:13px; }
+
+/* Login */
+#loginScreen { min-height: 100vh; display:flex; align-items:center; justify-content:center; padding:24px; background: linear-gradient(160deg, #0B2430 0%, #004A87 100%); }
+.login-card { background:#fff; border-radius:12px; padding:32px; width:100%; max-width:420px; box-shadow:0 12px 40px rgba(0,0,0,0.25); }
+.login-logo { display:flex; justify-content:center; margin-bottom:20px; }
+.login-logo img { height:52px; width:auto; object-fit:contain; filter: none; }
+.login-logo-fallback { font-family:'Archivo Black',sans-serif; color:var(--azul); font-size:26px; letter-spacing:2px; display:none; }
+.login-title { text-align:center; font-size:20px; color:var(--petroleo); margin:0 0 4px; }
+.login-sub { text-align:center; font-size:13px; color:var(--grafite); opacity:.75; margin:0 0 20px; }
+.pwd-wrap { position:relative; }
+.pwd-wrap .input { padding-right:44px; }
+.pwd-toggle { position:absolute; right:6px; top:50%; transform:translateY(-50%); width:32px; height:32px; border:none; background:transparent; cursor:pointer; color:var(--azul); display:flex; align-items:center; justify-content:center; border-radius:6px; }
+.pwd-toggle:focus-visible { outline:2px solid var(--ciano); }
+.demo-box { margin-top:16px; padding:10px 12px; border:1px dashed var(--prodfor-border); border-radius:8px; font-size:12px; color:var(--grafite); background:var(--creme); }
+.msg-err { color:var(--vermelho); font-size:13px; min-height:18px; margin-top:8px; }
+.login-links { display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:10px; flex-wrap:wrap; }
+.link-btn { background:none; border:none; color:var(--azul); cursor:pointer; font-size:13px; text-decoration:underline; padding:0; font-family:inherit; }
+
+/* Layout app */
+#appShell { display:flex; min-height:100vh; }
+.sidebar { width:260px; min-width:260px; background:#0B2430; color:#CFDCD3; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
+.sb-brand { padding:22px 20px 14px; border-bottom:1px solid rgba(207,220,211,0.15); }
+.sb-prog { font-family:'Archivo Black',sans-serif; color:#fff; font-size:15px; margin-top:8px; line-height:1.3; }
+.sb-user { padding:16px 20px; border-bottom:1px solid rgba(207,220,211,0.15); font-size:13px; }
+.sb-user-name { color:#fff; font-weight:600; }
+.badge-perfil { display:inline-block; background:#004A87; color:#fff; font-size:11px; padding:2px 8px; border-radius:4px; margin-top:6px; }
+.btn-sair { margin-top:10px; background:transparent; border:1px solid #CFDCD3; color:#CFDCD3; border-radius:6px; padding:5px 12px; cursor:pointer; font-size:12px; font-family:inherit; }
+.btn-sair:hover { background:rgba(255,255,255,0.08); }
+.sb-nav { display:flex; flex-direction:column; padding:10px 0; flex:1; }
+.nav-item { background:none; border:none; border-left:3px solid transparent; color:#CFDCD3; text-align:left; padding:12px 20px; font-size:14px; cursor:pointer; font-family:inherit; }
+.nav-item:hover { background:rgba(255,255,255,0.08); }
+.nav-item.active { border-left-color:#00A0E4; color:#fff; background:rgba(0,160,228,0.08); font-weight:600; }
+.nav-item:focus-visible { outline:2px solid var(--ciano); outline-offset:-2px; }
+.sb-foot { padding:14px 20px; font-size:11px; opacity:.7; border-top:1px solid rgba(207,220,211,0.15); }
+.main { flex:1; min-width:0; padding:28px 32px; }
+.page-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+.eyebrow-pill { display:inline-block; background:var(--salvia); color:var(--petroleo); font-size:11px; padding:3px 10px; border-radius:999px; font-weight:600; letter-spacing:.5px; }
+.page-title { font-size:26px; color:var(--petroleo); margin:8px 0 4px; }
+.page-sub { font-size:14px; opacity:.75; margin:0; }
+.topbar-actions { display:flex; gap:10px; flex-wrap:wrap; }
+
+/* Cards */
+.card { background:#fff; border-radius:12px; padding:24px; margin-bottom:20px; box-shadow:0 2px 10px rgba(11,36,48,0.08); width:100%; }
+.card-title { font-size:17px; color:var(--petroleo); margin:0 0 4px; }
+.card-sub { font-size:13px; opacity:.7; margin:0 0 16px; }
+.section-title { font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:var(--azul); margin:18px 0 10px; font-weight:700; }
+
+/* Faixa automática */
+.auto-strip { display:flex; flex-direction:row; align-items:center; gap:28px; flex-wrap:wrap; background:var(--creme); border:1px solid var(--salvia); border-radius:10px; padding:12px 18px; margin-bottom:20px; }
+.auto-item { display:flex; flex-direction:column; gap:4px; }
+.auto-item + .auto-item { border-left:1px solid var(--salvia); padding-left:28px; }
+.auto-label { font-size:11px; letter-spacing:.5px; text-transform:uppercase; opacity:.7; }
+.auto-value { font-size:14px; font-weight:600; }
+.auto-value.mono { font-family:'DM Mono',monospace; font-weight:500; }
+
+/* Forms */
+.form-grid-1 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.form-grid-2 { display:grid; grid-template-columns:1.2fr 1.4fr 1fr 1.2fr; gap:16px; margin-bottom:16px; }
+.form-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px; }
+.form-grid-5 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:16px; }
+.field { display:flex; flex-direction:column; min-width:0; }
+.field label { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--grafite); opacity:.85; margin-bottom:6px; font-weight:600; }
+.field .helper { font-size:12px; opacity:.65; margin-top:4px; }
+.input, .select, .textarea { width:100%; height:40px; border:1px solid var(--prodfor-border); border-radius:8px; padding:0 12px; font-size:14px; font-family:inherit; box-sizing:border-box; background:#fff; color:var(--grafite); }
+.textarea { height:auto; min-height:80px; padding:10px 12px; resize:vertical; }
+.input:focus, .select:focus, .textarea:focus { outline:none; border-color:var(--ciano); box-shadow:0 0 0 3px rgba(0,160,228,0.18); }
+.full { grid-column:1 / -1; }
+.btn { height:40px; padding:0 20px; border-radius:8px; border:none; background:var(--azul); color:#fff; cursor:pointer; font-size:14px; font-weight:600; font-family:inherit; white-space:nowrap; }
+.btn:hover { filter:brightness(1.08); }
+.btn-sec { background:transparent; border:1px solid var(--azul); color:var(--azul); height:40px; padding:0 20px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; font-family:inherit; white-space:nowrap; }
+.btn-sec:hover { background:rgba(0,74,135,0.06); }
+.btn-danger { background:transparent; border:1px solid var(--vermelho); color:var(--vermelho); height:30px; padding:0 10px; border-radius:6px; cursor:pointer; font-size:12px; font-family:inherit; }
+.btn-ghost { background:transparent; border:1px solid var(--azul); color:var(--azul); height:30px; padding:0 10px; border-radius:6px; cursor:pointer; font-size:12px; font-family:inherit; }
+.btn-row { display:flex; flex-direction:row; gap:12px; flex-wrap:nowrap; margin-top:8px; align-items:center; }
+.btn-row-primary { height:44px; }
+.btn-row-primary .btn { height:44px; }
+.filter-row { display:flex; flex-direction:row; flex-wrap:nowrap; align-items:flex-end; gap:16px; width:100%; }
+.filter-row > .field { flex:1 1 0; min-width:0; }
+.filter-row .input, .filter-row .select { width:100%; height:40px; box-sizing:border-box; }
+.filter-actions { display:flex; flex-direction:row; gap:12px; margin-top:16px; justify-content:flex-start; }
+.filter-actions .btn, .filter-actions .btn-sec { height:40px; padding:0 20px; flex:0 0 auto; white-space:nowrap; }
+.form-footer { margin-top:16px; font-size:12px; opacity:.75; }
+.hint-aviso { font-size:12px; color:var(--ambar); margin:0 0 12px; font-weight:600; }
+.msg { font-size:13px; min-height:20px; margin-top:12px; }
+.msg.err { color:var(--vermelho); }
+.msg.ok { color:var(--verde); }
+.msg-err-box { color:var(--vermelho); font-size:13px; margin-top:8px; }
+.auth-prompt { display:none; margin-top:10px; padding:10px 12px; border:1px solid var(--vermelho); border-radius:8px; background:#fff5f4; font-size:13px; }
+.auth-prompt .btn-danger, .auth-prompt .btn { height:32px; font-size:12px; }
+
+/* Contadores */
+.counters { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin-bottom:16px; }
+.counter { background:var(--creme); border:1px solid var(--salvia); border-radius:10px; padding:12px 14px; }
+.counter-num { font-family:'DM Mono',monospace; font-size:22px; color:var(--azul); font-weight:500; }
+.counter-lbl { font-size:11px; text-transform:uppercase; letter-spacing:.5px; opacity:.75; margin-top:2px; }
+
+/* Tabelas */
+.table-wrap { overflow-x:auto; border-radius:10px; border:1px solid var(--salvia); }
+table.grid { width:100%; border-collapse:collapse; font-size:13px; min-width:700px; }
+table.grid th { background:var(--azul); color:#fff; text-align:left; padding:10px; font-weight:600; white-space:nowrap; }
+table.grid td { padding:10px; border-bottom:1px solid #e6ece9; white-space:nowrap; }
+table.grid tbody tr:nth-child(even) { background:#F9F9F7; }
+table.grid tbody tr:hover { background:#eef6fb; }
+.empty-row td { text-align:center; opacity:.7; padding:24px; }
+.badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; color:#fff; }
+.b-verde { background:var(--verde); }
+.b-ambar { background:var(--ambar); }
+.b-verm { background:var(--vermelho); }
+.b-cinza { background:#7a8588; }
+.b-azul { background:var(--azul); }
+.mono-cell { font-family:'DM Mono',monospace; }
+
+/* Modal */
+.overlay { position:fixed; inset:0; background:rgba(11,36,48,0.6); display:none; align-items:center; justify-content:center; z-index:300; padding:16px; }
+.overlay.open { display:flex; }
+.modal { background:#fff; border-radius:12px; padding:28px; max-width:640px; width:100%; max-height:90vh; overflow-y:auto; box-sizing:border-box; }
+.modal h3 { margin:0 0 6px; color:var(--petroleo); font-size:18px; }
+.modal-sec { margin-bottom:14px; }
+.modal-sec b { display:block; font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--azul); margin-bottom:4px; }
+.modal-sec p { margin:0; font-size:14px; line-height:1.5; }
+.modal-foot { display:flex; justify-content:flex-end; margin-top:16px; }
+
+/* Toast */
+#toastBox { position:fixed; right:20px; bottom:20px; z-index:400; display:flex; flex-direction:column; gap:8px; }
+.toast { padding:12px 16px; border-radius:8px; color:#fff; font-size:13px; box-shadow:0 6px 18px rgba(0,0,0,0.2); min-width:240px; }
+.toast.ok { background:var(--verde); }
+.toast.err { background:var(--vermelho); }
+
+.app-footer { font-size:12px; opacity:.7; margin-top:24px; padding-top:14px; border-top:1px solid var(--salvia); }
+
+/* Responsivo */
+@media (max-width: 900px) {
+#appShell { flex-direction:column; }
+.sidebar { width:100%; min-width:0; height:auto; position:static; flex-direction:column; }
+.sb-brand { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:none; }
+.sb-prog { margin-top:0; font-size:13px; }
+.sb-user, .sb-foot { display:none; }
+.sb-nav { flex-direction:row; overflow-x:auto; padding:0; }
+.nav-item { border-left:none; border-bottom:3px solid transparent; white-space:nowrap; padding:12px 16px; }
+.nav-item.active { border-bottom-color:#00A0E4; }
+.main { padding:18px 14px; }
+.form-grid-1 { grid-template-columns:1fr; }
+.form-grid-2 { grid-template-columns:1fr 1fr; }
+.form-grid-3, .form-grid-5 { grid-template-columns:1fr; }
+.filter-row { overflow-x:auto; }
+.filter-row > .field { min-width:160px; }
+.auto-item + .auto-item { border-left:none; padding-left:0; }
+}
+@media print {
+.sidebar, .btn, .btn-sec, .btn-danger, .btn-ghost, .filter-actions, .topbar-actions, #toastBox, .overlay, #errorBar { display:none !important; }
+.main { padding:0; }
+.card { box-shadow:none; }
+}
+</style>
+</head>
+<body>
+<div id="errorBar"></div>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+<div class="login-card">
+<div class="login-logo">
+<img src="https://adapta-one-prod.s3.sa-east-1.amazonaws.com/frankvixp%40gmail.com/png/Logo_PRODFOR_IA.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3FLD6RMYLYFE2L2Q%2F20261105%2Fsa-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261105T170000Z&X-Amz-Expires=3600&X-Amz-Signature=PLACEHOLDER&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject" alt="PRODFOR" style="height:52px;width:auto;object-fit:contain" onerror="this.style.display='none';document.getElementById('loginLogoFallback').style.display='inline-block'">
+<span id="loginLogoFallback" class="login-logo-fallback">PRODFOR</span>
+</div>
+<h1 class="login-title">Acesso ao sistema</h1>
+<p class="login-sub">Entre com seu e-mail e senha para registrar as atividades do programa.</p>
+<div class="field">
+<label for="loginEmail">E-mail</label>
+<input class="input" id="loginEmail" type="email" placeholder="seu.nome@empresa.com.br" autocomplete="username">
+</div>
+<div class="field" style="margin-top:12px">
+<label for="loginSenha">Senha</label>
+<div class="pwd-wrap">
+<input class="input" id="loginSenha" type="password" placeholder="Digite sua senha" autocomplete="current-password">
+<button type="button" class="pwd-toggle" aria-label="Mostrar senha" id="btnOlhoLogin" onclick="alternarSenha('loginSenha','btnOlhoLogin')">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
+</div>
+</div>
+<div class="msg-err" id="loginErro"></div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+<button class="btn" style="width:100%" onclick="entrar()">Entrar</button>
+<button class="btn-sec" style="width:100%" onclick="entrarDemo()">Entrar como coordenação (demonstração)</button>
+</div>
+<div class="login-links">
+<button class="link-btn" onclick="restaurarAcesso()">Restaurar acesso padrão</button>
+</div>
+<div class="demo-box">Acesso inicial: <span class="mono">coordenacao@prodfor.com.br</span> / <span class="mono">prodfor2027</span></div>
+</div>
+</div>
+
+<!-- APP -->
+<div id="appScreen" class="hidden">
+<div id="appShell">
+<aside class="sidebar">
+<div class="sb-brand">
+<img src="https://adapta-one-prod.s3.sa-east-1.amazonaws.com/frankvixp%40gmail.com/png/Logo_PRODFOR_IA.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3FLD6RMYLYFE2L2Q%2F20261105%2Fsa-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261105T170000Z&X-Amz-Expires=3600&X-Amz-Signature=PLACEHOLDER&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject" alt="PRODFOR" style="height:44px;width:auto;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline-block'">
+<span id="logoFallback" style="display:none;font-family:'Archivo Black',sans-serif;color:#fff;font-size:20px;letter-spacing:2px">PRODFOR</span>
+</div>
+<div class="sb-prog">Programa PRODFOR</div>
+</div>
+<div class="sb-user">
+<div class="sb-user-name" id="sbNome">—</div>
+<span class="badge-perfil" id="sbPerfil">—</span><br>
+<button class="btn-sair" onclick="sair()">Sair</button>
+</div>
+<nav class="sb-nav">
+<button class="nav-item active" data-aba="presenca" onclick="mostrarAba('presenca')">Presença em eventos</button>
+<button class="nav-item" data-aba="consultoria" onclick="mostrarAba('consultoria')">Consultorias</button>
+<button class="nav-item" data-aba="diagnostico" onclick="mostrarAba('diagnostico')">Diagnósticos</button>
+<button class="nav-item" data-aba="auditoria" onclick="mostrarAba('auditoria')">Auditoria interna</button>
+</nav>
+<div class="sb-foot">v3.0 · Registros Operacionais</div>
+</aside>
+
+<main class="main">
+<!-- ABA PRESENÇA -->
+<section id="aba-presenca">
+<div class="page-header">
+<div>
+<span class="eyebrow-pill">Registros Operacionais</span>
+<h2 class="page-title">Presença em eventos</h2>
+<p class="page-sub">Registre a presença dos participantes em cada evento do programa.</p>
+</div>
+<div class="topbar-actions">
+<button class="btn-sec" onclick="window.print()">Imprimir</button>
+</div>
+</div>
+
+<div class="auto-strip">
+<div class="auto-item">
+<span class="auto-label">Registrado por</span>
+<span class="auto-value" id="autoUsuario">—</span>
+</div>
+<div class="auto-item">
+<span class="auto-label">Perfil</span>
+<span><span class="badge-perfil" id="autoPerfil" style="margin:0;background:#004A87;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px">—</span></span>
+</div>
+<div class="auto-item">
+<span class="auto-label">Data/hora do registro</span>
+<span class="auto-value mono" id="autoDataHora">—</span>
+</div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Novo registro de presença</h3>
+<p class="card-sub">Campos obrigatórios marcados com a lista de eventos do programa ativo.</p>
+<p class="hint-aviso hidden" id="avisoListaPadraoPres">Cadastre um programa e ative uma turma para usar as listas dinâmicas</p>
+<form id="formPresenca" onsubmit="return false">
+<div class="form-grid-1">
+<div class="field">
+<label for="presEvento">Evento</label>
+<select class="select" id="presEvento" required></select>
+<span class="helper">Lista definida pelo programa e turma ativa.</span>
+</div>
+<div class="field">
+<label for="presData">Data do evento</label>
+<input class="input" id="presData" type="date" required>
+<span class="helper">Dia em que o evento foi realizado.</span>
+</div>
+</div>
+<div class="form-grid-2">
+<div class="field">
+<label for="presEmpresa">Empresa</label>
+<select class="select" id="presEmpresa" required></select>
+</div>
+<div class="field">
+<label for="presNome">Nome completo do participante</label>
+<input class="input" id="presNome" type="text" placeholder="Ex.: Mariana Costa Lima" required>
+</div>
+<div class="field">
+<label for="presCargo">Cargo/função</label>
+<input class="input" id="presCargo" type="text" placeholder="Ex.: Gerente de produção" required>
+</div>
+<div class="field">
+<label for="presEmail">E-mail do participante</label>
+<input class="input" id="presEmail" type="email" placeholder="nome@empresa.com.br" required>
+</div>
+</div>
+<div class="form-grid-3" style="grid-template-columns:1fr">
+<div class="field">
+<label for="presObs">Observações</label>
+<textarea class="textarea" id="presObs" placeholder="Informações adicionais sobre a presença (opcional)"></textarea>
+</div>
+</div>
+<div class="btn-row btn-row-primary">
+<button class="btn" type="button" style="height:44px" onclick="registrarPresenca()">Registrar presença</button>
+</div>
+</form>
+<div class="auth-prompt" id="authPresenca">
+<div id="authPresencaTexto"></div>
+<div class="btn-row" style="margin-top:8px">
+<button class="btn" type="button" onclick="autorizarTrocaEmpresa()">Autorizar troca de empresa</button>
+<button class="btn-sec" type="button" onclick="cancelarAutorizacao()">Cancelar</button>
+</div>
+</div>
+<div class="msg" id="msgPresenca"></div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Filtros da listagem</h3>
+<p class="card-sub">Refine os registros por evento, empresa, período ou nome.</p>
+<div class="filter-row">
+<div class="field">
+<label for="fPresEvento">Evento</label>
+<select class="select" id="fPresEvento"></select>
+</div>
+<div class="field">
+<label for="fPresEmpresa">Empresa</label>
+<select class="select" id="fPresEmpresa"></select>
+</div>
+<div class="field">
+<label for="fPresIni">Data inicial</label>
+<input class="input" id="fPresIni" type="date">
+</div>
+<div class="field">
+<label for="fPresFim">Data final</label>
+<input class="input" id="fPresFim" type="date">
+</div>
+<div class="field">
+<label for="fPresBusca">Busca por nome</label>
+<input class="input" id="fPresBusca" type="text" placeholder="Digite parte do nome">
+</div>
+</div>
+<div class="filter-actions">
+<button class="btn" onclick="aplicarFiltros('presenca')">Aplicar</button>
+<button class="btn-sec" onclick="limparFiltros('presenca')">Limpar filtros</button>
+<button class="btn-sec" onclick="exportarCSV('presenca')">Exportar CSV</button>
+</div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Contadores de presença</h3>
+<p class="card-sub">Total de participantes registrados por evento e por empresa.</p>
+<div class="counters" id="contadoresPresenca"></div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Registros de presença</h3>
+<p class="card-sub">Lista de todos os participantes registrados, com responsável e data/hora.</p>
+<div class="table-wrap">
+<table class="grid">
+<thead><tr>
+<th>Evento</th><th>Data do evento</th><th>Empresa</th><th>Participante</th><th>Cargo</th><th>Registrado por</th><th>Data/hora do registro</th><th>Ações</th>
+</tr></thead>
+<tbody id="tbPresenca"></tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- ABA CONSULTORIAS -->
+<section id="aba-consultoria" class="hidden">
+<div class="page-header">
+<div>
+<span class="eyebrow-pill">Registros Operacionais</span>
+<h2 class="page-title">Consultorias</h2>
+<p class="page-sub">Registre as consultorias realizadas, com as atividades e pendências de cada visita.</p>
+</div>
+</div>
+<div class="card">
+<h3 class="card-title">Nova consultoria</h3>
+<p class="card-sub">Descreva as atividades realizadas em cada uma das cinco frentes.</p>
+<p class="hint-aviso hidden" id="avisoListaPadraoCons">Cadastre um programa e ative uma turma para usar as listas dinâmicas</p>
+<form onsubmit="return false">
+<div class="form-grid-3">
+<div class="field">
+<label for="consCodigo">Código da consultoria</label>
+<select class="select" id="consCodigo"></select>
+</div>
+<div class="field">
+<label for="consEmpresa">Empresa</label>
+<select class="select" id="consEmpresa"></select>
+</div>
+<div class="field">
+<label for="consConsultor">Nome do consultor</label>
+<input class="input" id="consConsultor" type="text" placeholder="Nome do consultor responsável">
+</div>
+</div>
+<div class="form-grid-3">
+<div class="field">
+<label for="consData">Data de realização</label>
+<input class="input" id="consData" type="date">
+</div>
+<div class="field">
+<label for="consInicio">Hora de início</label>
+<input class="input" id="consInicio" type="time">
+</div>
+<div class="field">
+<label for="consFim">Hora de fim</label>
+<input class="input" id="consFim" type="time">
+<span class="helper">Deve ser posterior ao início.</span>
+</div>
+</div>
+<div class="section-title">Descrição das atividades realizadas</div>
+<div class="field" style="margin-bottom:14px">
+<label for="cDesc1">Verificação de pendências de consultoria anterior</label>
+<textarea class="textarea" id="cDesc1" placeholder="Descreva pendências identificadas da consultoria anterior, se houver."></textarea>
+</div>
+<div class="field" style="margin-bottom:14px">
+<label for="cDesc2">Verificação de tarefas pré-consultoria</label>
+<textarea class="textarea" id="cDesc2" placeholder="Descreva se as tarefas previstas antes da consultoria foram realizadas."></textarea>
+</div>
+<div class="field" style="margin-bottom:14px">
+<label for="cDesc3">Orientações / repasse de conhecimento</label>
+<textarea class="textarea" id="cDesc3" placeholder="Descreva as orientações e conhecimentos repassados à empresa."></textarea>
+</div>
+<div class="field" style="margin-bottom:14px">
+<label for="cDesc4">Atividades a serem realizadas pós-consultoria</label>
+<textarea class="textarea" id="cDesc4" placeholder="Liste as atividades que a empresa deve executar até a próxima consultoria."></textarea>
+</div>
+<div class="field" style="margin-bottom:14px">
+<label for="cDesc5">Pontos críticos / necessidade de intervenção da coordenação do programa</label>
+<textarea class="textarea" id="cDesc5" placeholder="Registre riscos, bloqueios ou situações que exigem ação da coordenação."></textarea>
+</div>
+<div class="btn-row btn-row-primary">
+<button class="btn" type="button" style="height:44px" onclick="registrarConsultoria()">Registrar consultoria</button>
+</div>
+<div class="form-footer" id="rodapeConsultoria"></div>
+</form>
+<div class="msg" id="msgConsultoria"></div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Filtros</h3>
+<p class="card-sub">Filtre por consultoria, empresa, consultor ou período.</p>
+<div class="filter-row">
+<div class="field"><label for="fConsCodigo">Consultoria</label><select class="select" id="fConsCodigo"></select></div>
+<div class="field"><label for="fConsEmpresa">Empresa</label><select class="select" id="fConsEmpresa"></select></div>
+<div class="field"><label for="fConsConsultor">Consultor</label><input class="input" id="fConsConsultor" type="text" placeholder="Nome do consultor"></div>
+<div class="field"><label for="fConsIni">Data inicial</label><input class="input" id="fConsIni" type="date"></div>
+<div class="field"><label for="fConsFim">Data final</label><input class="input" id="fConsFim" type="date"></div>
+</div>
+<div class="filter-actions">
+<button class="btn" onclick="aplicarFiltros('consultoria')">Aplicar</button>
+<button class="btn-sec" onclick="limparFiltros('consultoria')">Limpar filtros</button>
+<button class="btn-sec" onclick="exportarCSV('consultoria')">Exportar CSV</button>
+</div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Consultorias registradas</h3>
+<p class="card-sub">Duração calculada automaticamente a partir dos horários informados.</p>
+<div class="table-wrap">
+<table class="grid">
+<thead><tr>
+<th>Consultoria</th><th>Empresa</th><th>Consultor</th><th>Data</th><th>Início</th><th>Fim</th><th>Duração</th><th>Registrado por</th><th>Ações</th>
+</tr></thead>
+<tbody id="tbConsultoria"></tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- ABA DIAGNÓSTICOS -->
+<section id="aba-diagnostico" class="hidden">
+<div class="page-header">
+<div>
+<span class="eyebrow-pill">Registros Operacionais</span>
+<h2 class="page-title">Diagnósticos</h2>
+<p class="page-sub">Registre diagnósticos iniciais, parciais e finais de cada empresa.</p>
+</div>
+</div>
+<div class="card">
+<h3 class="card-title">Novo diagnóstico</h3>
+<p class="card-sub">Cada código só pode existir uma vez por empresa.</p>
+<p class="hint-aviso hidden" id="avisoListaPadraoDiag">Cadastre um programa e ative uma turma para usar as listas dinâmicas</p>
+<form onsubmit="return false">
+<div class="form-grid-3">
+<div class="field">
+<label for="diagCodigo">Código do diagnóstico</label>
+<select class="select" id="diagCodigo"></select>
+</div>
+<div class="field">
+<label for="diagEmpresa">Empresa</label>
+<select class="select" id="diagEmpresa"></select>
+</div>
+<div class="field">
+<label for="diagConsultor">Consultor responsável</label>
+<input class="input" id="diagConsultor" type="text" placeholder="Nome do consultor">
+</div>
+</div>
+<div class="form-grid-3">
+<div class="field">
+<label for="diagData">Data de realização</label>
+<input class="input" id="diagData" type="date">
+</div>
+<div class="field">
+<label for="diagInicio">Hora de início</label>
+<input class="input" id="diagInicio" type="time">
+</div>
+<div class="field">
+<label for="diagFim">Hora de fim</label>
+<input class="input" id="diagFim" type="time">
+<span class="helper">Deve ser posterior ao início.</span>
+</div>
+</div>
+<div class="form-grid-1" style="grid-template-columns:1fr">
+<div class="field">
+<label for="diagResultado">Resultado final do diagnóstico</label>
+<select class="select" id="diagResultado">
+<option value="1,0">1,0</option>
+<option value="0,8">0,8</option>
+<option value="0,0">0,0</option>
+<option value="Vazio">Vazio</option>
+</select>
+</div>
+</div>
+<div class="field" style="margin-bottom:14px">
+<label for="diagPontos">Pontos críticos / necessidade de intervenção da coordenação do programa</label>
+<textarea class="textarea" id="diagPontos" placeholder="Registre riscos, bloqueios ou situações que exigem ação da coordenação."></textarea>
+</div>
+<div class="btn-row btn-row-primary">
+<button class="btn" type="button" style="height:44px" onclick="registrarDiagnostico()">Registrar diagnóstico</button>
+</div>
+<div class="form-footer" id="rodapeDiagnostico"></div>
+</form>
+<div class="msg" id="msgDiagnostico"></div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Filtros</h3>
+<p class="card-sub">Filtre por tipo de diagnóstico, empresa, resultado ou período.</p>
+<div class="filter-row">
+<div class="field"><label for="fDiagCodigo">Diagnóstico</label><select class="select" id="fDiagCodigo"></select></div>
+<div class="field"><label for="fDiagEmpresa">Empresa</label><select class="select" id="fDiagEmpresa"></select></div>
+<div class="field"><label for="fDiagResultado">Resultado</label>
+<select class="select" id="fDiagResultado">
+<option value="">Todos</option>
+<option value="1,0">1,0</option>
+<option value="0,8">0,8</option>
+<option value="0,0">0,0</option>
+<option value="Vazio">Vazio</option>
+</select>
+</div>
+<div class="field"><label for="fDiagIni">Data inicial</label><input class="input" id="fDiagIni" type="date"></div>
+<div class="field"><label for="fDiagFim">Data final</label><input class="input" id="fDiagFim" type="date"></div>
+</div>
+<div class="filter-actions">
+<button class="btn" onclick="aplicarFiltros('diagnostico')">Aplicar</button>
+<button class="btn-sec" onclick="limparFiltros('diagnostico')">Limpar filtros</button>
+<button class="btn-sec" onclick="exportarCSV('diagnostico')">Exportar CSV</button>
+</div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Diagnósticos registrados</h3>
+<p class="card-sub">Resultado exibido em badge colorido conforme a pontuação.</p>
+<div class="table-wrap">
+<table class="grid">
+<thead><tr>
+<th>Diagnóstico</th><th>Empresa</th><th>Consultor</th><th>Data</th><th>Início</th><th>Fim</th><th>Resultado</th><th>Registrado por</th><th>Ações</th>
+</tr></thead>
+<tbody id="tbDiagnostico"></tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- ABA AUDITORIA -->
+<section id="aba-auditoria" class="hidden">
+<div class="page-header">
+<div>
+<span class="eyebrow-pill">Registros Operacionais</span>
+<h2 class="page-title">Auditoria interna</h2>
+<p class="page-sub">Registre as auditorias internas de qualidade (AIQ) e seus achados.</p>
+</div>
+</div>
+<div class="card">
+<h3 class="card-title">Nova auditoria interna</h3>
+<p class="card-sub">Responda às cinco anotações gerais para concluir o registro.</p>
+<form onsubmit="return false">
+<div class="form-grid-3">
+<div class="field">
+<label for="audEmpresa">Empresa</label>
+<select class="select" id="audEmpresa"></select>
+</div>
+<div class="field">
+<label for="audIdent">Identificação da AIQ</label>
+<input class="input" id="audIdent" type="text" placeholder="Ex.: AIQ 2027.1 — Empresa Alfa">
+</div>
+<div class="field">
+<label for="audConsultor">Nome do consultor</label>
+<input class="input" id="audConsultor" type="text" placeholder="Nome do consultor">
+</div>
+</div>
+<div class="form-grid-3">
+<div class="field">
+<label for="audData">Data de realização</label>
+<input class="input" id="audData" type="date">
+</div>
+<div class="field">
+<label for="audInicio">Hora de início</label>
+<input class="input" id="audInicio" type="time">
+</div>
+<div class="field">
+<label for="audFim">Hora de fim</label>
+<input class="input" id="audFim" type="time">
+<span class="helper">Deve ser posterior ao início.</span>
+</div>
+</div>
+<div class="section-title">Anotações gerais da auditoria interna</div>
+<div class="form-grid-3">
+<div class="field">
+<label for="audPlanej">Cumpriu o planejamento</label>
+<select class="select" id="audPlanej"><option value="SIM">SIM</option><option value="NÃO">NÃO</option></select>
+</div>
+<div class="field">
+<label for="audRelatorio">O relatório de AIQ foi finalizado</label>
+<select class="select" id="audRelatorio"><option value="SIM">SIM</option><option value="NÃO">NÃO</option></select>
+</div>
+<div class="field">
+<label for="audNC">Total de não conformidades apontadas</label>
+<input class="input" id="audNC" type="number" min="0" step="1" value="0">
+</div>
+</div>
+<div class="form-grid-1" style="grid-template-columns:1fr">
+<div class="field">
+<label for="audFase">Sistema de gestão está estruturado para seguir para fase 01</label>
+<select class="select" id="audFase"><option value="SIM">SIM</option><option value="NÃO">NÃO</option></select>
+</div>
+</div>
+<div class="field" style="margin-bottom:14px">
+<label for="audPontos">Pontos críticos / necessidade de intervenção da coordenação do programa</label>
+<textarea class="textarea" id="audPontos" placeholder="Registre riscos, bloqueios ou situações que exigem ação da coordenação."></textarea>
+</div>
+<div class="btn-row btn-row-primary">
+<button class="btn" type="button" style="height:44px" onclick="registrarAuditoria()">Registrar auditoria</button>
+</div>
+<div class="form-footer" id="rodapeAuditoria"></div>
+</form>
+<div class="msg" id="msgAuditoria"></div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Filtros</h3>
+<p class="card-sub">Filtre por empresa, período ou prontidão para a fase 01.</p>
+<div class="filter-row">
+<div class="field"><label for="fAudEmpresa">Empresa</label><select class="select" id="fAudEmpresa"></select></div>
+<div class="field"><label for="fAudIni">Data inicial</label><input class="input" id="fAudIni" type="date"></div>
+<div class="field"><label for="fAudFim">Data final</label><input class="input" id="fAudFim" type="date"></div>
+<div class="field"><label for="fAudFase">Estruturado para fase 01</label>
+<select class="select" id="fAudFase"><option value="">Todos</option><option value="SIM">SIM</option><option value="NÃO">NÃO</option></select>
+</div>
+</div>
+<div class="filter-actions">
+<button class="btn" onclick="aplicarFiltros('auditoria')">Aplicar</button>
+<button class="btn-sec" onclick="limparFiltros('auditoria')">Limpar filtros</button>
+<button class="btn-sec" onclick="exportarCSV('auditoria')">Exportar CSV</button>
+</div>
+</div>
+
+<div class="card">
+<h3 class="card-title">Auditorias registradas</h3>
+<p class="card-sub">Badges indicam o cumprimento de cada critério da AIQ.</p>
+<div class="table-wrap">
+<table class="grid">
+<thead><tr>
+<th>Empresa</th><th>Identificação AIQ</th><th>Consultor</th><th>Data</th><th>Início</th><th>Fim</th><th>Cumpriu planejamento</th><th>Relatório finalizado</th><th>Não conformidades</th><th>Estruturado para fase 01</th><th>Registrado por</th><th>Ações</th>
+</tr></thead>
+<tbody id="tbAuditoria"></tbody>
+</table>
+</div>
+</div>
+</section>
+
+<div class="app-footer">Programa PRODFOR · Registro Operacional · v3.0 · Registros Operacionais · <span id="rodapeData"></span></div>
+</main>
+</div>
+</div>
+
+<!-- MODAL DETALHES CONSULTORIA -->
+<div class="overlay" id="modalConsultoria" onclick="if(event.target===this)fecharModal('modalConsultoria')">
+<div class="modal">
+<h3 id="modalConsTitulo">Detalhes da consultoria</h3>
+<p class="card-sub" id="modalConsSub"></p>
+<div id="modalConsCorpo"></div>
+<div class="modal-foot"><button class="btn" onclick="fecharModal('modalConsultoria')">Fechar</button></div>
+</div>
+</div>
+
+<div id="toastBox"></div>
+
+<script>
+// ===================== ESTADO =====================
+var ESTADO = {
+usuarios: [], sessao: null, presencas: [], consultorias: [], diagnosticos: [], auditorias: [],
+participantes: [], programas: [], turmasAtivas: [], empresas: [], autorizacoes: [],
+modoListasPadrao: true,
+pendente: null
+};
+var FILTROS = { presenca: {}, consultoria: {}, diagnostico: {}, auditoria: {} };
+
+var LISTA_EVENTOS_PADRAO = ["Lançamento", "Work 01", "Work 02", "Work 03", "Work 04", "Work 05", "Work 06", "Work 07", "Work 08", "Work 09", "Pit 01", "Pit 02", "Curso AIQ"];
+var LISTA_CONSULTORIAS_PADRAO = ["Consultoria 01", "Consultoria 02", "Consultoria 03", "Consultoria 04", "Consultoria 05", "Consultoria 06", "Consultoria 07", "Consultoria 08", "Consultoria 09"];
+var LISTA_DIAG_PADRAO = ["Diagnóstico Inicial", "Diagnóstico Parcial", "Diagnóstico Final (AIQ)"];
+var EMPRESAS_PADRAO = ["Empresa Alfa", "Empresa Beta", "Empresa Gama", "Empresa Delta", "Empresa Épsilon"];
+
+// ===================== ERRO GLOBAL =====================
+window.onerror = function (msg, src, linha) {
+var bar = document.getElementById("errorBar");
+if (bar) {
+bar.style.display = "block";
+bar.textContent = "Erro detectado: " + String(msg) + " (linha " + String(linha) + ")";
+}
+return false;
+};
+
+// ===================== PERSISTÊNCIA =====================
+function lerChave(chave, padrao) {
+try {
+var raw = localStorage.getItem(chave);
+if (raw === null || raw === undefined) return padrao;
+var v = JSON.parse(raw);
+return v === null || v === undefined ? padrao : v;
+} catch (e) {
+return padrao;
+}
+}
+function gravarChave(chave, valor) {
+try {
+localStorage.setItem(chave, JSON.stringify(valor));
+} catch (e) {
+mostrarMsgGlobal("Não foi possível gravar os dados no navegador.", "err");
+}
+}
+function carregarDados() {
+try {
+ESTADO.usuarios = lerChave("prodfor_usuarios", []);
+if (!Array.isArray(ESTADO.usuarios)) ESTADO.usuarios = [];
+ESTADO.sessao = lerChave("prodfor_sessao", null);
+ESTADO.presencas = lerChave("prodfor_presencas", []);
+ESTADO.consultorias = lerChave("prodfor_consultorias", []);
+ESTADO.diagnosticos = lerChave("prodfor_diagnosticos", []);
+ESTADO.auditorias = lerChave("prodfor_auditorias", []);
+ESTADO.participantes = lerChave("prodfor_participantes", []);
+ESTADO.programas = lerChave("prodfor_programas", []);
+ESTADO.turmasAtivas = lerChave("prodfor_turmas_ativas", []);
+ESTADO.empresas = lerChave("prodfor_empresas", []);
+ESTADO.autorizacoes = lerChave("prodfor_autorizacoes", []);
+if (!Array.isArray(ESTADO.presencas)) ESTADO.presencas = [];
+if (!Array.isArray(ESTADO.consultorias)) ESTADO.consultorias = [];
+if (!Array.isArray(ESTADO.diagnosticos)) ESTADO.diagnosticos = [];
+if (!Array.isArray(ESTADO.auditorias)) ESTADO.auditorias = [];
+if (!Array.isArray(ESTADO.participantes)) ESTADO.participantes = [];
+if (!Array.isArray(ESTADO.programas)) ESTADO.programas = [];
+if (!Array.isArray(ESTADO.turmasAtivas)) ESTADO.turmasAtivas = [];
+if (!Array.isArray(ESTADO.empresas)) ESTADO.empresas = [];
+if (!Array.isArray(ESTADO.autorizacoes)) ESTADO.autorizacoes = [];
+} catch (e) {
+ESTADO.usuarios = []; ESTADO.sessao = null;
+}
+}
+function salvarDados() {
+gravarChave("prodfor_usuarios", ESTADO.usuarios);
+gravarChave("prodfor_sessao", ESTADO.sessao);
+gravarChave("prodfor_presencas", ESTADO.presencas);
+gravarChave("prodfor_consultorias", ESTADO.consultorias);
+gravarChave("prodfor_diagnosticos", ESTADO.diagnosticos);
+gravarChave("prodfor_auditorias", ESTADO.auditorias);
+gravarChave("prodfor_participantes", ESTADO.participantes);
+gravarChave("prodfor_autorizacoes", ESTADO.autorizacoes);
+}
+
+function gerarId() {
+return String(Date.now()) + String(Math.floor(Math.random() * 100000));
+}
+function agoraIso() {
+return new Date().toISOString();
+}
+function formatarDataHora(iso) {
+try {
+var d = new Date(iso);
+if (isNaN(d.getTime())) return "—";
+var dd = ("0" + d.getDate()).slice(-2);
+var mm = ("0" + (d.getMonth() + 1)).slice(-2);
+var hh = ("0" + d.getHours()).slice(-2);
+var mi = ("0" + d.getMinutes()).slice(-2);
+return dd + "/" + mm + "/" + d.getFullYear() + " " + hh + ":" + mi;
+} catch (e) { return "—"; }
+}
+function formatarData(iso) {
+if (!iso) return "—";
+var p = String(iso).split("-");
+if (p.length !== 3) return String(iso);
+return p[2] + "/" + p[1] + "/" + p[0];
+}
+function normalizarNome(nome) {
+return String(nome || "").trim().toLowerCase().replace(/\s+/g, " ")
+.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+function escapeHtml(s) {
+return String(s === null || s === undefined ? "" : s).replace(/[&<>"']/g, function (c) {
+return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+});
+}
+
+// ===================== USUÁRIOS / SESSÃO =====================
+function garantirUsuarioPadrao() {
+try {
+var ok = false;
+for (var i = 0; i < ESTADO.usuarios.length; i++) {
+var u = ESTADO.usuarios[i];
+if (u && String(u.email).toLowerCase() === "coordenacao@prodfor.com.br" && String(u.senha) === "prodfor2027" && u.ativo === true) {
+ok = true; break;
+}
+}
+if (!ok) {
+var padrao = { id: "u1", nome: "Coordenação PRODFOR", email: "coordenacao@prodfor.com.br", senha: "prodfor2027", perfil: "coordenação", ativo: true };
+var idx = -1;
+for (var j = 0; j < ESTADO.usuarios.length; j++) {
+if (ESTADO.usuarios[j] && String(ESTADO.usuarios[j].email).toLowerCase() === "coordenacao@prodfor.com.br") { idx = j; break; }
+}
+if (idx >= 0) ESTADO.usuarios[idx] = padrao; else ESTADO.usuarios.push(padrao);
+gravarChave("prodfor_usuarios", ESTADO.usuarios);
+}
+} catch (e) {}
+}
+
+function entrar() {
+var email = String(document.getElementById("loginEmail").value || "").trim().toLowerCase();
+var senha = String(document.getElementById("loginSenha").value || "");
+var erro = document.getElementById("loginErro");
+erro.textContent = "";
+if (!email) { erro.textContent = "Informe o e-mail."; return; }
+if (!senha) { erro.textContent = "Informe a senha."; return; }
+var usuario = null;
+for (var i = 0; i < ESTADO.usuarios.length; i++) {
+if (ESTADO.usuarios[i] && String(ESTADO.usuarios[i].email).toLowerCase() === email) { usuario = ESTADO.usuarios[i]; break; }
+}
+if (!usuario) { erro.textContent = "E-mail não cadastrado."; return; }
+if (usuario.ativo !== true) { erro.textContent = "Usuário inativo. Procure a coordenação."; return; }
+if (String(usuario.senha) !== String(senha)) { erro.textContent = "Senha incorreta."; return; }
+ESTADO.sessao = { usuarioId: usuario.id, nome: usuario.nome, email: usuario.email, perfil: usuario.perfil };
+gravarChave("prodfor_sessao", ESTADO.sessao);
+document.getElementById("loginSenha").value = "";
+exibirApp();
+}
+function entrarDemo() {
+var u = null;
+for (var i = 0; i < ESTADO.usuarios.length; i++) {
+if (ESTADO.usuarios[i] && String(ESTADO.usuarios[i].email).toLowerCase() === "coordenacao@prodfor.com.br") { u = ESTADO.usuarios[i]; break; }
+}
+if (!u) { garantirUsuarioPadrao(); carregarDados(); u = ESTADO.usuarios[0]; }
+ESTADO.sessao = { usuarioId: u.id, nome: u.nome, email: u.email, perfil: u.perfil };
+gravarChave("prodfor_sessao", ESTADO.sessao);
+exibirApp();
+}
+function restaurarAcesso() {
+try {
+var lista = lerChave("prodfor_usuarios", []);
+if (!Array.isArray(lista)) lista = [];
+var outros = [];
+for (var i = 0; i < lista.length; i++) {
+if (lista[i] && String(lista[i].email).toLowerCase() !== "coordenacao@prodfor.com.br") outros.push(lista[i]);
+}
+outros.push({ id: "u1", nome: "Coordenação PRODFOR", email: "coordenacao@prodfor.com.br", senha: "prodfor2027", perfil: "coordenação", ativo: true });
+ESTADO.usuarios = outros;
+gravarChave("prodfor_usuarios", ESTADO.usuarios);
+document.getElementById("loginErro").textContent = "";
+toast("Acesso padrão restaurado. Use o e-mail e senha de demonstração.", "ok");
+} catch (e) {
+toast("Não foi possível restaurar o acesso.", "err");
+}
+}
+function sair() {
+ESTADO.sessao = null;
+gravarChave("prodfor_sessao", null);
+document.getElementById("appScreen").classList.add("hidden");
+document.getElementById("loginScreen").style.display = "flex";
+document.getElementById("loginErro").textContent = "";
+}
+function alternarSenha(idInput, idBotao) {
+var input = document.getElementById(idInput);
+var btn = document.getElementById(idBotao);
+if (!input || !btn) return;
+if (input.type === "password") {
+input.type = "text";
+btn.setAttribute("aria-label", "Ocultar senha");
+btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+} else {
+input.type = "password";
+btn.setAttribute("aria-label", "Mostrar senha");
+btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+}
+
+function perfilAtual() {
+return ESTADO.sessao && ESTADO.sessao.perfil ? String(ESTADO.sessao.perfil) : "";
+}
+function ehCoordenacao() {
+return perfilAtual().toLowerCase().indexOf("coordena") === 0;
+}
+function nomeAtual() {
+return ESTADO.sessao && ESTADO.sessao.nome ? String(ESTADO.sessao.nome) : "—";
+}
+
+// ===================== APP =====================
+function exibirApp() {
+document.getElementById("loginScreen").style.display = "none";
+document.getElementById("appScreen").classList.remove("hidden");
+document.getElementById("sbNome").textContent = nomeAtual();
+document.getElementById("sbPerfil").textContent = perfilAtual() || "—";
+document.getElementById("rodapeData").textContent = new Date().toLocaleDateString("pt-BR");
+preencherSelects();
+preencherFaixaAutomatica();
+renderizarPresencas();
+renderizarConsultorias();
+renderizarDiagnosticos();
+renderizarAuditorias();
+renderizarContadores();
+var nomeConsultor = document.getElementById("consConsultor");
+if (nomeConsultor && perfilAtual().toLowerCase().indexOf("consultor") === 0) nomeConsultor.value = nomeAtual();
+atualizarRodapesRegistro();
+}
+
+function preencherFaixaAutomatica() {
+try {
+document.getElementById("autoUsuario").textContent = nomeAtual();
+document.getElementById("autoPerfil").textContent = perfilAtual() || "—";
+document.getElementById("autoDataHora").textContent = formatarDataHora(agoraIso());
+} catch (e) {
+document.getElementById("autoUsuario").textContent = "—";
+document.getElementById("autoPerfil").textContent = "—";
+document.getElementById("autoDataHora").textContent = "—";
+}
+}
+
+function atualizarRodapesRegistro() {
+var texto = "Registrado por: " + nomeAtual() + " · " + formatarDataHora(agoraIso());
+["rodapeConsultoria", "rodapeDiagnostico", "rodapeAuditoria"].forEach(function (id) {
+var el = document.getElementById(id);
+if (el) el.textContent = texto;
+});
+}
+
+function mostrarAba(nome) {
+var abas = ["presenca", "consultoria", "diagnostico", "auditoria"];
+for (var i = 0; i < abas.length; i++) {
+var s = document.getElementById("aba-" + abas[i]);
+if (s) s.classList.toggle("hidden", abas[i] !== nome);
+}
+var botoes = document.querySelectorAll(".nav-item");
+for (var j = 0; j < botoes.length; j++) {
+botoes[j].classList.toggle("active", botoes[j].getAttribute("data-aba") === nome);
+}
+atualizarRodapesRegistro();
+preencherFaixaAutomatica();
+}
+
+// ===================== LISTAS DINÂMICAS =====================
+function obterListas() {
+var listas = { eventos: LISTA_EVENTOS_PADRAO.slice(), consultorias: LISTA_CONSULTORIAS_PADRAO.slice(), diagnosticos: LISTA_DIAG_PADRAO.slice(), modoPadrao: true };
+try {
+var turma = null;
+for (var i = 0; i < ESTADO.turmasAtivas.length; i++) {
+if (ESTADO.turmasAtivas[i] && ESTADO.turmasAtivas[i].ativa !== false) { turma = ESTADO.turmasAtivas[i]; break; }
+}
+var programa = null;
+if (turma) {
+for (var p = 0; p < ESTADO.programas.length; p++) {
+if (ESTADO.programas[p] && String(ESTADO.programas[p].id) === String(turma.programaId)) { programa = ESTADO.programas[p]; break; }
+}
+}
+if (programa && Array.isArray(programa.matriz) && programa.matriz.length) {
+var ev = [], co = [], di = [];
+for (var m = 0; m < programa.matriz.length; m++) {
+var item = programa.matriz[m];
+if (!item || !item.nome) continue;
+var tipo = String(item.tipo || "").toLowerCase();
+if (tipo === "evento") ev.push(String(item.nome));
+else if (tipo === "consultoria") co.push(String(item.nome));
+else if (tipo === "diagnostico") di.push(String(item.nome));
+}
+if (ev.length) listas.eventos = ev;
+if (co.length) listas.consultorias = co;
+if (di.length) listas.diagnosticos = di;
+listas.modoPadrao = false;
+}
+} catch (e) {}
+return listas;
+}
+
+function obterEmpresas() {
+var nomes = [];
+try {
+for (var i = 0; i < ESTADO.empresas.length; i++) {
+var e = ESTADO.empresas[i];
+var n = e && typeof e === "object" ? (e.nome || e.razaoSocial || "") : e;
+if (n && String(n).trim()) nomes.push(String(n).trim());
+}
+} catch (e) {}
+if (!nomes.length) nomes = EMPRESAS_PADRAO.slice();
+return nomes;
+}
+
+function preencherOpcoes(id, lista, primeiraOpcao) {
+var sel = document.getElementById(id);
+if (!sel) return;
+var atual = sel.value;
+sel.innerHTML = "";
+if (primeiraOpcao !== undefined && primeiraOpcao !== null) {
+var o0 = document.createElement("option");
+o0.value = ""; o0.textContent = primeiraOpcao;
+sel.appendChild(o0);
+}
+for (var i = 0; i < lista.length; i++) {
+var o = document.createElement("option");
+o.value = lista[i]; o.textContent = lista[i];
+sel.appendChild(o);
+}
+if (atual) sel.value = atual;
+}
+
+function preencherSelects() {
+var listas = obterListas();
+ESTADO.modoListasPadrao = listas.modoPadrao;
+var empresas = obterEmpresas();
+preencherOpcoes("presEvento", listas.eventos);
+preencherOpcoes("presEmpresa", empresas);
+preencherOpcoes("consCodigo", listas.consultorias);
+preencherOpcoes("consEmpresa", empresas);
+preencherOpcoes("diagCodigo", listas.diagnosticos);
+preencherOpcoes("diagEmpresa", empresas);
+preencherOpcoes("audEmpresa", empresas);
+preencherOpcoes("fPresEvento", listas.eventos, "Todos os eventos");
+preencherOpcoes("fPresEmpresa", empresas, "Todas as empresas");
+preencherOpcoes("fConsCodigo", listas.consultorias, "Todas as consultorias");
+preencherOpcoes("fConsEmpresa", empresas, "Todas as empresas");
+preencherOpcoes("fDiagCodigo", listas.diagnosticos, "Todos os diagnósticos");
+preencherOpcoes("fDiagEmpresa", empresas, "Todas as empresas");
+preencherOpcoes("fAudEmpresa", empresas, "Todas as empresas");
+var avisos = ["avisoListaPadraoPres", "avisoListaPadraoCons", "avisoListaPadraoDiag"];
+for (var i = 0; i < avisos.length; i++) {
+var el = document.getElementById(avisos[i]);
+if (el) el.classList.toggle("hidden", !listas.modoPadrao);
+}
+}
+
+// ===================== VALIDAÇÕES =====================
+function mensagem(id, texto, tipo) {
+var el = document.getElementById(id);
+if (!el) return;
+el.textContent = texto;
+el.className = "msg " + (tipo === "ok" ? "ok" : "err");
+if (tipo === "ok") {
+setTimeout(function () { if (el.textContent === texto) el.textContent = ""; }, 4000);
+}
+}
+function mostrarMsgGlobal(texto, tipo) {
+var bar = document.getElementById("errorBar");
+if (!bar) return;
+if (tipo === "err") {
+bar.style.display = "block";
+bar.textContent = texto;
+} else {
+bar.style.display = "none";
+}
+}
+function toast(texto, tipo) {
+var box = document.getElementById("toastBox");
+if (!box) return;
+var t = document.createElement("div");
+t.className = "toast " + (tipo === "err" ? "err" : "ok");
+t.textContent = texto;
+box.appendChild(t);
+setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
+}
+function valorCampo(id) {
+var el = document.getElementById(id);
+return el ? String(el.value || "").trim() : "";
+}
+function duracaoMinutos(inicio, fim) {
+if (!inicio || !fim) return null;
+var a = inicio.split(":"), b = fim.split(":");
+var mi = parseInt(a[0], 10) * 60 + parseInt(a[1], 10);
+var mf = parseInt(b[0], 10) * 60 + parseInt(b[1], 10);
+return mf - mi;
+}
+function formatarDuracao(min) {
+if (min === null || isNaN(min)) return "—";
+var h = Math.floor(min / 60), m = min % 60;
+return ("0" + h).slice(-2) + "h" + ("0" + m).slice(-2);
+}
+function horariosValidos(inicio, fim) {
+var d = duracaoMinutos(inicio, fim);
+return d !== null && d > 0;
+}
+
+// ===================== PRESENÇA =====================
+function registrarPresenca() {
+try {
+var evento = valorCampo("presEvento");
+var data = valorCampo("presData");
+var empresa = valorCampo("presEmpresa");
+var nome = valorCampo("presNome");
+var cargo = valorCampo("presCargo");
+var email = valorCampo("presEmail");
+var obs = valorCampo("presObs");
+if (!evento || !data || !empresa || !nome || !cargo || !email) {
+mensagem("msgPresenca", "Preencha todos os campos obrigatórios.", "err");
+return;
+}
+var chave = normalizarNome(nome);
+for (var i = 0; i < ESTADO.presencas.length; i++) {
+var p = ESTADO.presencas[i];
+if (normalizarNome(p.participanteNome) === chave && p.evento === evento && p.data === data) {
+mensagem("msgPresenca", "Este participante já foi registrado neste evento.", "err");
+return;
+}
+}
+var autorizado = false;
+for (var a = 0; a < ESTADO.autorizacoes.length; a++) {
+if (ESTADO.autorizacoes[a] && ESTADO.autorizacoes[a].chave === chave && ESTADO.autorizacoes[a].empresa === empresa) { autorizado = true; break; }
+}
+var vinculo = null;
+for (var j = 0; j < ESTADO.presencas.length; j++) {
+var q = ESTADO.presencas[j];
+if (normalizarNome(q.participanteNome) === chave && q.empresa !== empresa) { vinculo = q.empresa; break; }
+}
+if (vinculo && !autorizado) {
+var texto = "Este participante já está vinculado à empresa " + vinculo + ". Um participante pode representar apenas uma empresa.";
+document.getElementById("authPresencaTexto").textContent = texto;
+document.getElementById("authPresenca").style.display = "block";
+ESTADO.pendente = { evento: evento, data: data, empresa: empresa, nome: nome, cargo: cargo, email: email, obs: obs, chave: chave };
+if (!ehCoordenacao()) {
+document.getElementById("authPresenca").querySelector(".btn").style.display = "none";
+}
+mensagem("msgPresenca", texto, "err");
+return;
+}
+salvarPresenca({ evento: evento, data: data, empresa: empresa, nome: nome, cargo: cargo, email: email, obs: obs, chave: chave });
+} catch (e) {
+mensagem("msgPresenca", "Erro ao registrar presença.", "err");
+}
+}
+function salvarPresenca(d) {
+var reg = {
+id: gerarId(),
+evento: d.evento, data: d.data, empresa: d.empresa,
+participanteNome: d.nome, cargo: d.cargo, email: d.email, observacoes: d.obs || "",
+registradoPor: nomeAtual(), perfilUsuario: perfilAtual(), dataHoraRegistro: agoraIso()
+};
+ESTADO.presencas.push(reg);
+var jaExiste = false;
+for (var i = 0; i < ESTADO.participantes.length; i++) {
+if (ESTADO.participantes[i].chave === d.chave) { jaExiste = true; break; }
+}
+if (!jaExiste) ESTADO.participantes.push({ chave: d.chave, nome: d.nome, empresa: d.empresa });
+salvarDados();
+ESTADO.pendente = null;
+document.getElementById("authPresenca").style.display = "none";
+document.getElementById("formPresenca").reset();
+preencherSelects();
+renderizarPresencas();
+renderizarContadores();
+mensagem("msgPresenca", "Presença registrada com sucesso.", "ok");
+toast("Presença registrada com sucesso.", "ok");
+}
+function autorizarTrocaEmpresa() {
+if (!ehCoordenacao() || !ESTADO.pendente) return;
+var p = ESTADO.pendente;
+ESTADO.autorizacoes.push({ chave: p.chave, empresa: p.empresa, autorizadoPor: nomeAtual(), dataHora: agoraIso() });
+salvarDados();
+salvarPresenca(p);
+}
+function cancelarAutorizacao() {
+ESTADO.pendente = null;
+document.getElementById("authPresenca").style.display = "none";
+mensagem("msgPresenca", "", "ok");
+}
+
+function filtrarPresencas() {
+var f = FILTROS.presenca;
+return ESTADO.presencas.filter(function (p) {
+if (f.evento && p.evento !== f.evento) return false;
+if (f.empresa && p.empresa !== f.empresa) return false;
+if (f.ini && p.data < f.ini) return false;
+if (f.fim && p.data > f.fim) return false;
+if (f.busca && normalizarNome(p.participanteNome).indexOf(normalizarNome(f.busca)) < 0) return false;
+return true;
+});
+}
+function renderizarPresencas() {
+var tb = document.getElementById("tbPresenca");
+if (!tb) return;
+var lista = filtrarPresencas();
+tb.innerHTML = "";
+if (!lista.length) {
+tb.innerHTML = '<tr class="empty-row"><td colspan="8">Nenhum registro encontrado com os filtros atuais.</td></tr>';
+return;
+}
+lista.forEach(function (p) {
+var tr = document.createElement("tr");
+var acao = ehCoordenacao() ? '<button class="btn-danger" onclick="excluirRegistro(\'presenca\',\'' + p.id + '\')">Excluir</button>' : "—";
+tr.innerHTML = "<td>" + escapeHtml(p.evento) + "</td>" +
+"<td class='mono-cell'>" + formatarData(p.data) + "</td>" +
+"<td>" + escapeHtml(p.empresa) + "</td>" +
+"<td>" + escapeHtml(p.participanteNome) + "</td>" +
+"<td>" + escapeHtml(p.cargo) + "</td>" +
+"<td>" + escapeHtml(p.registradoPor) + "</td>" +
+"<td class='mono-cell'>" + formatarDataHora(p.dataHoraRegistro) + "</td>" +
+"<td>" + acao + "</td>";
+tb.appendChild(tr);
+});
+}
+function renderizarContadores() {
+var box = document.getElementById("contadoresPresenca");
+if (!box) return;
+var porEvento = {}, porEmpresa = {};
+ESTADO.presencas.forEach(function (p) {
+porEvento[p.evento] = (porEvento[p.evento] || 0) + 1;
+porEmpresa[p.empresa] = (porEmpresa[p.empresa] || 0) + 1;
+});
+var html = '<div class="counter"><div class="counter-num">' + ESTADO.presencas.length + '</div><div class="counter-lbl">Total de presenças</div></div>';
+Object.keys(porEvento).forEach(function (k) {
+html += '<div class="counter"><div class="counter-num">' + porEvento[k] + '</div><div class="counter-lbl">' + escapeHtml(k) + '</div></div>';
+});
+Object.keys(porEmpresa).forEach(function (k) {
+html += '<div class="counter"><div class="counter-num">' + porEmpresa[k] + '</div><div class="counter-lbl">' + escapeHtml(k) + '</div></div>';
+});
+box.innerHTML = html;
+}
+
+// ===================== CONSULTORIAS =====================
+function registrarConsultoria() {
+try {
+var codigo = valorCampo("consCodigo"), empresa = valorCampo("consEmpresa"), consultor = valorCampo("consConsultor");
+var data = valorCampo("consData"), ini = valorCampo("consInicio"), fim = valorCampo("consFim");
+var d1 = valorCampo("cDesc1"), d2 = valorCampo("cDesc2"), d3 = valorCampo("cDesc3"), d4 = valorCampo("cDesc4"), d5 = valorCampo("cDesc5");
+if (!codigo || !empresa || !consultor || !data || !ini || !fim || !d1 || !d2 || !d3 || !d4 || !d5) {
+mensagem("msgConsultoria", "Preencha todos os campos obrigatórios.", "err");
+return;
+}
+if (!horariosValidos(ini, fim)) {
+mensagem("msgConsultoria", "A hora de fim deve ser posterior à hora de início.", "err");
+return;
+}
+ESTADO.consultorias.push({
+id: gerarId(), codigo: codigo, empresa: empresa, consultor: consultor, data: data,
+inicio: ini, fim: fim, duracaoMin: duracaoMinutos(ini, fim),
+d1: d1, d2: d2, d3: d3, d4: d4, d5: d5,
+registradoPor: nomeAtual(), perfilUsuario: perfilAtual(), dataHoraRegistro: agoraIso()
+});
+salvarDados();
+document.getElementById("formConsultoria, #formConsultoria");
+document.querySelectorAll("#aba-consultoria textarea").forEach(function (t) { t.value = ""; });
+document.getElementById("consData").value = "";
+document.getElementById("consInicio").value = "";
+document.getElementById("consFim").value = "";
+renderizarConsultorias();
+mensagem("msgConsultoria", "Consultoria registrada com sucesso.", "ok");
+toast("Consultoria registrada com sucesso.", "ok");
+} catch (e) {
+mensagem("msgConsultoria", "Erro ao registrar consultoria.", "err");
+}
+}
+function filtrarConsultorias() {
+var f = FILTROS.consultoria;
+return ESTADO.consultorias.filter(function (c) {
+if (f.codigo && c.codigo !== f.codigo) return false;
+if (f.empresa && c.empresa !== f.empresa) return false;
+if (f.consultor && normalizarNome(c.consultor).indexOf(normalizarNome(f.consultor)) < 0) return false;
+if (f.ini && c.data < f.ini) return false;
+if (f.fim && c.data > f.fim) return false;
+return true;
+});
+}
+function renderizarConsultorias() {
+var tb = document.getElementById("tbConsultoria");
+if (!tb) return;
+var lista = filtrarConsultorias();
+tb.innerHTML = "";
+if (!lista.length) {
+tb.innerHTML = '<tr class="empty-row"><td colspan="9">Nenhuma consultoria encontrada.</td></tr>';
+return;
+}
+lista.forEach(function (c) {
+var tr = document.createElement("tr");
+var acoes = '<button class="btn-ghost" onclick="verDetalhesConsultoria(\'' + c.id + '\')">Ver detalhes</button> ';
+acoes += ehCoordenacao() ? '<button class="btn-danger" onclick="excluirRegistro(\'consultoria\',\'' + c.id + '\')">Excluir</button>' : "";
+tr.innerHTML = "<td>" + escapeHtml(c.codigo) + "</td>" +
+"<td>" + escapeHtml(c.empresa) + "</td>" +
+"<td>" + escapeHtml(c.consultor) + "</td>" +
+"<td class='mono-cell'>" + formatarData(c.data) + "</td>" +
+"<td class='mono-cell'>" + c.inicio + "</td>" +
+"<td class='mono-cell'>" + c.fim + "</td>" +
+"<td class='mono-cell'>" + formatarDuracao(c.duracaoMin) + "</td>" +
+"<td>" + escapeHtml(c.registradoPor) + "</td>" +
+"<td>" + acoes + "</td>";
+tr.cells[0].insertAdjacentHTML("afterend", "");
+tb.appendChild(tr);
+});
+}
+function verDetalhesConsultoria(id) {
+var c = null;
+for (var i = 0; i < ESTADO.consultorias.length; i++) { if (ESTADO.consultorias[i].id === id) { c = ESTADO.consultorias[i]; break; } }
+if (!c) return;
+document.getElementById("modalConsTitulo").textContent = c.codigo + " · " + c.empresa;
+document.getElementById("modalConsSub").textContent = "Registrado por " + c.registradoPor + " em " + formatarDataHora(c.dataHoraRegistro);
+var campos = [
+["Verificação de pendências de consultoria anterior", c.d1],
+["Verificação de tarefas pré-consultoria", c.d2],
+["Orientações / repasse de conhecimento", c.d3],
+["Atividades a serem realizadas pós-consultoria", c.d4],
+["Pontos críticos / necessidade de intervenção da coordenação do programa", c.d5]
+];
+var html = "";
+campos.forEach(function (x) {
+html += '<div class="modal-sec"><b>' + escapeHtml(x[0]) + '</b><p>' + escapeHtml(x[1]) + '</p></div>';
+});
+document.getElementById("modalConsCorpo").innerHTML = html;
+document.getElementById("modalConsultoria").classList.add("open");
+}
+function fecharModal(id) {
+var m = document.getElementById(id);
+if (m) m.classList.remove("open");
+}
+
+// ===================== DIAGNÓSTICOS =====================
+function registrarDiagnostico() {
+try {
+var codigo = valorCampo("diagCodigo"), empresa = valorCampo("diagEmpresa"), consultor = valorCampo("diagConsultor");
+var data = valorCampo("diagData"), ini = valorCampo("diagInicio"), fim = valorCampo("diagFim");
+var resultado = valorCampo("diagResultado"), pontos = valorCampo("diagPontos");
+if (!codigo || !empresa || !consultor || !data || !ini || !fim || !resultado || !pontos) {
+mensagem("msgDiagnostico", "Preencha todos os campos obrigatórios.", "err");
+return;
+}
+if (!horariosValidos(ini, fim)) {
+mensagem("msgDiagnostico", "A hora de fim deve ser posterior à hora de início.", "err");
+return;
+}
+for (var i = 0; i < ESTADO.diagnosticos.length; i++) {
+var d = ESTADO.diagnosticos[i];
+if (d.codigo === codigo && d.empresa === empresa) {
+mensagem("msgDiagnostico", "Já existe um " + codigo + " registrado para esta empresa.", "err");
+return;
+}
+}
+ESTADO.diagnosticos.push({
+id: gerarId(), codigo: codigo, empresa: empresa, consultor: consultor, data: data,
+inicio: ini, fim: fim, resultado: resultado, pontos: pontos,
+registradoPor: nomeAtual(), perfilUsuario: perfilAtual(), dataHoraRegistro: agoraIso()
+});
+salvarDados();
+document.getElementById("diagPontos").value = "";
+document.getElementById("diagData").value = "";
+document.getElementById("diagInicio").value = "";
+document.getElementById("diagFim").value = "";
+renderizarDiagnosticos();
+mensagem("msgDiagnostico", "Diagnóstico registrado com sucesso.", "ok");
+toast("Diagnóstico registrado com sucesso.", "ok");
+} catch (e) {
+mensagem("msgDiagnostico", "Erro ao registrar diagnóstico.", "err");
+}
+}
+function badgeResultado(r) {
+var cls = r === "1,0" ? "b-verde" : r === "0,8" ? "b-ambar" : r === "0,0" ? "b-verm" : "b-cinza";
+return '<span class="badge ' + cls + '">' + escapeHtml(r) + '</span>';
+}
+function filtrarDiagnosticos() {
+var f = FILTROS.diagnostico;
+return ESTADO.diagnosticos.filter(function (d) {
+if (f.codigo && d.codigo !== f.codigo) return false;
+if (f.empresa && d.empresa !== f.empresa) return false;
+if (f.resultado && d.resultado !== f.resultado) return false;
+if (f.ini && d.data < f.ini) return false;
+if (f.fim && d.data > f.fim) return false;
+return true;
+});
+}
+function renderizarDiagnosticos() {
+var tb = document.getElementById("tbDiagnostico");
+if (!tb) return;
+var lista = filtrarDiagnosticos();
+tb.innerHTML = "";
+if (!lista.length) {
+tb.innerHTML = '<tr class="empty-row"><td colspan="9">Nenhum diagnóstico encontrado.</td></tr>';
+return;
+}
+lista.forEach(function (d) {
+var tr = document.createElement("tr");
+var acao = ehCoordenacao() ? '<button class="btn-danger" onclick="excluirRegistro(\'diagnostico\',\'' + d.id + '\')">Excluir</button>' : "—";
+tr.innerHTML = "<td>" + escapeHtml(d.codigo) + "</td>" +
+"<td>" + escapeHtml(d.empresa) + "</td>" +
+"<td>" + escapeHtml(d.consultor) + "</td>" +
+"<td class='mono-cell'>" + formatarData(d.data) + "</td>" +
+"<td class='mono-cell'>" + d.inicio + "</td>" +
+"<td class='mono-cell'>" + d.fim + "</td>" +
+"<td>" + badgeResultado(d.resultado) + "</td>" +
+"<td>" + escapeHtml(d.registradoPor) + "</td>" +
+"<td>" + acao + "</td>";
+tb.appendChild(tr);
+});
+}
+
+// ===================== AUDITORIA =====================
+function registrarAuditoria() {
+try {
+var empresa = valorCampo("audEmpresa"), ident = valorCampo("audIdent"), consultor = valorCampo("audConsultor");
+var data = valorCampo("audData"), ini = valorCampo("audInicio"), fim = valorCampo("audFim");
+var planej = valorCampo("audPlanej"), relatorio = valorCampo("audRelatorio");
+var nc = valorCampo("audNC"), fase = valorCampo("audFase"), pontos = valorCampo("audPontos");
+if (!empresa || !ident || !consultor || !data || !ini || !fim || !planej || !relatorio || nc === "" || !fase || !pontos) {
+mensagem("msgAuditoria", "Preencha todos os campos obrigatórios.", "err");
+return;
+}
+var ncNum = parseInt(nc, 10);
+if (isNaN(ncNum) || ncNum < 0) {
+mensagem("msgAuditoria", "Não conformidades deve ser um número inteiro maior ou igual a zero.", "err");
+return;
+}
+if (!horariosValidos(ini, fim)) {
+mensagem("msgAuditoria", "A hora de fim deve ser posterior à hora de início.", "err");
+return;
+}
+ESTADO.auditorias.push({
+id: gerarId(), empresa: empresa, identificacao: ident, consultor: consultor, data: data,
+inicio: ini, fim: fim, cumpriuPlanejamento: planej, relatorioFinalizado: relatorio,
+naoConformidades: ncNum, estruturadoFase01: fase, pontos: pontos,
+registradoPor: nomeAtual(), perfilUsuario: perfilAtual(), dataHoraRegistro: agoraIso()
+});
+salvarDados();
+document.getElementById("audPontos").value = "";
+document.getElementById("audData").value = "";
+document.getElementById("audInicio").value = "";
+document.getElementById("audFim").value = "";
+renderizarAuditorias();
+mensagem("msgAuditoria", "Auditoria registrada com sucesso.", "ok");
+toast("Auditoria registrada com sucesso.", "ok");
+} catch (e) {
+mensagem("msgAuditoria", "Erro ao registrar auditoria.", "err");
+}
+}
+function badgeSimNao(v) {
+return '<span class="badge ' + (v === "SIM" ? "b-verde" : "b-verm") + '">' + v + '</span>';
+}
+function filtrarAuditorias() {
+var f = FILTROS.auditoria;
+return ESTADO.auditorias.filter(function (a) {
+if (f.empresa && a.empresa !== f.empresa) return false;
+if (f.ini && a.data < f.ini) return false;
+if (f.fim && a.data > f.fim) return false;
+if (f.fase && a.estruturadoFase01 !== f.fase) return false;
+return true;
+});
+}
+function renderizarAuditorias() {
+var tb = document.getElementById("tbAuditoria");
+if (!tb) return;
+var lista = filtrarAuditorias();
+tb.innerHTML = "";
+if (!lista.length) {
+tb.innerHTML = '<tr class="empty-row"><td colspan="12">Nenhuma auditoria encontrada.</td></tr>';
+return;
+}
+lista.forEach(function (a) {
+var tr = document.createElement("tr");
+var acao = ehCoordenacao() ? '<button class="btn-danger" onclick="excluirRegistro(\'auditoria\',\'' + a.id + '\')">Excluir</button>' : "—";
+tr.innerHTML = "<td>" + escapeHtml(a.empresa) + "</td>" +
+"<td>" + escapeHtml(a.identificacao) + "</td>" +
+"<td>" + escapeHtml(a.consultor) + "</td>" +
+"<td class='mono-cell'>" + formatarData(a.data) + "</td>" +
+"<td class='mono-cell'>" + a.inicio + "</td>" +
+"<td class='mono-cell'>" + a.fim + "</td>" +
+"<td>" + badgeSimNao(a.cumpriuPlanejamento) + "</td>" +
+"<td>" + badgeSimNao(a.relatorioFinalizado) + "</td>" +
+"<td class='mono-cell'>" + a.naoConformidades + "</td>" +
+"<td>" + badgeSimNao(a.estruturadoFase01) + "</td>" +
+"<td>" + escapeHtml(a.registradoPor) + "</td>" +
+"<td>" + acao + "</td>";
+tb.appendChild(tr);
+});
+}
+
+// ===================== AÇÕES GERAIS =====================
+function excluirRegistro(tipo, id) {
+if (!ehCoordenacao()) { toast("Apenas a coordenação pode excluir registros.", "err"); return; }
+if (!confirm("Confirma a exclusão deste registro?")) return;
+var mapa = { presenca: "presencas", consultoria: "consultorias", diagnostico: "diagnosticos", auditoria: "auditorias" };
+var chave = mapa[tipo];
+if (!chave) return;
+ESTADO[chave] = ESTADO[chave].filter(function (r) { return r.id !== id; });
+salvarDados();
+renderizarPresencas(); renderizarConsultorias(); renderizarDiagnosticos(); renderizarAuditorias(); renderizarContadores();
+toast("Registro excluído.", "ok");
+}
+
+function aplicarFiltros(tipo) {
+if (tipo === "presenca") {
+FILTROS.presenca = {
+evento: valorCampo("fPresEvento"), empresa: valorCampo("fPresEmpresa"),
+ini: valorCampo("fPresIni"), fim: valorCampo("fPresFim"), busca: valorCampo("fPresBusca")
+};
+renderizarPresencas();
+} else if (tipo === "consultoria") {
+FILTROS.consultoria = {
+codigo: valorCampo("fConsCodigo"), empresa: valorCampo("fConsEmpresa"),
+consultor: valorCampo("fConsConsultor"), ini: valorCampo("fConsIni"), fim: valorCampo("fConsFim")
+};
+renderizarConsultorias();
+} else if (tipo === "diagnostico") {
+FILTROS.diagnostico = {
+codigo: valorCampo("fDiagCodigo"), empresa: valorCampo("fDiagEmpresa"),
+resultado: valorCampo("fDiagResultado"), ini: valorCampo("fDiagIni"), fim: valorCampo("fDiagFim")
+};
+renderizarDiagnosticos();
+} else if (tipo === "auditoria") {
+FILTROS.auditoria = {
+empresa: valorCampo("fAudEmpresa"), ini: valorCampo("fAudIni"),
+fim: valorCampo("fAudFim"), fase: valorCampo("fAudFase")
+};
+renderizarAuditorias();
+}
+toast("Filtros aplicados.", "ok");
+}
+function limparFiltros(tipo) {
+var ids = {
+presenca: ["fPresEvento", "fPresEmpresa", "fPresIni", "fPresFim", "fPresBusca"],
+consultoria: ["fConsCodigo", "fConsEmpresa", "fConsConsultor", "fConsIni", "fConsFim"],
+diagnostico: ["fDiagCodigo", "fDiagEmpresa", "fDiagResultado", "fDiagIni", "fDiagFim"],
+auditoria: ["fAudEmpresa", "fAudIni", "fAudFim", "fAudFase"]
+};
+(ids[tipo] || []).forEach(function (id) {
+var el = document.getElementById(id);
+if (el) el.value = "";
+});
+FILTROS[tipo] = {};
+aplicarFiltros(tipo);
+toast("Filtros limpos.", "ok");
+}
+
+function csvEscape(v) {
+var s = String(v === null || v === undefined ? "" : v);
+if (s.indexOf(";") >= 0 || s.indexOf('"') >= 0 || s.indexOf("\n") >= 0) return '"' + s.replace(/"/g, '""') + '"';
+return s;
+}
+function exportarCSV(tipo) {
+try {
+var linhas = [], cab = [], dados = [];
+if (tipo === "presenca") {
+cab = ["ID", "Evento", "Data do evento", "Empresa", "Participante", "Cargo", "E-mail", "Observações", "Registrado por", "Perfil", "Data/hora do registro"];
+dados = filtrarPresencas().map(function (p) {
+return [p.id, p.evento, p.data, p.empresa, p.participanteNome, p.cargo, p.email, p.observacoes, p.registradoPor, p.perfilUsuario, p.dataHoraRegistro];
+});
+} else if (tipo === "consultoria") {
+cab = ["ID", "Consultoria", "Empresa", "Consultor", "Data", "Início", "Fim", "Duração (min)", "Pendências anteriores", "Tarefas pré-consultoria", "Orientações", "Atividades pós-consultoria", "Pontos críticos", "Registrado por", "Perfil", "Data/hora do registro"];
+dados = filtrarConsultorias().map(function (c) {
+return [c.id, c.codigo, c.empresa, c.consultor, c.data, c.inicio, c.fim, c.duracaoMin, c.d1, c.d2, c.d3, c.d4, c.d5, c.registradoPor, c.perfilUsuario, c.dataHoraRegistro];
+});
+} else if (tipo === "diagnostico") {
+cab = ["ID", "Diagnóstico", "Empresa", "Consultor", "Data", "Início", "Fim", "Resultado", "Pontos críticos", "Registrado por", "Perfil", "Data/hora do registro"];
+dados = filtrarDiagnosticos().map(function (d) {
+return [d.id, d.codigo, d.empresa, d.consultor, d.data, d.inicio, d.fim, d.resultado, d.pontos, d.registradoPor, d.perfilUsuario, d.dataHoraRegistro];
+});
+} else if (tipo === "auditoria") {
+cab = ["ID", "Empresa", "Identificação AIQ", "Consultor", "Data", "Início", "Fim", "Cumpriu planejamento", "Relatório finalizado", "Não conformidades", "Estruturado para fase 01", "Pontos críticos", "Registrado por", "Perfil", "Data/hora do registro"];
+dados = filtrarAuditorias().map(function (a) {
+return [a.id, a.empresa, a.identificacao, a.consultor, a.data, a.inicio, a.fim, a.cumpriuPlanejamento, a.relatorioFinalizado, a.naoConformidades, a.estruturadoFase01, a.pontos, a.registradoPor, a.perfilUsuario, a.dataHoraRegistro];
+});
+}
+linhas.push(cab.map(csvEscape).join(";"));
+dados.forEach(function (r) { linhas.push(r.map(csvEscape).join(";")); });
+var blob = new Blob(["\uFEFF" + linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
+var url = URL.createObjectURL(blob);
+var a = document.createElement("a");
+a.href = url;
+a.download = "prodfor_" + tipo + "_" + new Date().toISOString().slice(0, 10) + ".csv";
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+toast("Arquivo CSV gerado.", "ok");
+} catch (e) {
+toast("Não foi possível exportar o CSV.", "err");
+}
+}
+
+// ===================== BOOT =====================
+(function boot() {
+try {
+carregarDados();
+garantirUsuarioPadrao();
+carregarDados();
+document.getElementById("rodapeData").textContent = new Date().toLocaleDateString("pt-BR");
+if (ESTADO.sessao && ESTADO.sessao.nome) {
+exibirApp();
+} else {
+document.getElementById("loginScreen").style.display = "flex";
+document.getElementById("appScreen").classList.add("hidden");
+}
+} catch (e) {
+document.getElementById("loginScreen").style.display = "flex";
+}
+})();
+</script>
+</body>
+</html>
