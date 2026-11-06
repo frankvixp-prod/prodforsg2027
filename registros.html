@@ -1078,6 +1078,9 @@ body { min-height:100vh; }
 .badge-perfil { display:inline-block; background:#00A0E4; color:#0B2430; font-size:10px; padding:3px 10px; border-radius:10px; font-weight:700; text-transform:uppercase; }
 .btn-sair { height:32px; padding:0 16px; background:transparent; border:1px solid rgba(255,255,255,0.3); color:#CFDCD3; border-radius:6px; font-size:12px; cursor:pointer; font-family:inherit; box-sizing:border-box; }
 .btn-sair:hover { background:rgba(255,255,255,0.08); }
+.btn-inicio { display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 14px; background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.25); color:#FFFFFF; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.15s ease; box-sizing:border-box; }
+.btn-inicio:hover { background:rgba(255,255,255,0.18); }
+.btn-inicio:focus-visible { outline:2px solid var(--ciano); outline-offset:2px; }
 #topbarMenu { display:flex; flex-direction:row; align-items:stretch; gap:0; padding:0 28px; height:52px; box-sizing:border-box; overflow-x:auto; overflow-y:hidden; }
 .nav-item { display:flex; align-items:center; justify-content:center; height:52px; padding:0 22px; background:transparent; border:none; border-bottom:3px solid transparent; color:#CFDCD3; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; white-space:nowrap; box-sizing:border-box; transition:all 0.15s ease; }
 .nav-item:hover { background:rgba(255,255,255,0.06); color:#FFFFFF; }
@@ -1187,6 +1190,8 @@ table.grid tbody tr:hover { background:#eef6fb; }
 #appShell { flex-direction:column; }
 #topbarMarca { padding:0 16px; height:auto; min-height:56px; flex-wrap:wrap; gap:10px; padding-top:10px; padding-bottom:10px; }
 #topbarMenu { padding:0 8px; height:48px; }
+.btn-inicio { padding:0 10px; }
+.btn-inicio-txt { display:none; }
 .nav-item { padding:0 14px; font-size:12px; height:48px; }
 #conteudo { padding:20px 16px 32px 16px; }
 .main { padding:0; }
@@ -1254,6 +1259,7 @@ table.grid tbody tr:hover { background:#eef6fb; }
 <span class="tb-prog" id="tbPrograma">PRODFOR</span>
 </div>
 <div class="tb-user">
+<button type="button" class="btn-inicio" onclick="irParaInicio()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg><span class="btn-inicio-txt">Início</span></button>
 <span class="tb-user-name" id="sbNome">—</span>
 <span class="badge-perfil" id="sbPerfil">—</span>
 <button class="btn-sair" onclick="sair()">Sair</button>
@@ -1915,6 +1921,22 @@ document.getElementById("loginErro").textContent = "";
 toast("Acesso padrão restaurado. Use o e-mail e senha de demonstração.", "ok");
 } catch (e) {
 toast("Não foi possível restaurar o acesso.", "err");
+}
+}
+function irParaInicio() {
+try {
+var links = {};
+try {
+var bruto = localStorage.getItem('prodfor_links_paginas');
+if (bruto) { links = JSON.parse(bruto) || {}; }
+} catch (e1) { links = {}; }
+var url = links.inicio ? String(links.inicio).trim() : 'index.html';
+var janela = window.open(url, '_blank', 'noopener');
+if (!janela || janela.closed || typeof janela.closed === 'undefined') {
+alert('O navegador bloqueou a abertura. Acesse manualmente: ' + url);
+}
+} catch (erro) {
+alert('Não foi possível abrir a página inicial: ' + erro);
 }
 }
 function sair() {
